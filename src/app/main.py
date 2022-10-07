@@ -5,7 +5,7 @@ from app.db import engine, database, metadata
 
 metadata.create_all(engine)
 
-app = FastAPI(title="Notes and BlogPosts", openapi_url="/openapi.json")
+app = FastAPI(title="FastAPI_TDD_Docker : Notes and BlogPosts", openapi_url="/openapi.json")
 
 
 @app.on_event("startup")
