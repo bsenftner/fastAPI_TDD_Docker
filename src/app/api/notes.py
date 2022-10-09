@@ -1,3 +1,6 @@
+# ---------------------------------------------------------------------------------------------
+# This file contains the JSON endpoints for notes, handling the CRUD operations with the db 
+#
 from fastapi import APIRouter, HTTPException, Path 
 
 from app.api import crud

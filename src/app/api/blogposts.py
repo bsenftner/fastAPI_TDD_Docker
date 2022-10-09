@@ -1,3 +1,6 @@
+# ----------------------------------------------------------------------------------------------
+# This file contains the JSON endpoints for blog posts, handling the CRUD operations with the db 
+#
 from fastapi import APIRouter, HTTPException, Path 
 
 from app.api import crud
@@ -10,10 +13,10 @@ router = APIRouter()
 
 # ----------------------------------------------------------------------------------------------
 # declare a POST endpoint on the root
-# this will respond with a BlogPostDB upon succes 
+# this will respond with a BlogPostDB upon success  
 # This will receive a BlogPostSchema within payload 
 @router.post("/", response_model=BlogPostDB, status_code=201)
-async def create_blogpost(payload: BlogPostSchema):
+async def create_blogpost(payload: BlogPostSchema) -> dict:
     blogpost_id = await crud.post_blogpost(payload)
 
     response_object = {
@@ -26,7 +29,7 @@ async def create_blogpost(payload: BlogPostSchema):
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
 @router.get("/{id}/", response_model=BlogPostDB)
-async def read_blogpost(id: int = Path(..., gt=0),):
+async def read_blogpost(id: int = Path(..., gt=0),) -> dict:
     blogpost = await crud.get_blogpost(id)
     if not blogpost:
         raise HTTPException(status_code=404, detail="BlogPost not found")
@@ -35,13 +38,13 @@ async def read_blogpost(id: int = Path(..., gt=0),):
 # ----------------------------------------------------------------------------------------------
 # The response_model is a List with a BlogPostDB subtype. See import of List top of file. 
 @router.get("/", response_model=List[BlogPostDB])
-async def read_all_blogposts():
+async def read_all_blogposts() -> dict:
     return await crud.get_all_blogposts()
 
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
 @router.put("/{id}/", response_model=BlogPostDB)
-async def update_blogpost(payload: BlogPostSchema, id: int = Path(..., gt=0),):
+async def update_blogpost(payload: BlogPostSchema, id: int = Path(..., gt=0),) -> dict:
     blogpost = await crud.get_blogpost(id)
     if not blogpost:
         raise HTTPException(status_code=404, detail="BlogPost not found")
@@ -58,7 +61,7 @@ async def update_blogpost(payload: BlogPostSchema, id: int = Path(..., gt=0),):
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
 @router.delete("/{id}/", response_model=BlogPostDB)
-async def delete_blogpost(id: int = Path(..., gt=0)):
+async def delete_blogpost(id: int = Path(..., gt=0)) -> dict:
     blogpost = await crud.get_blogpost(id)
     if not blogpost:
         raise HTTPException(status_code=404, detail="BlogPost not found")
