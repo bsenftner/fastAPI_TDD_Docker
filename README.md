@@ -28,3 +28,5 @@ Or, if you want to preserve the info in the database, just use:
 `docker compose down`
 
 Next time you do step 2, above, the previous database info will still be there.
+
+Note: no user accounts or authentication yet; wait a few days for that bit...
