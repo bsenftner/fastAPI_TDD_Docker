@@ -111,29 +111,3 @@ async def root( request: Request, post_id: int ):
 # and finally include the html routes in the app:
 app.include_router(router)
 
-''' REFERENCE:
-# ------------------------------------------------------------------------------------------------------------------
-# serve page with an editor on it thru a template: 
-@api_router.get("/Editor/{post_id}", status_code=200, response_class=HTMLResponse)
-def root(
-    *,
-    request: Request,
-    post_id: int,
-    db: Session = Depends(deps.get_db),
-) -> dict:
-    """
-    Quill Editor GET
-    """
-    contentPost = crud.BlogPost.get(db=db, id=post_id)
-    if not contentPost:
-        # the exception is raised, not returned - you will get a validation error otherwise.
-        raise HTTPException( status_code=404, detail=f"BlogPost with ID {post_id} not found" )
-
-    # needed for result page's navigation: 
-    blogPosts = crud.BlogPost.get_multi(db=db, limit=10)
-
-    return TEMPLATES.TemplateResponse(
-        "editor.html",
-        {"request": request, "contentPost": contentPost, "frags": FRAGS, "blogPosts": blogPosts},
-    )
-'''
