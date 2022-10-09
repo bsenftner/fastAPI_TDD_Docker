@@ -1,7 +1,8 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Request, Depends
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from pathlib import Path
 
@@ -22,8 +23,19 @@ from app.page_frags import FRAGS
 # create db tables if they don't already exist:
 metadata.create_all(engine)
 
+# generate our "app"
 app = FastAPI(title="FastAPI_TDD_Docker (& postgresql): Notes and BlogPosts", openapi_url="/openapi.json")
 
+# add CORS handling: 
+app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        max_age=3600,
+    )
+    
 # enable automatic serving of contents of "static" directory: 
 app.mount("/static", StaticFiles(directory=str(BASE_PATH / "static")), name="static") 
 
@@ -53,6 +65,18 @@ app.include_router(blogposts.router, prefix="/blogposts", tags=["blogposts"])
 
 # define a router for the html returning endpoints: 
 router = APIRouter()
+
+# ------------------------------------------------------------------------------------------------------------------
+# added to get favicon served:
+favicon_path = BASE_PATH / 'favicon.ico'
+@router.get("/favicon.ico", status_code=200, include_in_schema=False) 
+def favicon():
+    """
+    Favicon.ico GET
+    """
+    # print(f"favicon_path is {favicon_path}")
+    return FileResponse(favicon_path)
+
 
 # ------------------------------------------------------------------------------------------------------------------
 # serve homepage thru a Jinja2 template:

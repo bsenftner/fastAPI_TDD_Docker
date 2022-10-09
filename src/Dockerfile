@@ -4,7 +4,8 @@ FROM python:3.9.4-alpine
 # set work directory
 WORKDIR /usr/src/app
 
-# set environment variables
+# set environment variables to prevent python from writing 
+# pyc files to disc and from buffering stdout and stderr:
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 

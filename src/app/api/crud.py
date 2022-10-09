@@ -1,6 +1,8 @@
 from app.api.models import NoteSchema, BlogPostSchema
 from app.db import notes, blogposts, database
 
+from sqlalchemy import asc
+
 # -----------------------------------------------------------------------------------------
 # for creating new notes
 async def post_note(payload: NoteSchema):
@@ -18,7 +20,7 @@ async def get_note(id: int):
 # -----------------------------------------------------------------------------------------
 # returns all notes:
 async def get_all_notes():
-    query = notes.select()
+    query = notes.select().order_by(asc(notes.c.id))
     return await database.fetch_all(query=query)
 
 # -----------------------------------------------------------------------------------------
@@ -58,7 +60,7 @@ async def get_blogpost(id: int):
 # -----------------------------------------------------------------------------------------
 # returns all blogposts:
 async def get_all_blogposts():
-    query = blogposts.select()
+    query = blogposts.select().order_by(asc(blogposts.c.id))
     return await database.fetch_all(query=query)
 
 # -----------------------------------------------------------------------------------------
