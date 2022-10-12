@@ -82,7 +82,22 @@
 
 		function Logout() { 
 			localStorage.removeItem('token');
-			window.location.href = "/login"; 
+			// document.cookie = 'access_token=; Max-Age=0; path=/; domain=' + location.host; // don't work
+			const options = { method: 'POST', body: {} };
+			fetch("/users/logout", options)
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error('Network response was not OK');
+				  	}
+					return response.json();
+				})
+				.then( response => 
+					{
+						console.log(response)
+						if (response.hasOwnProperty('username')) {
+							window.location.href = "/login";
+						}
+				  	})
 		}
 
 	</script>

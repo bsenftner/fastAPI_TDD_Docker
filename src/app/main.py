@@ -1,7 +1,5 @@
 
-from typing import Union
-
-from fastapi import FastAPI, APIRouter, HTTPException, Request, Depends, status
+from fastapi import FastAPI, APIRouter, HTTPException, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles

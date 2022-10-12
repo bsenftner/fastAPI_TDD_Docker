@@ -29,8 +29,8 @@ Or, if you want to preserve the info in the database, just use:
 
 Next time you do step 2, above, the previous database info will still be there.
 
-## Notes:
+## Notes
 
-### An initial blog post and user needs to be created via the OpenAPI GUI to get the HTML interface. 
+An initial blog post and user needs to be created via the OpenAPI GUI to get the HTML interface.
 
-### This version has JWT Bearer Token Authentication, using local storage. That may change to httpOnly cookies. 
+This version has JWT Bearer Token Authentication, using both local storage and httpOnly cookies.

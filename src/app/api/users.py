@@ -1,15 +1,11 @@
-#
-# from https://www.travisluong.com/how-to-build-a-user-authentication-flow-with-next-js-fastapi-and-postgresql/
-#
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, Response
 from passlib.context import CryptContext
 from app.db import users, database
-# from app.api.models import Token, TokenData, User, UserInDB, UserIn
 
-#from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-#
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.security import OAuth2PasswordBearer
+#
+# from fastapi.security import OAuth2PasswordBearer
+from app.api.utils import OAuth2PasswordBearerWithCookie
 
 from jose import JWTError, jwt
 from typing import Optional
@@ -49,18 +45,19 @@ class UserIn(User):
 # for authentication:
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# add OAuth2, declaring the url to get user auth tokens:
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-# create a local API router for the endpoints created in this file:
-router = APIRouter()
-
-
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+
+# add OAuth2, declaring the url to get user auth tokens:
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
+
+# create a local API router for the endpoints created in this file:
+router = APIRouter()
 
 
 
@@ -121,7 +118,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 
 @router.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
     user = await authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -131,8 +128,9 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
+            data={"sub": user.username}, expires_delta=access_token_expires
+        ) 
+    response.set_cookie(key="access_token",value=f"Bearer {access_token}", httponly=True)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -151,4 +149,11 @@ async def sign_up(user: UserIn):
     )
     last_record_id = await database.execute(query)
     return {"username": user.username, "id": last_record_id}
+
+
+@router.post("/users/logout/", response_model=User)
+async def logout(response: Response, current_user: User = Depends(get_current_active_user)):
+    print("logout hit!")
+    response.set_cookie(key="access_token",value=f"Bearer 0", httponly=True)
+    return current_user
 

@@ -67,7 +67,9 @@
 		function page_init() {
 			const access_token = localStorage.getItem('token');
 			if (access_token) {
-				const options = { headers: { "Authorization": "Bearer " + access_token } }
+				const options = { 
+					// headers: { "Authorization": "Bearer " + access_token } // only needed when JWT is not in cookie
+				}
 				fetch("/users/me", options)
 				.then(response => response.json())
 				.then( response => 
@@ -103,9 +105,7 @@
             .then(data => { 
                 console.log(data);
                 const jsonData = JSON.parse(data);
-
                 localStorage.setItem('token', jsonData.access_token);
-
                 window.location.reload();
             });
             
@@ -113,7 +113,26 @@
 
 		function Logout() { 
 			localStorage.removeItem('token');
-			window.location.reload();
+			// document.cookie = 'access_token=; Max-Age=0; path=/; domain=' + location.host; // don't work
+			const options = { method: 'POST', body: {} };
+			fetch("/users/logout", options)
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error('Network response was not OK');
+				  	}
+					return response.json();
+				})
+				.then( response => 
+					{
+						console.log(response)
+						if (response.hasOwnProperty('username')) {
+							document.getElementById("divLoginForm").innerHTML = 
+								"<h4>By now, " + response.username + ".</h4>";
+							
+							document.getElementById("aside").innerHTML = 
+								'<a href="#" class="button" onclick="window.location.reload();">Re-login</a>';
+						}
+				  	})
 		}
 
 	</script>
