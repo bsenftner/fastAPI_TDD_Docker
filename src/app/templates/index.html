@@ -15,6 +15,7 @@
 			{{ frags[0].header | safe }}
 		</header>
 
+		{# the left sidebar #}
 		<nav>
 			{# default links from page_frags.py #}
 			{% for alink in frags[0].links %} 
@@ -27,16 +28,21 @@
 			{% endfor %}
 		</nav>
 
+		{# the main content area #}
 		<main>
-			{# title and post contents, with an edit button #}
-			<H1> {{contentPost.title}} </H1>
-			{{contentPost.description | safe}}
-
-			<a href="#" class="button" onclick="BlogEdit()">Edit</a>
+			<div id="mainContent">
+				{# title and post contents, with an optional edit button #}
+				<H1> {{contentPost.title}} </H1>
+				{{contentPost.description | safe}}
+			</div>
+			
 		</main>
 
+		{# the right sidebar #}
 		<aside>
-			Right Sidebar
+			<div id="aside">
+				<a href="#" class="button" onclick="Login()">Login</a>
+			</div>
 		</aside>
   
 	<footer>
@@ -45,7 +51,40 @@
 	</div>
 
 	<script>
+		
+		document.addEventListener("DOMContentLoaded", function() {
+			page_init();
+		  });
+		function page_init() {
+			const access_token = localStorage.getItem('token');
+			if (access_token) {
+				const options = { headers: { "Authorization": "Bearer " + access_token } }
+				fetch("/users/me", options)
+				.then(response => response.json())
+				.then( response => 
+					{
+						console.log(response)
+						if (response.hasOwnProperty('username')) {
+
+							document.getElementById("mainContent").innerHTML += 
+								'<a href="#" class="button" onclick="BlogEdit()">Edit</a>';
+
+							document.getElementById("aside").innerHTML = 
+								'<a href="#" class="button" onclick="Logout()">Logout</a>';
+						}
+				  })
+			}
+		}
+
 		function BlogEdit() { window.location.href = "/Editor/{{ contentPost.id }}"; }
+
+		function Login() { window.location.href = "/login"; }
+
+		function Logout() { 
+			localStorage.removeItem('token');
+			window.location.href = "/login"; 
+		}
+
 	</script>
 </body>
 </html>

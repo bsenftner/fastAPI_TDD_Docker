@@ -13,7 +13,9 @@ from sqlalchemy.sql import func
 
 from databases import Database
 
+
 DATABASE_URL = os.getenv("DATABASE_URL")
+
 
 # SQLAlchemy
 engine = create_engine(DATABASE_URL)
@@ -34,6 +36,17 @@ blogposts = Table(
     Column("id", Integer, primary_key=True),
     Column("title", String(80)),
     Column("description", String(16384)),
+    Column("created_date", DateTime, default=func.now(), nullable=False),
+)
+
+users = Table(
+    "users",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("username", String(80)),
+    Column("email", String(80)),
+    Column("full_name", String(80)),
+    Column("hashed_password", String(80)),
     Column("created_date", DateTime, default=func.now(), nullable=False),
 )
 

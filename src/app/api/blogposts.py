@@ -1,9 +1,10 @@
 # ----------------------------------------------------------------------------------------------
 # This file contains the JSON endpoints for blog posts, handling the CRUD operations with the db 
 #
-from fastapi import APIRouter, HTTPException, Path 
+from fastapi import APIRouter, HTTPException, Path, Depends
 
 from app.api import crud
+from app.api.users import User, get_current_active_user
 from app.api.models import BlogPostDB, BlogPostSchema
 
 from typing import List
@@ -16,7 +17,9 @@ router = APIRouter()
 # this will respond with a BlogPostDB upon success  
 # This will receive a BlogPostSchema within payload 
 @router.post("/", response_model=BlogPostDB, status_code=201)
-async def create_blogpost(payload: BlogPostSchema) -> dict:
+async def create_blogpost(payload: BlogPostSchema, 
+                          current_user: User = Depends(get_current_active_user)) -> dict:
+    
     blogpost_id = await crud.post_blogpost(payload)
 
     response_object = {
@@ -44,7 +47,9 @@ async def read_all_blogposts() -> dict:
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
 @router.put("/{id}/", response_model=BlogPostDB)
-async def update_blogpost(payload: BlogPostSchema, id: int = Path(..., gt=0),) -> dict:
+async def update_blogpost(payload: BlogPostSchema, id: int = Path(..., gt=0), 
+                          current_user: User = Depends(get_current_active_user)) -> dict:
+    
     blogpost = await crud.get_blogpost(id)
     if not blogpost:
         raise HTTPException(status_code=404, detail="BlogPost not found")
@@ -61,7 +66,8 @@ async def update_blogpost(payload: BlogPostSchema, id: int = Path(..., gt=0),) -
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
 @router.delete("/{id}/", response_model=BlogPostDB)
-async def delete_blogpost(id: int = Path(..., gt=0)) -> dict:
+async def delete_blogpost(id: int = Path(..., gt=0), 
+                          current_user: User = Depends(get_current_active_user)) -> dict:
     blogpost = await crud.get_blogpost(id)
     if not blogpost:
         raise HTTPException(status_code=404, detail="BlogPost not found")

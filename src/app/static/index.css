@@ -149,6 +149,18 @@ div#divBeneathTheEditor {
   padding-top: 60px; /* 52px; */
 }
 
+label {
+  width: 15%;
+  display: inline-block;
+}
+input#username {
+  width: 50%;
+}
+input#password {
+  width: 50%;
+}
+
+
 aside {
   grid-row: 2;
   grid-column: 3 / 4;

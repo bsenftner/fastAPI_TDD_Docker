@@ -1,4 +1,7 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Request, Depends
+
+from typing import Union
+
+from fastapi import FastAPI, APIRouter, HTTPException, Request, Depends, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,19 +9,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from pathlib import Path
 
-from app.api import blogposts, notes, ping, crud, models
 from app.db import engine, database, metadata
-
-
-# Project Directories
-ROOT = Path(__file__).resolve().parent.parent
-BASE_PATH = Path(__file__).resolve().parent
-TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates"))
+from app.api import blogposts, notes, users, ping, crud 
 
 # page_frag.py contains common page fragments, like .header & .footer.
 # This is passed to page templates for repeated use of common html fragments: 
 from app.page_frags import FRAGS 
 
+
+# Project Directories
+ROOT = Path(__file__).resolve().parent.parent
+BASE_PATH = Path(__file__).resolve().parent
+TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates")) 
 
 # create db tables if they don't already exist:
 metadata.create_all(engine)
@@ -62,6 +64,9 @@ app.include_router(notes.router, prefix="/notes", tags=["notes"])
 # install the blogposts router into our app with a prefix & tag too:
 app.include_router(blogposts.router, prefix="/blogposts", tags=["blogposts"])
 
+# install the users router into our app with a prefix & tag too:
+app.include_router(users.router, tags=["users"])
+
 
 # define a router for the html returning endpoints: 
 router = APIRouter()
@@ -97,7 +102,20 @@ async def root( request: Request ):
         {"request": request, "contentPost": blogpost, "frags": FRAGS, "blogPosts": blogPostList}, 
     )
     
+# ------------------------------------------------------------------------------------------------------------------
+# serve login page thru a Jinja2 template:
+@router.get("/login", status_code=200, response_class=HTMLResponse)
+async def root( request: Request ):
 
+    blogPostList = await blogposts.read_all_blogposts()
+    
+    # print(f"root GET, blogPostList is {blogPostList[0]}")
+    
+    return TEMPLATES.TemplateResponse(
+        "login.html",
+        {"request": request, "frags": FRAGS, "blogPosts": blogPostList}, 
+    )
+    
 # ------------------------------------------------------------------------------------------------------------------
 # serve the requested page thru a Jinja2 template:
 @router.get("/blog/{post_id}", status_code=200, response_class=HTMLResponse)

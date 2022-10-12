@@ -1,3 +1,4 @@
+from typing import Union
 from pydantic import BaseModel, Field
 
 # create a "Pydantic Model" of the data we want to maintain in the database
