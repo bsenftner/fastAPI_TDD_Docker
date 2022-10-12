@@ -41,10 +41,12 @@
   					</div>
 				</div> 
 				<div id="divBeneathTheEditor">
-					<a href="#" class="button" onclick="BlogEditCancel()">Cancel Edit</a>
-					<a href="#" class="button" onclick="BlogSubmit()">Submit New Blog Post</a>
-					<a href="#" class="button" onclick="BlogUpdate()">Update Blog Post</a>
-					<a href="#" class="button" onclick="BlogDelete()">Delete Blog Post</a>
+					<a href="#" class="button" onclick="BlogEditCancel()">Cancel</a>
+					<a href="#" class="button" onclick="BlogUpdate()">Update</a>
+					<a href="#" class="button" onclick="BlogDelete()">Delete</a>
+					<br/>
+					<br/>
+					<a href="#" class="button" onclick="BlogSubmit()">Submit A Completely New Blog Post</a>
 				</div>
 			</form>
 		</main>
@@ -181,13 +183,14 @@
 			   	// .then(response => response.json())
 			   	.then(response => 
 			   	{
-					// Manipulate the data retrieved back, 
-					// if we want to do something with it
-					console.log(response)
-
 					window.location.href = "/blog/{{ contentPost.id }}";
 			   	}) 
-			   .catch(err => console.log(err)) // Do something with the error
+			   .catch(err => {
+					// Do something with the error
+					console.log(err) 
+					alert( err )
+					window.location.href = "/blog/{{ contentPost.id }}";
+				}) 
 			}
 			else { alert("Not Authorized.") }
 		}
@@ -205,19 +208,19 @@
 					.then( response => {
 						// Do something with response:
 						console.log( response )
-						if (response.id == '{{ contentPost.id }}')
+						if (response.id != '{{ contentPost.id }}')
 						{ 
-					  		window.location.href = "/";
-						}
-						else {
 							console.log( "DELETE ERROR!" )
+							alert( "DELETE ERROR!" )
+							
 						}
-					} ); /* */
+						window.location.href = "/";
+					} ); 
 			}
 			else { alert("Not Authorized.") }
 		}
 
-		  function Logout() { 
+		function Logout() { 
 			localStorage.removeItem('token');
 			window.location.href = "/login"; 
 		}

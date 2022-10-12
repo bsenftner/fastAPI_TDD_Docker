@@ -144,6 +144,10 @@ main {
 
 input#NewPostTitle {
   width: 80%;
+  margin-bottom: 20px;
+}
+input#NewPostTitle {
+  font-size: 30px;
 }
 div#divBeneathTheEditor {
   padding-top: 60px; /* 52px; */
@@ -152,12 +156,15 @@ div#divBeneathTheEditor {
 label {
   width: 15%;
   display: inline-block;
+  font-size: 30px;
 }
 input#username {
   width: 50%;
+  font-size: 30px;
 }
 input#password {
   width: 50%;
+  font-size: 30px;
 }
 
 
