@@ -2,16 +2,24 @@
 
 ## Static HTML GUI on top of FastAPI CRUD APIs for "notes" and "blog posts" with tests & CI/CD via Docker
 
-1. You'll need Docker
-2. Within the project's root:
+1. You'll need Docker; this was developed using WSL2-Ubuntu on Win10 with Docker Desktop 4.12.0 (85629)
+2. Via terminal navigate to `src\app` and create a file named `.env` in the same directory as main.py
+3. Enter `openssl rand -hex 32` to generate a random hex string
+4. Edit the `.env` file to have contents like this:
+
+    ```text
+    JWT_SECRET=[that-hex-string-generated-in-step-3]
+    ```
+
+5. Navigate back the project's root, where the `docker-compose.yml` file is located and enter:
 
     ```text
     docker compose up -d --build
     ```
 
-3. Visit `http://localhost:8002/docs` to use the OpenAPI GUI
-4. Run tests from project root with `docker compose exec web pytest .`
-5. Visit `http://localhost:8002` to use the static GUI.
+6. Via your web browser visit `http://localhost:8002/docs` to use the OpenAPI GUI
+7. Run tests from project root with `docker compose exec web pytest .`
+8. Visit `http://localhost:8002/register` to create the first user on the static GUI.
 
 This produces two Docker images, one hosting postgres and the other the FastAPI app.
 It is pretty basic at this point, quite easy to make your own. The file page_frags.py is the only one
