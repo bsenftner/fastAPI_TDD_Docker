@@ -35,7 +35,7 @@ Or, if you want to preserve the info in the database, just use:
 
 `docker compose down`
 
-Next time you do step 2, above, the previous database info will still be there.
+Next time you do step 5, above, the previous database info will still be there.
 
 ## Notes
 
