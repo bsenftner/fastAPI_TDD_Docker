@@ -45,7 +45,7 @@ users = Table(
     Column("id", Integer, primary_key=True),
     Column("username", String(80)),
     Column("email", String(80)),
-    Column("full_name", String(80)),
+    Column("roles", String(80)),
     Column("hashed_password", String(80)),
     Column("created_date", DateTime, default=func.now(), nullable=False),
 )

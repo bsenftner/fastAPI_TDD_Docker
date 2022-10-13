@@ -27,8 +27,8 @@ for key, value in envConfig.items():
     print(key, ' : ', value)
 '''
 secret = envConfig["JWT_SECRET"]
-print(f'secret is {secret}')
-
+# print(f'secret is {secret}')
+#
 # to get a string like this run:
 # openssl rand -hex 32
 SECRET_KEY = secret
@@ -47,15 +47,24 @@ class TokenData(BaseModel):
 class User(BaseModel):
     username: str
     email: Union[str, None] = None
-    full_name: Union[str, None] = None
+    roles: Union[str, None] = None
     disabled: Union[bool, None] = None
     
 class UserInDB(User):
+    id: int
     hashed_password: str
 
-class UserIn(User):
+class UserReg(BaseModel):
+    username: str
     password: str
-
+    email: Union[str, None] = None
+    
+class UserPublic(BaseModel):
+    username: str
+    id: int
+    roles: Union[str, None] = None
+    email: Union[str, None] = None
+    
 
 # for authentication:
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -82,8 +91,12 @@ async def get_user(username: str):
     if not user:
         # print(f"get_user: no such user")
         return False
-    # print(f"get_user: user = {user}")
-    return UserInDB(username=user["username"], hashed_password=user["hashed_password"])
+    print(f"get_user: user = {user}")
+    return UserInDB(username=user["username"], 
+                    id=user["id"], 
+                    hashed_password=user["hashed_password"],
+                    email=user["email"],
+                    roles=user["roles"])
 
 
 async def authenticate_user(username: str, password: str):
@@ -150,25 +163,41 @@ async def login_for_access_token(response: Response, form_data: OAuth2PasswordRe
 
 
 
-@router.get("/users/me/", response_model=User)
+@router.get("/users/me/", response_model=UserPublic)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
-    return current_user
+    return {"username": current_user.username, "id": current_user.id, "email": current_user.email, "roles": current_user.roles}
+    # return current_user
 
 
 
-@router.post("/users/", response_model=User)
-async def sign_up(user: UserIn):
+@router.post("/users/", response_model=UserPublic)
+async def sign_up(user: UserReg):
+    existingUser = await get_user(user.username)
+    if existingUser:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Username already in use.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     hashed_password = get_password_hash(user.password)
-    query = users.insert().values(
-        username=user.username, hashed_password=hashed_password
-    )
+    emailAddr = ''
+    roles = 'user'
+    if len(user.email)>0:
+        emailAddr = user.email 
+        if emailAddr=='bsenftner@earthlink.net':
+            roles += ' admin'
+    query = users.insert().values( username=user.username, 
+                                   hashed_password=hashed_password,
+                                   email=emailAddr,
+                                   roles=roles )
     last_record_id = await database.execute(query)
-    return {"username": user.username, "id": last_record_id}
+    return {"username": user.username, "id": last_record_id, "email": emailAddr, "roles": roles}
 
 
-@router.post("/users/logout/", response_model=User)
+@router.post("/users/logout/", response_model=UserPublic)
 async def logout(response: Response, current_user: User = Depends(get_current_active_user)):
     print("logout hit!")
     response.set_cookie(key="access_token",value=f"Bearer 0", httponly=True)
-    return current_user
+    return {"username": current_user.username, "id": current_user.id, "email": current_user.email, "roles": current_user.roles}
+    # return current_user
 

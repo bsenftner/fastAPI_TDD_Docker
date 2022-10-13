@@ -109,13 +109,27 @@ async def root( request: Request ):
     )
     
 # ------------------------------------------------------------------------------------------------------------------
-# serve login page thru a Jinja2 template:
-@router.get("/login", status_code=200, response_class=HTMLResponse)
-async def root( request: Request ):
+# serve registration page thru a Jinja2 template:
+@router.get("/register", status_code=200, response_class=HTMLResponse)
+async def register( request: Request ):
 
     blogPostList = await blogposts.read_all_blogposts()
     
-    # print(f"root GET, blogPostList is {blogPostList[0]}")
+    # print(f"register GET, blogPostList is {blogPostList[0]}")
+    
+    return TEMPLATES.TemplateResponse(
+        "register.html",
+        {"request": request, "frags": FRAGS, "blogPosts": blogPostList}, 
+    )
+    
+# ------------------------------------------------------------------------------------------------------------------
+# serve login page thru a Jinja2 template:
+@router.get("/login", status_code=200, response_class=HTMLResponse)
+async def login( request: Request ):
+
+    blogPostList = await blogposts.read_all_blogposts()
+    
+    # print(f"login GET, blogPostList is {blogPostList[0]}")
     
     return TEMPLATES.TemplateResponse(
         "login.html",
@@ -125,15 +139,14 @@ async def root( request: Request ):
 # ------------------------------------------------------------------------------------------------------------------
 # serve the requested page thru a Jinja2 template:
 @router.get("/blog/{post_id}", status_code=200, response_class=HTMLResponse)
-async def root( request: Request, post_id: int ):
+async def blogPage( request: Request, post_id: int ):
     
-    # blogpost = await crud.get_blogpost(post_id)
     blogpost = await blogposts.read_blogpost(post_id)
     if not blogpost:
         raise HTTPException(status_code=404, detail="BlogPost not found")
 
     blogPostList = await blogposts.read_all_blogposts()
-    # print(f"root GET, blogpost is \n{blogpost.id}")
+    # print(f"blogPage GET, blogpost is \n{blogpost.id}")
     
     return TEMPLATES.TemplateResponse(
         "index.html",
@@ -143,7 +156,7 @@ async def root( request: Request, post_id: int ):
 # ------------------------------------------------------------------------------------------------------------------
 # serve with an editor on it thru a template:
 @router.get("/Editor/{post_id}", status_code=200, response_class=HTMLResponse)
-async def root( request: Request, post_id: int ):
+async def editor( request: Request, post_id: int ):
     
     blogpost = await crud.get_blogpost(post_id)
     if not blogpost:

@@ -42,6 +42,8 @@
 		<aside>
 			<div id="aside">
 				<a href="#" class="button" onclick="Login()">Login</a>
+				<br/>
+				<a href="#" class="button" onclick="Register()">Register</a>
 			</div>
 		</aside>
   
@@ -79,6 +81,8 @@
 		function BlogEdit() { window.location.href = "/Editor/{{ contentPost.id }}"; }
 
 		function Login() { window.location.href = "/login"; }
+
+		function Register() { window.location.href = "/register"; }
 
 		function Logout() { 
 			localStorage.removeItem('token');

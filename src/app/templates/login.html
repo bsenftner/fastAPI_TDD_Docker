@@ -51,7 +51,9 @@
 
         {# the right sidebar #}
 		<aside>
-			<div id="aside"></div>
+			<div id="aside">
+				<a href="#" class="button" onclick="Register()">Register</a>
+			</div>
 		</aside>
   
 	<footer>
@@ -88,6 +90,8 @@
 
         function Cancel() { window.location.href = "/blog/1"; }
 
+		function Register() { window.location.href = "/register"; }
+		
 		function Login() { 
             
             // get the user's info:
