@@ -31,6 +31,10 @@ Next time you do step 2, above, the previous database info will still be there.
 
 ## Notes
 
-An initial blog post and user needs to be created via the OpenAPI GUI to get the HTML interface.
+* The new registration page can be used at `/register` to create an initial user.
 
-This version has JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
+* An initial blog post needs to be created via the OpenAPI GUI to get blog page HTML interfaces.
+
+* This version has JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
+
+* Coming next is email verification, password recovery, and separate user/admin capabilities.
