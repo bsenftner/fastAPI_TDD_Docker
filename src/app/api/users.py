@@ -14,9 +14,24 @@ from datetime import datetime, timedelta
 from typing import Union
 from pydantic import BaseModel, Field
 
+from pathlib import Path
+#
+ENV_PATH = Path(__file__).resolve().parent.parent
+# print(f'users: env_path is {ENV_PATH}')
+#
+from dotenv import dotenv_values 
+envConfig = dotenv_values(str(ENV_PATH / ".env"))  
+'''
+print('users envConfig is')
+for key, value in envConfig.items():
+    print(key, ' : ', value)
+'''
+secret = envConfig["JWT_SECRET"]
+print(f'secret is {secret}')
+
 # to get a string like this run:
 # openssl rand -hex 32
-SECRET_KEY = "9c557eaaf092a7f874f1b45a521341b4816523de0214ead5143025b36cb5b28a"
+SECRET_KEY = secret
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

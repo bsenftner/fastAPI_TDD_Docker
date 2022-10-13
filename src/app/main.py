@@ -7,19 +7,27 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from pathlib import Path
 
-from app.db import engine, database, metadata
-from app.api import blogposts, notes, users, ping, crud 
-
 # page_frag.py contains common page fragments, like .header & .footer.
 # This is passed to page templates for repeated use of common html fragments: 
 from app.page_frags import FRAGS 
 
-
 # Project Directories
-ROOT = Path(__file__).resolve().parent.parent
 BASE_PATH = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(BASE_PATH / "templates")) 
 
+from dotenv import dotenv_values 
+envConfig = dotenv_values(str(BASE_PATH / ".env"))  
+'''
+print('envConfig is')
+for key, value in envConfig.items():
+    print(key, ' : ', value)
+'''
+
+from app.db import engine, database, metadata
+from app.api import blogposts, notes, users, ping, crud 
+
+
+    
 # create db tables if they don't already exist:
 metadata.create_all(engine)
 
