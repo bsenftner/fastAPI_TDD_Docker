@@ -3,7 +3,7 @@ FRAGS = [
         "header": 
 """
 <div>
-    <img id="blakeImg" src="/static/blake_science.jpg" alt="me." height="100px">
+    <img id="blakeImg" src="/static/bs/blake_science.jpg" alt="me." height="100px">
     <h3>Blake Senftner
     </h3>
     <h4>Technology Architect & Developer | MBA | Digital Artist | Mad Computer Scientist</h4>

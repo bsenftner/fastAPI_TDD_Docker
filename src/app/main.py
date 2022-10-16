@@ -1,9 +1,11 @@
 
-from fastapi import FastAPI, APIRouter, HTTPException, Request
+from fastapi import FastAPI, APIRouter, HTTPException, Request, status, Depends, BackgroundTasks
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+
+from pydantic import BaseModel
 
 from pathlib import Path
 
@@ -25,7 +27,9 @@ for key, value in envConfig.items():
 
 from app.db import engine, database, metadata
 from app.api import blogposts, notes, users, ping, crud 
-
+from app.api.models import User
+from app.api.users import get_current_active_user
+from app.send_email import send_email_async, send_email_background
 
     
 # create db tables if they don't already exist:
@@ -56,8 +60,7 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await database.disconnect()
-    
-    
+
 # install the ping router into our app:
 app.include_router(ping.router)
 
@@ -104,13 +107,13 @@ async def root( request: Request ):
     # print(f"root GET, blogPostList is {blogPostList[0]}")
     
     return TEMPLATES.TemplateResponse(
-        "index.html",
+        "home.html",
         {"request": request, "contentPost": blogpost, "frags": FRAGS, "blogPosts": blogPostList}, 
     )
     
 # ------------------------------------------------------------------------------------------------------------------
 # serve registration page thru a Jinja2 template:
-@router.get("/register", status_code=200, response_class=HTMLResponse)
+@router.get("/register", status_code=status.HTTP_201_CREATED, response_class=HTMLResponse)
 async def register( request: Request ):
 
     blogPostList = await blogposts.read_all_blogposts()
@@ -154,9 +157,26 @@ async def blogPage( request: Request, post_id: int ):
     )
     
 # ------------------------------------------------------------------------------------------------------------------
+# serve a contact page with an editor on it thru a template:
+@router.get("/Contact", status_code=200, response_class=HTMLResponse)
+async def contact( request: Request ):
+    
+    email = {
+        'subject': 'your subject',
+        'msg': 'your message'
+    }
+
+    blogPostList = await blogposts.read_all_blogposts()
+    
+    return TEMPLATES.TemplateResponse(
+        "contact.html",
+        {"request": request, "contentPost": email, "frags": FRAGS, "blogPosts": blogPostList}, 
+    )
+    
+# ------------------------------------------------------------------------------------------------------------------
 # serve with an editor on it thru a template:
 @router.get("/Editor/{post_id}", status_code=200, response_class=HTMLResponse)
-async def editor( request: Request, post_id: int ):
+async def editor( request: Request, post_id: int, current_user: User = Depends(get_current_active_user) ):
     
     blogpost = await crud.get_blogpost(post_id)
     if not blogpost:
@@ -169,6 +189,37 @@ async def editor( request: Request, post_id: int ):
         {"request": request, "contentPost": blogpost, "frags": FRAGS, "blogPosts": blogPostList}, 
     )
     
-# and finally include the html routes in the app:
-app.include_router(router)
+    
+# ------------------------------------------------------------------------------------------------------------------ 
+class ContactMsg(BaseModel):
+    subject: str
+    msg: str
+    
+# ------------------------------------------------------------------------------------------------------------------
+@router.get('/send-email/asynchronous')
+async def send_email_asynchronous(current_user: User = Depends(get_current_active_user)):
+    await send_email_async('Hello World','bsenftner@earthlink.net',
+    { 'body': { 'title': 'the title', 'name':'this is the body'}})
+    return 'Success'
+  
 
+    
+# ------------------------------------------------------------------------------------------------------------------
+@router.post('/send-email/contact', response_model=ContactMsg)
+async def send_contact_email_asynchronous(msg: ContactMsg):
+    
+    await send_email_async(msg.subject,'bsenftner@earthlink.net',
+    { 'body': { 'title': msg.subject, 'name': msg.msg}})
+    return msg
+
+# ------------------------------------------------------------------------------------------------------------------
+@router.get('/send-email/backgroundtasks')
+def send_email_backgroundtasks(background_tasks: BackgroundTasks, current_user: User = Depends(get_current_active_user)):
+    send_email_background(background_tasks, 'Hello World',   
+    'someemail@gmail.com', {'title': 'Hello World', 'name':       'John Doe'})
+    return 'Success'
+
+
+
+# and finally include these locally implemented html routes in the app:
+app.include_router(router)

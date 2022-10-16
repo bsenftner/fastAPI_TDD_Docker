@@ -13,9 +13,7 @@ from typing import List
 router = APIRouter()
 
 # ----------------------------------------------------------------------------------------------
-# declare a POST endpoint on the root
-# this will respond with a BlogPostDB upon success  
-# This will receive a BlogPostSchema within payload 
+# declare a POST endpoint on the root 
 @router.post("/", response_model=BlogPostDB, status_code=201)
 async def create_blogpost(payload: BlogPostSchema, 
                           current_user: User = Depends(get_current_active_user)) -> dict:

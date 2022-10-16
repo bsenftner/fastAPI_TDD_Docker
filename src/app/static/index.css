@@ -142,11 +142,11 @@ main {
   height: 75%; 
 } 
 
-input#NewPostTitle {
+input#NewPostTitle, NewEmailSubject {
   width: 80%;
   margin-bottom: 20px;
 }
-input#NewPostTitle {
+input#NewPostTitle, NewEmailSubject {
   font-size: 30px;
 }
 div#divBeneathTheEditor {

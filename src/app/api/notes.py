@@ -1,10 +1,11 @@
 # ---------------------------------------------------------------------------------------------
 # This file contains the JSON endpoints for notes, handling the CRUD operations with the db 
 #
-from fastapi import APIRouter, HTTPException, Path 
+from fastapi import APIRouter, HTTPException, Path, Depends
 
 from app.api import crud
 from app.api.models import NoteDB, NoteSchema
+from app.api.users import User, get_current_active_user
 
 from typing import List
 
@@ -16,7 +17,9 @@ router = APIRouter()
 # this will respond with a NoteDB upon succes 
 # This will receive a NoteSchema within payload 
 @router.post("/", response_model=NoteDB, status_code=201)
-async def create_note(payload: NoteSchema):
+async def create_note(payload: NoteSchema, 
+                      current_user: User = Depends(get_current_active_user)):
+    
     note_id = await crud.post_note(payload)
 
     response_object = {
@@ -30,6 +33,7 @@ async def create_note(payload: NoteSchema):
 # Note: id's type is validated as greater than 0  
 @router.get("/{id}/", response_model=NoteDB)
 async def read_note(id: int = Path(..., gt=0),):
+    
     note = await crud.get_note(id)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
@@ -44,7 +48,9 @@ async def read_all_notes():
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
 @router.put("/{id}/", response_model=NoteDB)
-async def update_note(payload: NoteSchema, id: int = Path(..., gt=0),):
+async def update_note(payload: NoteSchema, id: int = Path(..., gt=0), 
+                      current_user: User = Depends(get_current_active_user)):
+    
     note = await crud.get_note(id)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
@@ -61,7 +67,9 @@ async def update_note(payload: NoteSchema, id: int = Path(..., gt=0),):
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
 @router.delete("/{id}/", response_model=NoteDB)
-async def delete_note(id: int = Path(..., gt=0)):
+async def delete_note(id: int = Path(..., gt=0), 
+                      current_user: User = Depends(get_current_active_user)):
+    
     note = await crud.get_note(id)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")

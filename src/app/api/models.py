@@ -1,5 +1,5 @@
 from typing import Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr, constr
 
 # create a "Pydantic Model" of the data we want to maintain in the database
 # by inheriting from BaseModel. This inherits data parsing and validation 
@@ -26,3 +26,34 @@ class BlogPostDB(BlogPostSchema):
 
 
 
+# an access token used by authentication
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    refresh_token: str
+
+class TokenData(BaseModel):
+    username: Union[str, None] = None
+    
+class User(BaseModel):
+    username: str
+    email: Union[EmailStr, None] = None
+    roles: Union[str, None] = None
+    disabled: Union[bool, None] = None
+    
+class UserInDB(User):
+    id: int
+    hashed_password: str
+
+class UserReg(BaseModel):
+    username: str
+    password: constr(min_length=12)
+    email: Union[EmailStr, None] = None
+    
+class UserPublic(BaseModel):
+    username: str
+    id: int
+    roles: Union[str, None] = None
+    email: Union[EmailStr, None] = None
+    
+    

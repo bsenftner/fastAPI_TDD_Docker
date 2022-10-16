@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+{# 
+	This is a Jinja2 template for an html page
+	These lines are comments and are removed when the template is rendered. 
+#}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Blog of Blake Senftner</title>
+  <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+	<div class="grid">
+		<header>
+			{{ frags[0].header | safe }}
+		</header>
+
+		{# the left sidebar #}
+		<nav>
+			{# default links from page_frags.py #}
+			{% for alink in frags[0].links %} 
+				{{ alink | safe }}
+			{% endfor %}
+
+			{# not expecting a huge number of blog posts, so here's all of them #}
+			{% for post in blogPosts %} 
+				<br/><br/><a href="/blog/{{ post.id }}">{{ post.title }}</a>
+			{% endfor %}
+		</nav>
+
+		{# the main content area #}
+		<main>
+			<div id="mainContent">
+				{# title and post contents, with an optional edit button #}
+				<H3> Welcome to my website and blog. </H3>
+				<p>I'm Blake Senftner. This website is my blog and career showcase.</p>
+                <p>I've been writing software professionally since age 17, which was way back in '82. During highschool I founded a video game studio 
+                    for the <b>Vic-20</b> and the <b>Commodore 64</b> home computers. We had games nation wide in <b>Sears</b> and <b>K-Mart</b> the 
+                    holiday season of 1982. 
+                    That high school game studio was a lot of ambitious and crazy teen energy exposing me to the larger world of professional technology 
+                    and business. Lessons that proved to be very useful later...
+                </p>
+                <p>
+                   Since that time I have been one of the original pre-release <b>Apple Macintosh</b> developers, a member of the 80's 3D graphics research
+                   community, an R&D era developer of CD-ROMs, OS team member of multiple 3D game consoles, team or lead of over 36 media rich multmedia
+                   and/or 3D video game titles (including <b>Tiger Woods Golf</b>, <b>NCAA Football</b>, <b>Brunswick Bowling</b> and more). 
+                   As Director of Skunkworks for the Internet's first <b>Live Video Infrastructure Provider</b>, I was one of the pioneers of 
+                   <b>Live Internet Video</b> <em>five years before YouTube.</em>
+                   I worked as a triplicate <em>digital artist / software engineer / financial analysis</em> for an <b>Academy Award</b> winning VFX studio
+                   across nine VFX heavy major release feature films. While working in VFX, I also earned a double majored MBA in Finance and International Business.
+                   My Master's Thesis is in and I am a global patent author for <em>Automated Actor Replacement in Filmed Media</em>. 
+                   Acquiring a <em>global patent</em>is a story in itself. 
+                </p>
+                <p>
+                   I attempted to create a new form of advertising with my patent. I envisioned <em>Personalized Video Advertising</em> where you, your family 
+                   and friends appear in the video adverts streamed to your Internet devices. I launched a startup with fellow VFX veterans and built a complete 
+                   broadcast quality <b>automated actor replacement pipeline</b> and <b>automatic photo-real digital double creation service</b>. 
+                   However, launching during 2008's financial crisis and a good number of years before general public awareness of
+                   <em>deep fake technology</em>, financing was unrealizable and a pivot to the video game industry could not save the company. 
+                   From the experience of my startup, I gained the interest of a leading <b>Facial Recognition Developer</b>. I became the lead engineer of their 
+                   flagship product through three generations, earning top 5 placements in the annual <b>NIST Facial Recognition Vendor's Test</b> each year 
+                   participating. 
+                </p>
+                <p>
+                    Over the course of my career I worked for <a href="https://en.wikipedia.org/wiki/Benoit_Mandelbrot">Benoit Mandelbrot</a> on his original 
+                    research publication on <a href="https://en.wikipedia.org/wiki/The_Beauty_of_Fractals">Fractal Mathmatics</a>. 
+                    I was at <b>Electronic Arts</b> during their first <em>E.A. Spouse Era</em>, and have some quiet interesting stories about the <b>cut throat</b>
+                    video games industry. This was during the creation of the <em>3D0 game console</em>, as well as a few years afterward working as a 3rd party 
+                    developer for E.A..
+                    I was the first software engineer hire at <b>Sony Computer Entertainment of N. America</b>. In that role I worked in Tokyo with the 
+                    <b>original PlayStation OS team</b> during the PSX's pre-release period as the OS and runtime libraries were finalized. 
+                    I was the <em>streaming media expert</em> with prior experience at <b>Philips Media</b> and their <em>failed interactive CD-I project</em>. 
+                </p>
+                <p>A brief word about my <em>Mad Computer Scientist</em> slogan: my being a <em>Mad Computer Scientist</em> is not as in 
+                   "I want to take over the world" nor is as in "I'm a conspircy enthusiast".
+                   My being a <em>Mad Computer Scientist</em> is more like <em>Mad Magazine</em> and a general appreciation for satire, the more poltical the better. ;P 
+                </p>
+                <p>If you want to comment on any of my blog posts, or you want to send me a direct contact you will need to register an account.
+                    You can register by clicking the link on the right-hand sidebar. 
+                </p>
+                <p>About this web site: I hand coded it myself. The backend is in Python using FastAPI, and the front end is simply hand written static html/CSS 
+                    with some mininal JavaScript for my own personal enjoyment.  
+                </p>
+			</div>
+			
+		</main>
+
+		{# the right sidebar #}
+		<aside>
+			<div id="aside">
+				<a href="#" class="button" onclick="Login()">Login</a>
+				<br/>
+				<a href="#" class="button" onclick="Register()">Register</a>
+			</div>
+		</aside>
+  
+	<footer>
+		{{ frags[0].footer | safe }} 
+	</footer>
+	</div>
+
+	<script>
+		
+		document.addEventListener("DOMContentLoaded", function() {
+			page_init();
+		  });
+		function page_init() {
+            // everyone is allowed:
+			const access_token = 1 // = localStorage.getItem('token');
+			if (access_token) {
+				const options = { headers: { "Authorization": "Bearer " + access_token } }
+				fetch("/users/me", options)
+				.then(response => response.json())
+				.then( response => 
+					{
+						console.log(response)
+						if (response.hasOwnProperty('username')) {
+
+							document.getElementById("aside").innerHTML = 
+								'<a href="#" class="button" onclick="Logout()">Logout</a>';
+						}
+				  })
+			}
+		}
+
+		function Login() { window.location.href = "/login"; }
+
+		function Register() { window.location.href = "/register"; }
+
+		function Logout() { 
+			localStorage.removeItem('token');
+			const options = { method: 'POST', body: {} };
+			fetch("/users/logout", options)
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error('Network response was not OK');
+				  	}
+					return response.json();
+				})
+				.then( response => 
+					{
+						console.log(response)
+						if (response.hasOwnProperty('username')) {
+							window.location.href = "/login";
+						}
+				  	})
+		}
+
+	</script>
+</body>
+</html>

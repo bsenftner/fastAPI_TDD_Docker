@@ -46,7 +46,7 @@
                 	<label for="confirmPass">Confirm Password:</label>
                 	<input type="password" id="confirmPass" name="label" value="">
                 	<br/>
-                	<br/>
+					<h4>Password must be a minimum of 12 characters long.</h4>
 			    	<div id="divRegisterButtons">
 				    	<a href="#" class="button" onclick="Cancel()">Cancel</a>
 				    	<a href="#" class="button" onclick="Register()">Register</a>
@@ -73,11 +73,11 @@
 		  });
 		function page_init() {
             // check if this is a reload after successful registration:
-			const newusername = localStorage.getItem('newusername');
-			if (newusername) {
+			const webusername = localStorage.getItem('webusername');
+			if (webusername) {
 				console.log('new user refresh')
 				document.getElementById("divRegisterForm").innerHTML = 
-								'<h4>Welcome to the site ' + newusername + '</h4>' +
+								'<h4>Welcome to the site ' + webusername + '</h4>' +
                                 '<h5>Now that you are registered, you need to login:<h5>' +
 							    '<a href="#" class="button" onclick="Login()">Login</a>';
 			}
@@ -111,8 +111,14 @@
 			const regPass = document.getElementById("password").value;
 			const regConf = document.getElementById("confirmPass").value;
 
-            if (regPass!=regConf) {
-                document.getElementById("userMsg").innerHTML = '<h3>Password and Confirm Password must match!</h3>'
+            if (regPass.length < 12) {
+                document.getElementById("userMsg").innerHTML = '<h3>Password must be at least 12 characters long.</h3>'
+            }
+            else if (regPass!=regConf) {
+                document.getElementById("userMsg").innerHTML = '<h3>Password and Confirm Password must match.</h3>'
+            }
+            else if (regEmail.indexOf('@') < 1) {
+                document.getElementById("userMsg").innerHTML = '<h3>Please supply a valid email, it is required for account validation.</h3>'
             }
             else {
                 
@@ -131,12 +137,12 @@
 					},
                     body: JSON.stringify( regData ) 
                 };
-                fetch('/users', options)
+                fetch('/users/register', options)
                 .then(response => response.text())
                 .then(data => { 
                     console.log(data);
                     const jsonData = JSON.parse(data);
-                    localStorage.setItem('newusername', jsonData.username);
+                    localStorage.setItem('webusername', jsonData.username);
                     window.location.reload();
                 });
             }
