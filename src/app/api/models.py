@@ -31,9 +31,6 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     refresh_token: str
-
-class TokenData(BaseModel):
-    username: Union[str, None] = None
     
 class User(BaseModel):
     username: str
