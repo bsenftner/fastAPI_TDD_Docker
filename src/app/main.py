@@ -96,19 +96,12 @@ def favicon():
 # serve homepage thru a Jinja2 template:
 @router.get("/", status_code=200, response_class=HTMLResponse)
 async def root( request: Request ):
-    
-    post_id = 1
-    blogpost = await blogposts.read_blogpost(post_id)
-    if not blogpost:
-        raise HTTPException(status_code=404, detail="BlogPost not found")
 
     blogPostList = await blogposts.read_all_blogposts()
     
-    # print(f"root GET, blogPostList is {blogPostList[0]}")
-    
     return TEMPLATES.TemplateResponse(
         "home.html",
-        {"request": request, "contentPost": blogpost, "frags": FRAGS, "blogPosts": blogPostList}, 
+        {"request": request, "frags": FRAGS, "blogPosts": blogPostList}, 
     )
     
 # ------------------------------------------------------------------------------------------------------------------
@@ -117,8 +110,6 @@ async def root( request: Request ):
 async def register( request: Request ):
 
     blogPostList = await blogposts.read_all_blogposts()
-    
-    # print(f"register GET, blogPostList is {blogPostList[0]}")
     
     return TEMPLATES.TemplateResponse(
         "register.html",
@@ -131,8 +122,6 @@ async def register( request: Request ):
 async def login( request: Request ):
 
     blogPostList = await blogposts.read_all_blogposts()
-    
-    # print(f"login GET, blogPostList is {blogPostList[0]}")
     
     return TEMPLATES.TemplateResponse(
         "login.html",
@@ -149,7 +138,6 @@ async def blogPage( request: Request, post_id: int ):
         raise HTTPException(status_code=404, detail="BlogPost not found")
 
     blogPostList = await blogposts.read_all_blogposts()
-    # print(f"blogPage GET, blogpost is \n{blogpost.id}")
     
     return TEMPLATES.TemplateResponse(
         "index.html",
