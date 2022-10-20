@@ -181,8 +181,9 @@ async def editor( request: Request, post_id: int, current_user: User = Depends(g
 # ------------------------------------------------------------------------------------------------------------------
 @router.get('/send-email/asynchronous')
 async def send_email_asynchronous(current_user: User = Depends(get_current_active_user)):
-    await send_email_async('Hello World','bsenftner@earthlink.net',
-    { 'body': { 'title': 'the title', 'name':'this is the body'}})
+    await send_email_async('bsenftner@earthlink.net',
+                           { 'msg': { 'subject': 'the title', 'body': 'this is the body'}},
+                           'basic_email.html')
     return 'Success'
   
 
@@ -190,16 +191,18 @@ async def send_email_asynchronous(current_user: User = Depends(get_current_activ
 # ------------------------------------------------------------------------------------------------------------------
 @router.post('/send-email/contact', response_model=ContactMsg)
 async def send_contact_email_asynchronous(msg: ContactMsg):
-    
-    await send_email_async(msg.subject,'bsenftner@earthlink.net',
-    { 'body': { 'title': msg.subject, 'name': msg.msg}})
+    await send_email_async('bsenftner@earthlink.net', 
+                           { 'msg': { 'subject': msg.subject, 'body': msg.msg}},
+                           'basic_email.html')
     return msg
 
 # ------------------------------------------------------------------------------------------------------------------
 @router.get('/send-email/backgroundtasks')
 def send_email_backgroundtasks(background_tasks: BackgroundTasks, current_user: User = Depends(get_current_active_user)):
-    send_email_background(background_tasks, 'Hello World',   
-    'someemail@gmail.com', {'title': 'Hello World', 'name':       'John Doe'})
+    send_email_background(background_tasks, 
+                          'Hello World',   
+                          'someemail@gmail.com', 
+                          { 'msg': { 'subject': 'the title', 'body': 'this is the body'}})
     return 'Success'
 
 

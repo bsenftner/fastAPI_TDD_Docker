@@ -79,13 +79,60 @@
 						console.log(response)
 						if (response.hasOwnProperty('username')) {
 							document.getElementById("divLoginForm").innerHTML = 
-								"<h4>Welcome back " + response.username + "</h4>";
+								"<h4>Welcome back, " + response.username + "</h4>";
 							
 							document.getElementById("aside").innerHTML = 
 								'<a href="#" class="button" onclick="Logout()">Logout</a>';
+
+							if (response.roles.includes('unverified'))
+							{
+								var newHtml = 
+`<h4>Please verify your email:</h4>
+ <form method="post">
+	<label for="vcode">Email Verification code:</label>
+  	<input type="text" id="vcode" name="label" value="">
+    <br/><br/>
+	<div id="divLoginButtons">
+		<a href="#" class="button" onclick="Cancel()">Cancel</a>
+		<a href="#" class="button" onclick="VerifyEmail()">Verify Email</a>
+	</div>
+</form>`
+								document.getElementById("divLoginForm").innerHTML += newHtml
+							}
 						}
 				  })
 			}
+		}
+
+        function VerifyEmail() { 
+			console.log('poop.');
+
+			// get the verification code:
+			const userVCode = document.getElementById("vcode").value;
+
+			// post:
+			const params = { "code": userVCode.trim() };
+		
+			const options = {
+				method: 'POST',
+				headers: {
+					  'Accept': 'application/json',
+					  'Content-Type': 'application/json',
+					  // "Authorization": "Bearer " + access_token // only needed when JWT is not in cookie
+				},
+				body: JSON.stringify( params )  
+			};
+			fetch( '/users/verify/', options )
+				.then( response => response.json() )
+				.then( response => {
+					// Do something with response.
+					console.log( response )
+					if (response.status=='ok')
+					{
+						document.getElementById("divLoginForm").innerHTML = 
+								"<h4>Email verified, thank you.</h4>";
+					}
+				}); /* */
 		}
 
         function Cancel() { window.location.href = "/blog/1"; }
@@ -112,7 +159,6 @@
                 localStorage.setItem('token', jsonData.access_token);
                 window.location.reload();
             });
-            
         }
 
 		function Logout() { 

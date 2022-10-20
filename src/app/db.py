@@ -52,6 +52,7 @@ users = Table(
     Column("email", String(80), index=True),
     Column("roles", String(80)),
     Column("hashed_password", String(80)),
+    Column("verify_code", String(16)),
     Column("created_date", DateTime, default=func.now(), nullable=False),
 )
 

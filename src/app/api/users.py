@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Request, Response
 from passlib.context import CryptContext
 from app.config import settings 
-from app.api.models import Token, User, UserInDB, UserPublic, UserReg
+from app.api.models import Token, User, UserInDB, UserPublic, UserReg, VerifyEmailPayload
 from app.db import users, database
 
 from fastapi.security import OAuth2PasswordRequestForm
@@ -13,6 +13,11 @@ from jose import JWTError, jwt
 from typing import Any, Union
 from datetime import datetime, timedelta
 from pydantic import EmailStr
+
+import secrets
+import string
+from app.send_email import send_email_async
+import json
 
 SECRET_KEY = settings.JWT_SECRET_KEY
 REFRESH_KEY = settings.JWT_SECRET_REFRESH_KEY
@@ -40,21 +45,37 @@ oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token", scheme_name="JW
 router = APIRouter()
 
 
-
+'''
+    print(f'get_user: user = {username}')
+    print(f'get_user: id = {id}')
+    print(f'get_user: verify_code = {verify_code}')
+    print(f'get_user: ushashed_passworder = {hashed_password}')
+    print(f'get_user: email = {email}')
+    print(f'get_user: roles = {roles}')
+''' 
 # -------------------------------------------------------------------------------------
 async def get_user(username: str):
+    # print(f"get_user: looking for {username}")
+    
     query = users.select().where(users.c.username == username)
     user = await database.fetch_one(query)
     if not user:
         print(f"get_user: no such user")
         return False
-    # username = user["username"]
-    # print(f'get_user: user = {username}')
+    
+    username = user['username']
+    id = user['id']
+    verify_code = user["verify_code"]
+    hashed_password = user["hashed_password"]
+    email = user["email"]
+    roles = user["roles"]
+
     return UserInDB(username=user["username"], 
-                    id=user["id"], 
-                    hashed_password=user["hashed_password"],
-                    email=user["email"],
-                    roles=user["roles"])
+                    id=id, 
+                    verify_code=verify_code,
+                    hashed_password=hashed_password,
+                    email=email,
+                    roles=roles)
 
 # -------------------------------------------------------------------------------------
 async def get_user_by_email(email: str):
@@ -65,6 +86,7 @@ async def get_user_by_email(email: str):
         return False
     return UserInDB(username=user["username"], 
                     id=user["id"], 
+                    verify_code=user['verify_code'],
                     hashed_password=user["hashed_password"],
                     email=user["email"],
                     roles=user["roles"])
@@ -78,6 +100,7 @@ async def authenticate_user(username: str, password: str):
     if not verify_password(password, user.hashed_password):
         return False
     return user
+
 
 # -------------------------------------------------------------------------------------
 def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> str:
@@ -101,6 +124,12 @@ def create_refresh_token(subject: Union[str, Any], expires_delta: int = None) ->
     encoded_jwt = jwt.encode(to_encode, REFRESH_KEY, ALGORITHM)
     return encoded_jwt
 
+
+
+
+# -------------------------------------------------------------------------------------
+def user_has_role( user: UserInDB, role: str):
+    return role in user.roles
 
 
 # -------------------------------------------------------------------------------------
@@ -174,8 +203,8 @@ async def get_refresh_user(request: Request):
 
 
 # -------------------------------------------------------------------------------------
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    if current_user.disabled:
+async def get_current_active_user(current_user: UserInDB = Depends(get_current_user)):
+    if user_has_role(current_user, 'disabled'):
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
@@ -277,21 +306,48 @@ async def sign_up(user: UserReg):
             detail="Email already in use.",
             headers={"WWW-Authenticate": "Bearer"},
         )
-        
-    hashed_password = get_password_hash(user.password)
     
     emailAddr = ''
-    roles = 'user'
+    roles = 'user unverified'
     if len(user.email)>0: 
         if user.username=='bsenftner' and user.email=='bsenftner@earthlink.net':
             roles += ' admin'
         emailAddr = EmailStr(user.email)
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="Email must be a valid address.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
         
+    hashed_password = get_password_hash(user.password)
+    
+    verify_code = ''.join(secrets.choice(string.ascii_uppercase + string.ascii_lowercase) for i in range(16))
+    # print(f'email verification code is {verify_code}')
+        
+    # validation of user info complete, create the user in the db:
     query = users.insert().values( username=user.username, 
                                    hashed_password=hashed_password,
+                                   verify_code=verify_code,
                                    email=emailAddr,
                                    roles=roles )
     last_record_id = await database.execute(query)
+    
+    d = { 'name': user.username, 'code': verify_code }
+    body = '''\
+<p>Hello {name}</p>
+<p>Here is your email verification code:<\p>
+<p>{code}<\p>
+<p>You will be asked to enter this code before your first posting at my Blog.</p>
+<p>-Blake Senftner</p>\
+'''
+    body = body.format(name=user.username, code=verify_code)
+
+    params = { 'msg': { 'subject': 'Verification email',
+                        'body': body }
+    }
+    # print(json.dumps(params, indent = 4))
+    await send_email_async(user.email, params, 'verify_email.html')
     
     return {"username": user.username, "id": last_record_id, "email": emailAddr, "roles": roles}
 
@@ -305,3 +361,39 @@ async def logout(response: Response, current_user: User = Depends(get_current_ac
     return {"username": current_user.username, "id": current_user.id, "email": current_user.email, "roles": current_user.roles}
 
 
+# -------------------------------------------------------------------------------------
+@router.post("/users/verify", summary="Accept user email verification code")
+async def verify_user_email(payload: VerifyEmailPayload, current_user: UserInDB = Depends(get_current_active_user)):
+
+    ret = 'ok'
+    
+    if user_has_role( current_user, 'unverified'):
+        # print(f"current_user vcode {current_user.verify_code} and payload vcode {payload.code}")
+        if current_user.verify_code != payload.code:
+            raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="The verification code does not match.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        else:
+            role_list = current_user.roles.split()
+            current_user.roles = ''
+            first = True
+            for role in role_list:
+                if role != 'unverified':
+                    if not first:
+                        current_user.roles += ' '
+                    current_user.roles += role
+                    first = False
+            query = (
+                users
+                .update()
+                .where(current_user.id == users.c.id)
+                .values(roles=current_user.roles)
+                .returning(users.c.id)
+            )
+            ret = await database.execute(query)
+            if ret != current_user.id:
+                ret = 'ERROR!'
+            
+    return { 'status': 'ok' }

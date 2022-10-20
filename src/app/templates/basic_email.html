@@ -1,0 +1,15 @@
+<html>
+<body style="margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, Helvetica, sans-serif;">
+<div style="width: 100%; background: #a00a0a; border-radius: 10px; padding: 10px;">
+  <div style="margin: 0 auto; width: 90%;">
+    <h1 style="background-color: #000000; padding: 5px 10px; border-radius: 5px; color: white; text-align: center;">{{ msg.subject }}</h1>
+    <div style="margin: 30px auto; background: white; width: 40%; border-radius: 10px; padding: 50px;">
+      {{ msg.body | safe }}
+      <p style="margin-bottom: 30px;">“IMPORTANT: The contents of this email and any attachments are confidential. 
+        They are intended for the named recipient(s) only. If you have received this email by mistake, please notify 
+        the sender immediately and do not disclose the contents to anyone or make copies thereof”</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

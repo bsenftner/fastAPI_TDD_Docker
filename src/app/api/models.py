@@ -36,29 +36,40 @@ class Token(BaseModel):
 # a user 
 class User(BaseModel):
     username: str
-    email: Union[EmailStr, None] = None
-    roles: Union[str, None] = None
-    disabled: Union[bool, None] = None
+    email: EmailStr
+    roles: str
+    # disabled: Union[bool, None] = None
+    # email: Union[EmailStr, None] = None
+    # roles: Union[str, None] = None
+
     
 # a user in the dabase
 class UserInDB(User):
     id: int
+    verify_code: str
     hashed_password: str
 
 # info for user registration
 class UserReg(BaseModel):
     username: str
     password: constr(min_length=12)
-    email: Union[EmailStr, None] = None
+    email: EmailStr
+    # email: Union[EmailStr, None] = None
     
 # info returned from a user query
 class UserPublic(BaseModel):
     username: str
     id: int
-    roles: Union[str, None] = None
-    email: Union[EmailStr, None] = None
+    roles: str
+    email: EmailStr
+    # roles: Union[str, None] = None
+    # email: Union[EmailStr, None] = None
     
-
+    
+# info posted by a user as their email verification code:
+class VerifyEmailPayload(BaseModel):
+    code: str
+    
     
 # info posted by a user as a Contact the website email message:
 class ContactMsg(BaseModel):

@@ -7,6 +7,8 @@ from typing import List
 from jinja2 import Environment, select_autoescape, PackageLoader
 from app.config import settings 
 
+import json
+
 from pathlib import Path
 BASE_PATH = Path(__file__).resolve().parent
 
@@ -35,45 +37,41 @@ conf = ConnectionConfig(
 )
 
 # ----------------------------------------------------------------------------------------------
-'''
-template = """
-        <html>
-            <body>
-                <p>Hi !!!
-                <br>Thanks for using fastapi mail, keep using it..!!!</p>
-            </body>
-        </html>
-        """
-    message = MessageSchema(
-        subject=subject,
-        recipients=[email_to],
-        body=template,
-        subtype='html',
-    )
-'''
-
-# ----------------------------------------------------------------------------------------------
-async def send_email_async(subject: str, email_to: str, body: dict):
+async def send_email_async(email_to: str, params: dict, templateName: str):
+    
+    # print(json.dumps(params, indent = 4))
     
     # Generate the HTML template based on the template name
     # body is expected in this form:
-    # { 'body': { 'title': 'the title', 'name':'this is the body'}}
-    template = env.get_template('email.html')
+    # { 'msg': { 'subject': 'the title', 'body':'this is the body'}}
+    # template = env.get_template('basic_email.html')
+    
+    # here the passed template name is used to load the template:
+    template = env.get_template(templateName)
     #
-    html = template.render( body )
-    # print("send_email_async: rendered template:")
+    # # the format of the msg dictionary is reliant on the template,
+    # but in general they are something like:
+    # { 'msg': { 'subject': 'the title', 'body':'this is the body'}}
+    # i.e. a msg at the top with different named keys with values beneath
+    #
+    # here the values in msg are rendered into the template: 
+    html = template.render( params )
     # print(html)
     
     # Define the message options
     message = MessageSchema(
-            subject=subject,
+            subject=params['msg']['subject'],
             recipients=[email_to],
             body=html,
             subtype="html"
     )
     
+    # make the connection:
     fm = FastMail(conf)
+    
+    # send the email:
     await fm.send_message(message)
+    
     return JSONResponse(status_code=200, content={"message": "email has been sent"})
     
 
@@ -87,5 +85,5 @@ def send_email_background(background_tasks: BackgroundTasks, subject: str, email
     )    
     
     fm = FastMail(conf)
-    background_tasks.add_task( fm.send_message, message, template_name='email.html' )
+    background_tasks.add_task( fm.send_message, message, template_name='basic_email.html' )
     return JSONResponse(status_code=200, content={"message": "email has been queued to be sent."})

@@ -77,8 +77,10 @@
 			if (webusername) {
 				console.log('new user refresh')
 				document.getElementById("divRegisterForm").innerHTML = 
-								'<h4>Welcome to the site ' + webusername + '</h4>' +
-                                '<h5>Now that you are registered, you need to login:<h5>' +
+								'<h4>Thank you for registering with the site, ' + webusername + '.</h4>' +
+                                '<h5>Now that you are registered, expect to receive an email with a verification code.' +
+								'<br/><br/>' +
+								'After logging into the site, the verification code is needed before you can post.<h5>' +
 							    '<a href="#" class="button" onclick="Login()">Login</a>';
 			}
             // check if the user is already logged in: 
