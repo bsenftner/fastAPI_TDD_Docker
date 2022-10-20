@@ -7,9 +7,11 @@ from sqlalchemy import (
     MetaData,
     String,
     Table,
-    create_engine
+    create_engine,
 )
 from sqlalchemy.sql import func
+
+from sqlalchemy.orm import relationship
 
 from databases import Database
 
@@ -18,7 +20,9 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 # SQLAlchemy
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL) # , future=True) adding the future parameter enables SQLAlchemy 2.0 syntax
+
+# metadata is a container for tables
 metadata = MetaData()
 
 notes = Table(
@@ -34,6 +38,7 @@ blogposts = Table(
     "blogposts",
     metadata,
     Column("id", Integer, primary_key=True),
+    Column("owner", Integer, index=True),
     Column("title", String(80)),
     Column("description", String(16384)),
     Column("created_date", DateTime, default=func.now(), nullable=False),
@@ -43,8 +48,8 @@ users = Table(
     "users",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("username", String(80)),
-    Column("email", String(80)),
+    Column("username", String(80), index=True),
+    Column("email", String(80), index=True),
     Column("roles", String(80)),
     Column("hashed_password", String(80)),
     Column("created_date", DateTime, default=func.now(), nullable=False),
@@ -53,3 +58,8 @@ users = Table(
 
 # databases query builder
 database = Database(DATABASE_URL)
+
+    
+# create db tables if they don't already exist:
+metadata.create_all(engine)
+

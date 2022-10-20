@@ -25,15 +25,12 @@ for key, value in envConfig.items():
     print(key, ' : ', value)
 '''
 
-from app.db import engine, database, metadata
+from app.db import database
 from app.api import blogposts, notes, users, ping, crud 
-from app.api.models import User
+from app.api.models import User, ContactMsg
 from app.api.users import get_current_active_user
 from app.send_email import send_email_async, send_email_background
 
-    
-# create db tables if they don't already exist:
-metadata.create_all(engine)
 
 # generate our "app"
 app = FastAPI(title="FastAPI_TDD_Docker (& postgresql): Notes and BlogPosts", openapi_url="/openapi.json")
@@ -60,6 +57,8 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await database.disconnect()
+
+
 
 # install the ping router into our app:
 app.include_router(ping.router)
@@ -177,11 +176,7 @@ async def editor( request: Request, post_id: int, current_user: User = Depends(g
         {"request": request, "contentPost": blogpost, "frags": FRAGS, "blogPosts": blogPostList}, 
     )
     
-    
-# ------------------------------------------------------------------------------------------------------------------ 
-class ContactMsg(BaseModel):
-    subject: str
-    msg: str
+
     
 # ------------------------------------------------------------------------------------------------------------------
 @router.get('/send-email/asynchronous')

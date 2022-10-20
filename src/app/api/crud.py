@@ -45,9 +45,9 @@ async def delete_note(id: int):
 
 # -----------------------------------------------------------------------------------------
 # for creating new blogposts
-async def post_blogpost(payload: BlogPostSchema):
+async def post_blogpost(payload: BlogPostSchema, user_id: int):
     # Creates a SQLAlchemy insert object expression query
-    query = blogposts.insert().values(title=payload.title, description=payload.description)
+    query = blogposts.insert().values(owner=user_id, title=payload.title, description=payload.description)
     # Executes the query and returns the generated ID
     return await database.execute(query=query)
 

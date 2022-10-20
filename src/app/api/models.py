@@ -15,7 +15,7 @@ class NoteDB(NoteSchema):
 
 
 
-# seeing if a separate table can be defined under this code/app structure:
+# basic "blog post":
 class BlogPostSchema(BaseModel):
     title: str = Field(..., min_length=3, max_length=80)
     description: str = Field(..., min_length=3, max_length=16384)
@@ -23,6 +23,7 @@ class BlogPostSchema(BaseModel):
 # A "BlogPost" in the database is simply an id plus our BlogPostSchema: 
 class BlogPostDB(BlogPostSchema):
     id: int
+    owner: int
 
 
 
@@ -32,25 +33,34 @@ class Token(BaseModel):
     token_type: str
     refresh_token: str
     
+# a user 
 class User(BaseModel):
     username: str
     email: Union[EmailStr, None] = None
     roles: Union[str, None] = None
     disabled: Union[bool, None] = None
     
+# a user in the dabase
 class UserInDB(User):
     id: int
     hashed_password: str
 
+# info for user registration
 class UserReg(BaseModel):
     username: str
     password: constr(min_length=12)
     email: Union[EmailStr, None] = None
     
+# info returned from a user query
 class UserPublic(BaseModel):
     username: str
     id: int
     roles: Union[str, None] = None
     email: Union[EmailStr, None] = None
     
+
     
+# info posted by a user as a Contact the website email message:
+class ContactMsg(BaseModel):
+    subject: str
+    msg: str

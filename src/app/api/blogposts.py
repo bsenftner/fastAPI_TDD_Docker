@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------------------------
 # This file contains the JSON endpoints for blog posts, handling the CRUD operations with the db 
 #
-from fastapi import APIRouter, HTTPException, Path, Depends
+from fastapi import APIRouter, HTTPException, Path, Depends, status
 
 from app.api import crud
 from app.api.users import User, get_current_active_user
@@ -18,10 +18,11 @@ router = APIRouter()
 async def create_blogpost(payload: BlogPostSchema, 
                           current_user: User = Depends(get_current_active_user)) -> dict:
     
-    blogpost_id = await crud.post_blogpost(payload)
+    blogpost_id = await crud.post_blogpost(payload, current_user.id)
 
     response_object = {
         "id": blogpost_id,
+        "owner": current_user.id,
         "title": payload.title,
         "description": payload.description,
     }
@@ -52,10 +53,15 @@ async def update_blogpost(payload: BlogPostSchema, id: int = Path(..., gt=0),
     if not blogpost:
         raise HTTPException(status_code=404, detail="BlogPost not found")
 
+    if blogpost.owner != current_user.id:
+        HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
+                      detail='You are not the owner of this BlogPost')
+        
     blogpost_id = await crud.put_blogpost(id, payload)
 
     response_object = {
         "id": blogpost_id,
+        "owner": current_user.id,
         "title": payload.title,
         "description": payload.description,
     }
