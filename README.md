@@ -4,12 +4,27 @@
 
 1. You'll need Docker; this was developed using WSL2-Ubuntu on Win10 with Docker Desktop 4.12.0 (85629)
 2. Via terminal navigate to `src\app` and create a file named `.env` in the same directory as main.py
-3. Enter `openssl rand -hex 32` to generate a random hex string
+3. Enter `openssl rand -hex 32` to generate a random hex string, and again because you'll need two.
 4. Edit the `.env` file to have contents like this:
 
     ```text
     JWT_SECRET=[that-hex-string-generated-in-step-3]
+    JWT_SECRET_KEY=[that-first-hex-string-generated-in-step-3]
+    JWT_SECRET_REFRESH_KEY=[that-second-hex-string-generated-in-step-3]
+    ACCESS_TOKEN_EXPIRES_MINUTES=15
+    REFRESH_TOKEN_EXPIRES_MINUTES=60
+    JWT_ALGORITHM=HS256
+    CLIENT_ORIGIN=http://localhost:8002
+    MAIL_USERNAME=[email-username-often-same-as-email-address]
+    MAIL_PASSWORD=[email-password]
+    MAIL_FROM=[email-from-account]
+    MAIL_PORT=587
+    MAIL_SERVER=[smtp-email-server-addr]
+    MAIL_FROM_NAME=[email-from-account-username]
     ```
+
+    Unless you already have a programmatic email address you use and can get the various
+    email settings for above, I suggest looking up using GMail and their secure app email password system.
 
 5. Navigate back the project's root, where the `docker-compose.yml` file is located and enter:
 
@@ -39,10 +54,14 @@ Next time you do step 5, above, the previous database info will still be there.
 
 ## Notes
 
-* The new registration page can be used at `/register` to create an initial user.
+* Registration, login, email verification, post navigating, logout and backing all flow smooth.
 
 * An initial blog post needs to be created via the OpenAPI GUI to get blog page HTML interfaces.
 
-* This version has JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
+* JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
 
-* Coming next is email verification, password recovery, and separate user/admin capabilities.
+* New email verification, and a 'contact me' page that sends an email to the admin account. Currently that
+  contact page is public access. I'm adding an admin page, and control of the contact page being public or not
+  as one of the admin settings.
+  
+* Password recovery is not in yet...
