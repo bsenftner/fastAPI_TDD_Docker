@@ -8,7 +8,6 @@
 4. Edit the `.env` file to have contents like this:
 
     ```text
-    JWT_SECRET=[that-hex-string-generated-in-step-3]
     JWT_SECRET_KEY=[that-first-hex-string-generated-in-step-3]
     JWT_SECRET_REFRESH_KEY=[that-second-hex-string-generated-in-step-3]
     ACCESS_TOKEN_EXPIRES_MINUTES=15
