@@ -63,4 +63,5 @@ Next time you do step 5, above, the previous database info will still be there.
   contact page is public access. I'm adding an admin page, and control of the contact page being public or not
   as one of the admin settings.
   
-* Password recovery is not in yet...
+* Password recovery is not in yet... And the tests are failing because I've not accounted for the newly
+  added authentication on the test endpoints...
