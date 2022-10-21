@@ -11,26 +11,14 @@
 </head>
 <body>
 	<div class="grid">
-		<header>
-			{{ frags[0].header | safe }}
-		</header>
+		{% include 'common_header.html' %}
 
-        {# the left sidebar #}
-		<nav>
-			{# default links from page_frags.py #}
-			{% for alink in frags[0].links %} 
-				{{ alink | safe }}
-			{% endfor %}
-
-			{# not expecting a huge number of blog posts, so here's all of them #}
-			{% for post in blogPosts %} 
-				<br/><br/><a href="/blog/{{ post.id }}">{{ post.title }}</a>
-			{% endfor %}
-		</nav>
+		{# the left sidebar #}
+		{% include 'common_lsidebar.html' %}
 
         {# the main content area #}
 		<main>
-			<div id="divRegisterForm">
+			<div id="mainContent">
 				{# a new user registration form #}
             	<h4>New User Registration:</h4>
 				<form method="post">
@@ -76,11 +64,11 @@
 			const webusername = localStorage.getItem('webusername');
 			if (webusername) {
 				console.log('new user refresh')
-				document.getElementById("divRegisterForm").innerHTML = 
+				document.getElementById("mainContent").innerHTML = 
 								'<h4>Thank you for registering with the site, ' + webusername + '.</h4>' +
                                 '<h5>Now that you are registered, expect to receive an email with a verification code.' +
 								'<br/><br/>' +
-								'After logging into the site, the verification code is needed before you can post.<h5>' +
+								'After logging into the site, the verification code is needed before you can post.</h5>' +
 							    '<a href="#" class="button" onclick="Login()">Login</a>';
 			}
             // check if the user is already logged in: 
@@ -94,7 +82,7 @@
                         {
                             console.log(response)
                             if (response.hasOwnProperty('username')) {
-                                document.getElementById("divRegisterForm").innerHTML = 
+                                document.getElementById("mainContent").innerHTML = 
                                     '<h4>You are already alogged in ' + response.username + '</h4>';
                             }
                         })

@@ -1,0 +1,33 @@
+<script>
+
+function Logout() { 
+    localStorage.removeItem('token');
+    // document.cookie = 'access_token=; Max-Age=0; path=/; domain=' + location.host; // don't work
+    const options = { method: 'POST', body: {} };
+    fetch("/users/logout", options)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not OK');
+              }
+            return response.json();
+        })
+        .then( response => 
+            {
+                console.log(response)
+                if (response.hasOwnProperty('username')) {
+                    document.getElementById("mainContent").innerHTML = 
+                        "<h4>By now, " + response.username + ".</h4>";
+                    
+                    if (window.location.href != '/login')
+                    {
+                        window.location.href = '/login';
+                    }
+                    else{
+                        document.getElementById("aside").innerHTML = 
+                            '<a href="#" class="button" onclick="window.location.reload();">Re-login</a>';
+                    }
+                }
+              })
+}
+
+</script>
