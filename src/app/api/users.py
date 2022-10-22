@@ -251,7 +251,7 @@ async def login_for_access_token(response: Response,
 
 # --------------------------------------------------------------------------------------------------------------
 # Refresh access token
-@router.get('/refresh')
+@router.get('/refresh', summary="Submit refresh token and get new access token")
 async def refresh_token(response: Response, request: Request): 
     try:
         refreshUser = await get_refresh_user(request)
@@ -280,7 +280,7 @@ async def refresh_token(response: Response, request: Request):
 
 # --------------------------------------------------------------------------------------------------------------
 # return info about the current logged in user:
-@router.get("/users/me", response_model=UserPublic)
+@router.get("/users/me", summary="Get current logged in user data", response_model=UserPublic)
 async def read_users_me(request: Request, current_user: User = Depends(get_current_active_user)):
     # print(request.cookies)
     return {"username": current_user.username, 
@@ -290,7 +290,7 @@ async def read_users_me(request: Request, current_user: User = Depends(get_curre
 
 
 # --------------------------------------------------------------------------------------------------------------
-@router.post("/users/register", response_model=UserPublic)
+@router.post("/users/register", summary="Register new user", response_model=UserPublic)
 async def sign_up(user: UserReg):
     existingUser = await get_user(user.username)
     if existingUser:
@@ -352,7 +352,7 @@ async def sign_up(user: UserReg):
 
 
 # --------------------------------------------------------------------------------------------------------------
-@router.post("/users/logout", response_model=UserPublic)
+@router.post("/users/logout", summary="Logout current user", response_model=UserPublic)
 async def logout(response: Response, current_user: User = Depends(get_current_active_user)):
     # print("logout hit!")
     response.set_cookie(key="access_token",value=f"Bearer 0", httponly=True)
@@ -463,7 +463,7 @@ async def reset_user_password(payload: basicTextPayload):
 
 
 # -------------------------------------------------------------------------------------
-@router.post("/users/setpass", summary="Set user password")
+@router.post("/users/setpass", summary="Set user password and send user email with new password")
 async def set_user_password(payload: basicTextPayload, current_user: UserInDB = Depends(get_current_active_user)):
     
     if user_has_role( current_user, 'unverified'):

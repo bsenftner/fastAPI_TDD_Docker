@@ -33,6 +33,9 @@
 
 6. Via your web browser visit `http://localhost:8002/docs` to use the OpenAPI GUI
 7. Run tests from project root with `docker compose exec web pytest .`
+
+   * And I realize the tests are failing; that's because I've not accounted for the newly added authentication on endpoints...
+
 8. Visit `http://localhost:8002/register` to create the first user on the static GUI.
 
 This produces two Docker images, one hosting postgres and the other the FastAPI app.
@@ -66,4 +69,3 @@ Next time you do step 5, above, the previous database info will still be there.
   Currently that contact page is public access.
   I'll be extending the account settings page to include admin changes like having the contact page be protected or not.
   
-* And I realize the tests are failing; that's because I've not accounted for the newly added authentication on endpoints...
