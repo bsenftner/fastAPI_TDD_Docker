@@ -53,15 +53,17 @@ Next time you do step 5, above, the previous database info will still be there.
 
 ## Notes
 
-* Registration, login, email verification, post navigating, logout and backing all flow smooth.
+* Registration, login, email verification, post navigating, logout and logging back in all flow smooth.
 
 * An initial blog post needs to be created via the OpenAPI GUI to get blog page HTML interfaces.
 
-* JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
+* Uses JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
 
-* New email verification, and a 'contact me' page that sends an email to the admin account. Currently that
-  contact page is public access. I'm adding an admin page, and control of the contact page being public or not
-  as one of the admin settings.
+* New is a user account settings page. This is for changing email, changing password or deleting the account.
+  Currently only this page only has working password changes. Expect an update pretty quickly.
+
+* There's a 'contact me' page that sends an email to the admin account.
+  Currently that contact page is public access.
+  I'll be extending the account settings page to include admin changes like having the contact page be protected or not.
   
-* Password recovery is not in yet... And the tests are failing because I've not accounted for the newly
-  added authentication on the test endpoints...
+* And I realize the tests are failing; that's because I've not accounted for the newly added authentication on endpoints...
