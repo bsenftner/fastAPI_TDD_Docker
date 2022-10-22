@@ -75,7 +75,10 @@
 						if (response.hasOwnProperty('username')) {
 
 							document.getElementById("aside").innerHTML = 
-								'<a href="#" class="button" onclick="Logout()">Logout</a>';
+							`<a href="#" class="button" onclick="UserSettings()">Settings</a>
+							<br/><br/>
+							<a href="#" class="button" onclick="Logout()">Logout</a>
+							`;
 						}
 						else { window.location.href = "/blog/{{ contentPost.id }}"; }
 				  })
@@ -213,6 +216,8 @@
 			}
 			else { alert("Not Authorized.") }
 		}
+
+		function UserSettings() { window.location.href = "/Settings"; }
 
 	</script>
 

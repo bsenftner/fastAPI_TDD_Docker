@@ -11,22 +11,10 @@
 </head>
 <body>
 	<div class="grid">
-		<header>
-			{{ frags[0].header | safe }}
-		</header>
+		{% include 'common_header.html' %}
 
 		{# the left sidebar #}
-		<nav>
-			{# default links from page_frags.py #}
-			{% for alink in frags[0].links %} 
-				{{ alink | safe }}
-			{% endfor %}
-
-			{# not expecting a huge number of blog posts, so here's all of them #}
-			{% for post in blogPosts %} 
-				<br/><br/><a href="/blog/{{ post.id }}">{{ post.title }}</a>
-			{% endfor %}
-		</nav>
+		{% include 'common_lsidebar.html' %}
 
 		{# the main content area #}
 		<main>
@@ -72,7 +60,10 @@
 								'<a href="#" class="button" onclick="BlogEdit()">Edit</a>';
 
 							document.getElementById("aside").innerHTML = 
-								'<a href="#" class="button" onclick="Logout()">Logout</a>';
+							`<a href="#" class="button" onclick="UserSettings()">Settings</a>
+							<br/><br/>
+							<a href="#" class="button" onclick="Logout()">Logout</a>
+							`;
 						}
 				  })
 			}
@@ -84,26 +75,11 @@
 
 		function Register() { window.location.href = "/register"; }
 
-		function Logout() { 
-			localStorage.removeItem('token');
-			// document.cookie = 'access_token=; Max-Age=0; path=/; domain=' + location.host; // don't work
-			const options = { method: 'POST', body: {} };
-			fetch("/users/logout", options)
-				.then((response) => {
-					if (!response.ok) {
-						throw new Error('Network response was not OK');
-				  	}
-					return response.json();
-				})
-				.then( response => 
-					{
-						console.log(response)
-						if (response.hasOwnProperty('username')) {
-							window.location.href = "/login";
-						}
-				  	})
-		}
+		function UserSettings() { window.location.href = "/Settings"; }
 
 	</script>
+
+	{% include 'common_logout.html' %}
+	
 </body>
 </html>

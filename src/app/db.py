@@ -39,8 +39,8 @@ blogposts = Table(
     metadata,
     Column("id", Integer, primary_key=True),
     Column("owner", Integer, index=True),
-    Column("title", String(80)),
-    Column("description", String(16384)),
+    Column("title", String),
+    Column("description", String),
     Column("created_date", DateTime, default=func.now(), nullable=False),
 )
 
@@ -48,9 +48,9 @@ users = Table(
     "users",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("username", String(80), index=True),
+    Column("username", String, index=True),
     Column("email", String(80), index=True),
-    Column("roles", String(80)),
+    Column("roles", String),
     Column("hashed_password", String(80)),
     Column("verify_code", String(16)),
     Column("created_date", DateTime, default=func.now(), nullable=False),

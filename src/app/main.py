@@ -161,7 +161,7 @@ async def contact( request: Request ):
     )
     
 # ------------------------------------------------------------------------------------------------------------------
-# serve with an editor on it thru a template:
+# serve blog post page with an editor on it thru a template:
 @router.get("/Editor/{post_id}", status_code=200, response_class=HTMLResponse)
 async def editor( request: Request, post_id: int, current_user: User = Depends(get_current_active_user) ):
     
@@ -174,6 +174,23 @@ async def editor( request: Request, post_id: int, current_user: User = Depends(g
     return TEMPLATES.TemplateResponse(
         "editor.html",
         {"request": request, "contentPost": blogpost, "frags": FRAGS, "blogPosts": blogPostList}, 
+    )
+    
+# ------------------------------------------------------------------------------------------------------------------
+# serve a user profile page thru a template:
+@router.get("/Settings", status_code=200, response_class=HTMLResponse)
+async def settings( request: Request, current_user: User = Depends(get_current_active_user) ):
+    
+    page_data = {
+        'username': current_user.username,
+        'email': current_user.email,
+    }
+
+    blogPostList = await blogposts.read_all_blogposts()
+    
+    return TEMPLATES.TemplateResponse(
+        "user_page.html",
+        {"request": request, "data": page_data, "frags": FRAGS, "blogPosts": blogPostList}, 
     )
     
 

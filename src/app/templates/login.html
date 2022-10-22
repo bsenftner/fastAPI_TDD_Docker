@@ -21,6 +21,7 @@
 			<div id="mainContent">
 				{# a login form #}
             	<h4>Login:</h4>
+				<div id="userMsg"></div>
 				<form method="post">
 			    	<label for="username">Username:</label>
   			    	<input type="text" id="username" name="label" value="">
@@ -32,6 +33,11 @@
 			    	<div id="divLoginButtons">
 				    	<a href="#" class="button" onclick="Cancel()">Cancel</a>
 				    	<a href="#" class="button" onclick="Login()">Login</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+				    	<a href="#" class="button" onclick="ResetPassword()">Reset password</a>
+						<br/>
+						For password reset, enter your username or the email used to register at this site.<br/>
+						After clicking the reset button you will receive an email with a new password.
 			    	</div>
 				</form>
 			</div>
@@ -55,12 +61,11 @@
 			page_init();
 		  });
 		function page_init() {
+			// look for an existing access_token indicating the user is logged in:
 			const access_token = localStorage.getItem('token');
 			if (access_token) {
-				const options = { 
-					// headers: { "Authorization": "Bearer " + access_token } // only needed when JWT is not in cookie
-				}
-				fetch("/users/me", options)
+				// if already authenticated, this will return valid user data:
+				fetch("/users/me")
 				.then(response => response.json())
 				.then( response => 
 					{
@@ -70,7 +75,10 @@
 								"<h4>Welcome back, " + response.username + "</h4>";
 							
 							document.getElementById("aside").innerHTML = 
-								'<a href="#" class="button" onclick="Logout()">Logout</a>';
+`<a href="#" class="button" onclick="UserSettings()">Settings</a>
+<br/><br/>
+<a href="#" class="button" onclick="Logout()">Logout</a>
+`;
 
 							if (response.roles.includes('unverified'))
 							{
@@ -82,7 +90,7 @@
  <div id="divLoginButtons">
 	<a href="#" class="button" onclick="Cancel()">Cancel</a>
 	<a href="#" class="button" onclick="VerifyEmail()">Verify Email</a>
- </div>`
+ </div>`;
 								document.getElementById("mainContent").innerHTML += newHtml
 							}
 						}
@@ -119,9 +127,11 @@
 				}); /* */
 		}
 
-        function Cancel() { window.location.href = "/blog/1"; }
+        function Cancel() { window.location.href = "/"; }
 
 		function Register() { window.location.href = "/register"; }
+
+		function UserSettings() { window.location.href = "/Settings"; }
 		
 		function Login() { 
             
@@ -140,10 +150,44 @@
             .then(data => { 
                 console.log(data);
                 const jsonData = JSON.parse(data);
-                localStorage.setItem('token', jsonData.access_token);
-                window.location.reload();
+				if (jsonData.access_token) {
+					localStorage.setItem('token', jsonData.access_token);
+                	window.location.reload();
+				}
+                else if (jsonData.detail)
+				{
+					document.getElementById("userMsg").innerHTML += 
+						'<p>' + jsonData.detail + '</p>';
+				}
             });
         }
+
+		function ResetPassword() { 
+            
+            // get the user's info:
+			const resetText = document.getElementById("username").value;
+
+			const regData = { 
+				'text': resetText
+			};
+			const options = { 
+				method: 'POST', 
+				headers: {
+					  'Accept': 'application/json',
+					  'Content-Type': 'application/json',
+				},
+				body: JSON.stringify( regData ) 
+			};
+			fetch('/users/resetpass', options)
+			.then(response => response.text())
+			.then(data => { 
+				console.log(data);
+				const jsonData = JSON.parse(data);
+				localStorage.setItem('webusername', jsonData.username);
+				window.location.reload();
+			});
+        }
+
 	</script>
 
 	{% include 'common_logout.html' %}

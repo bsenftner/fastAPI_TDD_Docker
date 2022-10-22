@@ -7,7 +7,7 @@ function Logout() {
     fetch("/users/logout", options)
         .then((response) => {
             if (!response.ok) {
-                throw new Error('Network response was not OK');
+                window.location.href = '/';
               }
             return response.json();
         })

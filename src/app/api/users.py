@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Request, Response
 from passlib.context import CryptContext
 from app.config import settings 
-from app.api.models import Token, User, UserInDB, UserPublic, UserReg, VerifyEmailPayload
+from app.api.models import Token, User, UserInDB, UserPublic, UserReg, basicTextPayload
 from app.db import users, database
 
 from fastapi.security import OAuth2PasswordRequestForm
@@ -17,7 +17,7 @@ from pydantic import EmailStr
 import secrets
 import string
 from app.send_email import send_email_async
-import json
+# import json
 
 SECRET_KEY = settings.JWT_SECRET_KEY
 REFRESH_KEY = settings.JWT_SECRET_REFRESH_KEY
@@ -333,7 +333,6 @@ async def sign_up(user: UserReg):
                                    roles=roles )
     last_record_id = await database.execute(query)
     
-    d = { 'name': user.username, 'code': verify_code }
     body = '''\
 <p>Hello {name}</p>
 <p>Here is your email verification code:<\p>
@@ -363,7 +362,7 @@ async def logout(response: Response, current_user: User = Depends(get_current_ac
 
 # -------------------------------------------------------------------------------------
 @router.post("/users/verify", summary="Accept user email verification code")
-async def verify_user_email(payload: VerifyEmailPayload, current_user: UserInDB = Depends(get_current_active_user)):
+async def verify_user_email(payload: basicTextPayload, current_user: UserInDB = Depends(get_current_active_user)):
 
     ret = 'ok'
     
@@ -396,4 +395,117 @@ async def verify_user_email(payload: VerifyEmailPayload, current_user: UserInDB 
             if ret != current_user.id:
                 ret = 'ERROR!'
             
+    return { 'status': 'ok' }
+
+
+# -------------------------------------------------------------------------------------
+@router.post("/users/resetpass", summary="Reset password and send user email with new password")
+async def reset_user_password(payload: basicTextPayload):
+
+    existingUser = await get_user(payload.text)
+    if not existingUser:
+        existingUser = await get_user_by_email(payload.text)
+        if not existingUser:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No user with that username or email found.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        else:
+            print('existing user was email')
+    else:
+        print('existing user was username')
+    
+    if user_has_role( existingUser, 'unverified'):
+        if existingUser.verify_code != payload.code:
+            raise HTTPException(
+            status_code=status.HTTP_412_PRECONDITION_FAILED,
+            detail="The requested account must have a verified email to receive reset passwords.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    reset_password = ''.join(secrets.choice(string.ascii_uppercase + string.ascii_lowercase) for i in range(16))
+    print(f'reset_password is {reset_password}')
+    
+    hashed_password = get_password_hash(reset_password)
+    
+    query = users.update().values( username=existingUser.username, 
+                                   hashed_password=hashed_password,
+                                   verify_code=existingUser.verify_code,
+                                   email=existingUser.email,
+                                   roles=existingUser.roles ).returning(users.c.id)
+    id = await database.execute(query=query)
+    if id!=existingUser.id:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database error.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    body = '''\
+<p>Hello {name}</p>
+<p>Your username at my website is:<\p>
+<p>{name}<\p>
+<p>Your reset password is:<\p>
+<p>{password}<\p>
+<p>Use these to login to my Blog. Note, this email is the only location this password is plaintext.</p>
+<p>-Blake Senftner</p>\
+'''
+    body = body.format(name=existingUser.username, password=reset_password)
+
+    params = { 'msg': { 'subject': 'Password reset email',
+                        'body': body }
+    }
+    # print(json.dumps(params, indent = 4))
+    await send_email_async(existingUser.email, params, 'verify_email.html')
+    
+    return { 'status': 'ok' }
+
+
+# -------------------------------------------------------------------------------------
+@router.post("/users/setpass", summary="Set user password")
+async def set_user_password(payload: basicTextPayload, current_user: UserInDB = Depends(get_current_active_user)):
+    
+    if user_has_role( current_user, 'unverified'):
+        raise HTTPException(
+            status_code=status.HTTP_412_PRECONDITION_FAILED,
+            detail="Account must have a verified email to accept account changes.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    new_password = payload.text
+    print(f'set_user_password: new password is {new_password}')
+    
+    hashed_password = get_password_hash(new_password)
+    
+    query = users.update().values( username=current_user.username, 
+                                   hashed_password=hashed_password,
+                                   verify_code=current_user.verify_code,
+                                   email=current_user.email,
+                                   roles=current_user.roles ).returning(users.c.id)
+    id = await database.execute(query=query)
+    if id!=current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database error.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    body = '''\
+<p>Hello {name}</p>
+<p>Your username at my website is:<\p>
+<p>{name}<\p>
+<p>Your password changed and is now:<\p>
+<p>{password}<\p>
+<p>Use these to login to my Blog. Note, this email is the only location this password is plaintext.</p>
+<p>-Blake Senftner</p>\
+'''
+    body = body.format(name=current_user.username, password=new_password)
+
+    params = { 'msg': { 'subject': 'Password changed email',
+                        'body': body }
+    }
+    # print(json.dumps(params, indent = 4))
+    await send_email_async(current_user.email, params, 'verify_email.html')
+    
     return { 'status': 'ok' }

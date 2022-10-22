@@ -154,7 +154,7 @@ div#divBeneathTheEditor {
 }
 
 label {
-  width: 20%;
+  width: 25%;
   display: inline-block;
   font-size: 30px;
 }
@@ -162,11 +162,11 @@ input#username {
   width: 50%;
   font-size: 30px;
 }
-input#password {
+input#password, input#password2 {
   width: 50%;
   font-size: 30px;
 }
-input#email {
+input#email, input#email2 {
   width: 50%;
   font-size: 30px;
 }

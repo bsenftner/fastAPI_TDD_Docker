@@ -65,10 +65,10 @@ class UserPublic(BaseModel):
     # roles: Union[str, None] = None
     # email: Union[EmailStr, None] = None
     
-    
-# info posted by a user as their email verification code:
-class VerifyEmailPayload(BaseModel):
-    code: str
+ 
+# a user sending just a string:
+class basicTextPayload(BaseModel):
+    text: str
     
     
 # info posted by a user as a Contact the website email message:

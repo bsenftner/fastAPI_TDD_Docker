@@ -105,7 +105,10 @@
 						if (response.hasOwnProperty('username')) {
 
 							document.getElementById("aside").innerHTML = 
-								'<a href="#" class="button" onclick="Logout()">Logout</a>';
+							`<a href="#" class="button" onclick="UserSettings()">Settings</a>
+							<br/><br/>
+							<a href="#" class="button" onclick="Logout()">Logout</a>
+							`;
 						}
 				  })
 			}
@@ -115,9 +118,11 @@
 
 		function Register() { window.location.href = "/register"; }
 
+		function UserSettings() { window.location.href = "/Settings"; }
+
 	</script>
 
 	{% include 'common_logout.html' %}
-	
+
 </body>
 </html>
