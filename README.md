@@ -63,7 +63,7 @@ Next time you do step 5, above, the previous database info will still be there.
 * Uses JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
 
 * New is a user account settings page. This is for changing email, changing password or deleting the account.
-  Currently only this page only has working password changes. Expect an update pretty quickly.
+  Currently this page only has working password changes. Expect an update pretty quickly.
 
 * There's a 'contact me' page that sends an email to the admin account.
   Currently that contact page is public access.
