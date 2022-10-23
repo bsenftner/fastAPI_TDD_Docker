@@ -56,16 +56,22 @@ Next time you do step 5, above, the previous database info will still be there.
 
 ## Notes
 
-* Registration, login, email verification, post navigating, logout and logging back in all flow smooth.
-
 * An initial blog post needs to be created via the OpenAPI GUI to get blog page HTML interfaces.
 
 * Uses JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
 
-* New is a user account settings page. This is for changing email, changing password or deleting the account.
-  Currently this page only has working password changes. Expect an update pretty quickly.
+* New users are sent an email with an email verification code.
+  * That code is requested upon login.
+  * Without the code the account cannot post or make account settings changes.
 
-* There's a 'contact me' page that sends an email to the admin account.
+* New is a user account settings page. This is for changing email, changing password or disabling the account.
+  * User settings cannot be changed unless the user has a verified email.
+  * When either the email or password changes, a notification email is sent.
+  * In the case of an email change, that notification is sent to the new email account with a new email verification code.
+
+  Each of these user settings page features work. Be aware "deleting" an account is disabling, all that account's info is retained.
+
+* There is a 'contact me' page that sends an email to the admin account.
   Currently that contact page is public access.
   I'll be extending the account settings page to include admin changes like having the contact page be protected or not.
   

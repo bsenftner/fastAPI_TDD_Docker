@@ -26,8 +26,7 @@
                 <label for="email2">Change email again:</label>
                 <input type="text" id="email2" name="label" value="{{data.email}}">
                 <br/><br/>
-                <div id="userMsg">Both fields must match to change. 
-                    A notification is sent to both the curent and the new email acct.</div>
+                <div id="userMsg">Both fields must match to change.</div>
                 <br/>
                 <a href="#" class="button" onclick="ChangeEmail()">Change email</a>
 
@@ -43,9 +42,10 @@
                 <br/>
                 <a href="#" class="button" onclick="ChangePassword()">Change password</a>
 
-                <br/><br/><br/><br/><br/><br/><br/><br/>
+                <br/><br/><br/><br/>
 
-                <a href="#" class="button" onclick="DeleteAccount()">Delete Account</a>
+				<div id="userMsg3"><p>This freezes the account from any future activity.</p></div>
+                <a href="#" class="button" onclick="DisableAccount()">Disable Account</a>
 
 			</div>
 		</main>
@@ -84,7 +84,41 @@
 		}
 
 
-		function ChangeEmail() {  }
+		function ChangeEmail() {
+			const access_token = localStorage.getItem('token');
+			if (access_token)
+			{
+				// get user data
+				const newEmail = document.getElementById("email").value;
+				const newEmail2 = document.getElementById("email2").value;
+                if (newEmail != newEmail2)
+                {
+                    document.getElementById("userMsg").innerHTML += 
+                        '<h3>Both email fields must match to change your email.</h3>';
+                }
+                else{
+                    document.getElementById("userMsg").innerHTML = "Both fields must match to change.";
+
+                    // post as ordinary text submission:
+				    const options = {
+					    method: 'POST',
+					    headers: {
+				  		    'Accept': 'application/json',
+				  		    'Content-Type': 'application/json',
+					    },
+					    body: JSON.stringify( { "text": newEmail } )  
+				    };
+				    fetch( '/users/setemail/', options )
+					    .then( response => response.json() )
+					    .then( response => {
+						    // Do something with response.
+						    console.log( response )
+                            document.getElementById("userMsg").innerHTML = 
+                                '<p>Email successfully changed.</p>';
+					    }); /* */
+                }
+			}
+		}
 
 		function ChangePassword() {
 			const access_token = localStorage.getItem('token');
@@ -119,15 +153,11 @@
                                 '<p>Password successfully changed.<br/>Expect an email with updated account info.</p>';
 					    }); /* */
                 }
-
-				
 			}
 		}
 
-		function DeleteAccount() {  }
 
-
-		function BlogDelete() {
+		function DisableAccount() {
 			const access_token = localStorage.getItem('token');
 			if (access_token)
 			{
@@ -135,7 +165,7 @@
 					method: 'DELETE',
 					// headers: { "Authorization": "Bearer " + access_token } // only needed when JWT is not in cookie
 				};
-				fetch( '/blogposts/1', options )
+				fetch( '/users/disable', options )
 					.then( response => response.json() )
 					.then( response => {
 						// Do something with response:
@@ -146,7 +176,7 @@
 							alert( "DELETE ERROR!" )
 							
 						}
-						window.location.href = "/";
+						Logout();
 
 					} ); 
 			}

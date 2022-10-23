@@ -337,7 +337,7 @@ async def sign_up(user: UserReg):
 <p>Hello {name}</p>
 <p>Here is your email verification code:<\p>
 <p>{code}<\p>
-<p>You will be asked to enter this code before your first posting at my Blog.</p>
+<p>You will be asked to enter this code upon your next login. Email verification enables posting and account changes.</p>
 <p>-Blake Senftner</p>\
 '''
     body = body.format(name=user.username, code=verify_code)
@@ -509,3 +509,88 @@ async def set_user_password(payload: basicTextPayload, current_user: UserInDB = 
     await send_email_async(current_user.email, params, 'verify_email.html')
     
     return { 'status': 'ok' }
+
+# -------------------------------------------------------------------------------------
+@router.post("/users/setemail", summary="Set user email and send email verification code to that account.")
+async def set_user_email(payload: basicTextPayload, current_user: UserInDB = Depends(get_current_active_user)):
+    
+    if user_has_role( current_user, 'unverified'):
+        raise HTTPException(
+            status_code=status.HTTP_412_PRECONDITION_FAILED,
+            detail="Account must have a verified email to accept account changes.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+    new_email = payload.text
+    if new_email == current_user.email:
+        print('set_user_email: same email address, no change necessary.')
+        return { 'status': 'ok' }
+    
+    
+    verify_code = ''.join(secrets.choice(string.ascii_uppercase + string.ascii_lowercase) for i in range(16))
+    
+    new_roles = current_user.roles + ' unverified'
+    username = current_user.username
+    print(f'set_user_email: new email is {new_email} for user {username} with roles after this action of {new_roles}')
+    print(f'set_user_email: new email verify code {verify_code}')
+    
+    query = users.update().values( username=username, 
+                                   hashed_password=current_user.hashed_password,
+                                   verify_code=verify_code,
+                                   email=new_email,
+                                   roles=new_roles
+                                 ).returning(users.c.id)
+    
+    id = await database.execute(query=query)
+    if id!=current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database error.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    body = '''\
+<p>Hello {name}</p>
+<p>Here is your email verification code:<\p>
+<p>{code}<\p>
+<p>You will be asked to enter this code upon your next login. Email verification enables posting and account changes.</p>
+<p>-Blake Senftner</p>\
+'''
+    body = body.format(name=current_user.username, code=verify_code)
+
+    params = { 'msg': { 'subject': 'Verification email',
+                        'body': body }
+    }
+    # print(json.dumps(params, indent = 4))
+    await send_email_async(new_email, params, 'verify_email.html')
+    
+    return { 'status': 'ok' }
+
+
+# ----------------------------------------------------------------------------------------------
+# Note: id's type is validated as greater than 0  
+@router.delete("/users/disable", response_model=UserPublic, summary="Disable the current user account.")
+async def delete_user(current_user: UserInDB = Depends(get_current_active_user)):
+    
+    new_roles = current_user.roles + " disabled"
+    
+    query = users.update().values( username=current_user.username, 
+                                   hashed_password=current_user.hashed_password,
+                                   verify_code=current_user.verify_code,
+                                   email=current_user.email,
+                                   roles=new_roles
+                                 ).returning(users.c.id)
+    id = await database.execute(query=query)
+    if id!=current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database error.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    current_user.roles = new_roles
+    
+    return  {"username": current_user.username, 
+             "id": current_user.id, 
+             "email": current_user.email, 
+             "roles": current_user.roles}
