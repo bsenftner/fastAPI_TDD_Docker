@@ -100,10 +100,10 @@
 
         function VerifyEmail() { 
 			// get the verification code:
-			const userVCode = document.getElementById("vcode").value;
-
+			userVCode = document.getElementById("vcode").value;
+			userVCode = userVCode.trim();
 			// post:
-			const params = { "code": userVCode.trim() };
+			const params = { "text": userVCode };
 			//
 			const options = {
 				method: 'POST',

@@ -28,7 +28,7 @@ for key, value in envConfig.items():
 from app.db import database
 from app.api import blogposts, notes, users, ping, crud 
 from app.api.models import User, ContactMsg
-from app.api.users import get_current_active_user
+from app.api.users import get_current_active_user, user_has_role
 from app.send_email import send_email_async, send_email_background
 
 
@@ -188,8 +188,12 @@ async def settings( request: Request, current_user: User = Depends(get_current_a
 
     blogPostList = await blogposts.read_all_blogposts()
     
+    page = 'user_page.html'
+    if user_has_role( current_user, "admin"):
+        page = 'admin_page.html'
+        
     return TEMPLATES.TemplateResponse(
-        "user_page.html",
+        page,
         {"request": request, "data": page_data, "frags": FRAGS, "blogPosts": blogPostList}, 
     )
     

@@ -365,10 +365,11 @@ async def logout(response: Response, current_user: User = Depends(get_current_ac
 async def verify_user_email(payload: basicTextPayload, current_user: UserInDB = Depends(get_current_active_user)):
 
     ret = 'ok'
+    print('here')
     
     if user_has_role( current_user, 'unverified'):
-        # print(f"current_user vcode {current_user.verify_code} and payload vcode {payload.code}")
-        if current_user.verify_code != payload.code:
+        print(f"current_user vcode {current_user.verify_code} and payload vcode {payload.text}")
+        if current_user.verify_code != payload.text:
             raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail="The verification code does not match.",
@@ -399,6 +400,8 @@ async def verify_user_email(payload: basicTextPayload, current_user: UserInDB = 
 
 
 # -------------------------------------------------------------------------------------
+# accepts username or a user's email, resets their password and sends email with new password 
+# specifically not a protected endpoint. 
 @router.post("/users/resetpass", summary="Reset password and send user email with new password")
 async def reset_user_password(payload: basicTextPayload):
 
@@ -417,8 +420,7 @@ async def reset_user_password(payload: basicTextPayload):
         print('existing user was username')
     
     if user_has_role( existingUser, 'unverified'):
-        if existingUser.verify_code != payload.code:
-            raise HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_412_PRECONDITION_FAILED,
             detail="The requested account must have a verified email to receive reset passwords.",
             headers={"WWW-Authenticate": "Bearer"},
