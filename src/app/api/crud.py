@@ -5,9 +5,12 @@ from sqlalchemy import asc
 
 # -----------------------------------------------------------------------------------------
 # for creating new notes
-async def post_note(payload: NoteSchema):
+async def post_note(payload: NoteSchema, owner: int):
     # Creates a SQLAlchemy insert object expression query
-    query = notes.insert().values(title=payload.title, description=payload.description)
+    query = notes.insert().values(title=payload.title, 
+                                  description=payload.description,
+                                  data=payload.data,
+                                  owner=owner)
     # Executes the query and returns the generated ID
     return await database.execute(query=query)
 
@@ -25,12 +28,15 @@ async def get_all_notes():
 
 # -----------------------------------------------------------------------------------------
 # update a note:
-async def put_note(id: int, payload: NoteSchema):
+async def put_note(id: int, payload: NoteSchema, owner: int):
     query = (
         notes
         .update()
         .where(id == notes.c.id)
-        .values(title=payload.title, description=payload.description)
+        .values(title=payload.title, 
+                description=payload.description, 
+                data=payload.data,
+                owner=owner)
         .returning(notes.c.id)
     )
     return await database.execute(query=query)

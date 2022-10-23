@@ -64,6 +64,10 @@ Next time you do step 5, above, the previous database info will still be there.
   * That code is requested upon login.
   * Without the code the account cannot post or make account settings changes.
 
+* Just modified the "notes" to be data containers with a title and a description.
+  * The data is arbitary JSON, with ownership controls for privacy.
+  * I'll be using these "notes" for various things as this shapes up into a showcase type CMS.
+
 * New is a user account settings page. This is for changing email, changing password or disabling the account.
   * User settings cannot be changed unless the user has a verified email.
   * When either the email or password changes, a notification email is sent.

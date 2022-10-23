@@ -4,14 +4,18 @@ from pydantic import BaseModel, Field, EmailStr, constr
 # create a "Pydantic Model" of the data we want to maintain in the database
 # by inheriting from BaseModel. This inherits data parsing and validation 
 # such that fields of the model are guaranteed to be these types when filled 
-# with payloads for creating and updating Notes. 
+# with payloads for creating and updating things.
+
+# here is a "note": something with a title, a description, and data 
 class NoteSchema(BaseModel):
     title: str = Field(..., min_length=3, max_length=50)
     description: str = Field(..., min_length=3, max_length=50)
+    data: str
 
 # A "Note" in the database is simply an id plus our NoteSchema: 
 class NoteDB(NoteSchema):
     id: int
+    owner: int
 
 
 

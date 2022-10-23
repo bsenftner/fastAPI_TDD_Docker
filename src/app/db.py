@@ -25,15 +25,6 @@ engine = create_engine(DATABASE_URL) # , future=True) adding the future paramete
 # metadata is a container for tables
 metadata = MetaData()
 
-notes = Table(
-    "notes",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("title", String(50)),
-    Column("description", String(50)),
-    Column("created_date", DateTime, default=func.now(), nullable=False),
-)
-
 blogposts = Table(
     "blogposts",
     metadata,
@@ -53,6 +44,17 @@ users = Table(
     Column("roles", String),
     Column("hashed_password", String(80)),
     Column("verify_code", String(16)),
+    Column("created_date", DateTime, default=func.now(), nullable=False),
+)
+
+notes = Table(
+    "notes",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("owner", Integer, index=True),
+    Column("title", String),
+    Column("description", String),      # describe the data here
+    Column("data", String),             # data saved as string of encoded json
     Column("created_date", DateTime, default=func.now(), nullable=False),
 )
 
