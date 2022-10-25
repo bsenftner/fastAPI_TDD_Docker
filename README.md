@@ -1,6 +1,8 @@
-# FastAPI_TDD_Docker : Notes and BlogPosts
+# FastAPI_TDD_Docker : BlogPosts and Data Notes
 
-## Static HTML GUI on top of FastAPI CRUD APIs for "notes" and "blog posts" with tests & CI/CD via Docker
+## Simple HTML GUI on top of FastAPI CRUD APIs for "blog posts" and "data notes" with tests & CI/CD via Docker
+
+A "data note" is arbitary JSON with a title and description.
 
 1. You'll need Docker; this was developed using WSL2-Ubuntu on Win10 with Docker Desktop 4.12.0 (85629)
 2. Via terminal navigate to `src\app` and create a file named `.env` in the same directory as main.py
@@ -56,8 +58,6 @@ Next time you do step 5, above, the previous database info will still be there.
 
 ## Notes
 
-* An initial blog post needs to be created via the OpenAPI GUI to get blog page HTML interfaces.
-
 * Uses JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
 
 * New users are sent an email with an email verification code.
@@ -68,7 +68,8 @@ Next time you do step 5, above, the previous database info will still be there.
   * The data is arbitary JSON, with ownership controls for privacy.
   * I'll be using these "notes" for various things as this shapes up into a showcase type CMS.
 
-* New is a user account settings page. This is for changing email, changing password or disabling the account.
+* There's a basic user account settings page. This is for changing email, changing password or disabling the account.
+  * If the user is an admin, additional site admin controls are added to the Settings page
   * User settings cannot be changed unless the user has a verified email.
   * When either the email or password changes, a notification email is sent.
   * In the case of an email change, that notification is sent to the new email account with a new email verification code.
@@ -76,6 +77,6 @@ Next time you do step 5, above, the previous database info will still be there.
   Each of these user settings page features work. Be aware "deleting" an account is disabling, all that account's info is retained.
 
 * There is a 'contact me' page that sends an email to the admin account.
-  Currently that contact page is public access.
-  I'll be extending the account settings page to include admin changes like having the contact page be protected or not.
+  * On the Settings page for admins there is a control to make the Contact page public or require login.
+    * If not public, going to the Contact redirects to the homepage.
   
