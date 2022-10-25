@@ -146,6 +146,9 @@ main {
 .editorContainer { 
   height: 75%; 
 } 
+.ql-container {
+  font-size: 20px;
+}
 
 input#NewPostTitle {
   width: 80%;

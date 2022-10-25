@@ -53,6 +53,10 @@
 	
 	{% include 'common_ifAccessDo.html' %}
 
+	<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+	{% include 'common_editStyle.html' %}
+
 	<!-- Include the Quill library -->
 	<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 	
@@ -106,7 +110,7 @@
 		});
 
 		function SendEmail() {
-            // let anyone send contact messages
+            // "let anyone" send contact messages
 			const access_token = 1 // localStorage.getItem('token');
 			if (access_token)
 			{
