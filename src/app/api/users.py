@@ -364,9 +364,6 @@ async def logout(response: Response, current_user: User = Depends(get_current_ac
 @router.post("/users/verify", summary="Accept user email verification code")
 async def verify_user_email(payload: basicTextPayload, current_user: UserInDB = Depends(get_current_active_user)):
 
-    ret = 'ok'
-    print('here')
-    
     if user_has_role( current_user, 'unverified'):
         print(f"current_user vcode {current_user.verify_code} and payload vcode {payload.text}")
         if current_user.verify_code != payload.text:
@@ -405,6 +402,7 @@ async def verify_user_email(payload: basicTextPayload, current_user: UserInDB = 
 @router.post("/users/resetpass", summary="Reset password and send user email with new password")
 async def reset_user_password(payload: basicTextPayload):
 
+    print(f"reset_user_password: working with >{payload.text}<")
     existingUser = await get_user(payload.text)
     if not existingUser:
         existingUser = await get_user_by_email(payload.text)

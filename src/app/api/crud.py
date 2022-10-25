@@ -1,7 +1,7 @@
 from app.api.models import NoteSchema, BlogPostSchema
 from app.db import notes, blogposts, database
 
-from sqlalchemy import asc
+from sqlalchemy import asc  
 
 # -----------------------------------------------------------------------------------------
 # for creating new notes
@@ -18,6 +18,12 @@ async def post_note(payload: NoteSchema, owner: int):
 # for getting notes:
 async def get_note(id: int):
     query = notes.select().where(id == notes.c.id)
+    return await database.fetch_one(query=query)
+
+# -----------------------------------------------------------------------------------------
+# for getting notes by their title:
+async def get_note_by_title(title: str):
+    query = notes.select().where(title == notes.c.title)
     return await database.fetch_one(query=query)
 
 # -----------------------------------------------------------------------------------------
@@ -53,7 +59,9 @@ async def delete_note(id: int):
 # for creating new blogposts
 async def post_blogpost(payload: BlogPostSchema, user_id: int):
     # Creates a SQLAlchemy insert object expression query
-    query = blogposts.insert().values(owner=user_id, title=payload.title, description=payload.description)
+    query = blogposts.insert().values(owner=user_id, 
+                                      title=payload.title, 
+                                      description=payload.description)
     # Executes the query and returns the generated ID
     return await database.execute(query=query)
 

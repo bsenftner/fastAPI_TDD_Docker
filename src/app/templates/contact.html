@@ -20,24 +20,29 @@
 		{% include 'common_lsidebar.html' %}
 
 		<main>
-			{# the editor itself, embedded in a form, with a post's contents, and operation buttons #}
-			<h4>Contact Form</h4>
-            <form method="post">
-				<label for="NewEmailSubject">Subject:</label>
-  				<input type="text" id="NewEmailSubject" name="label" value="{{contentPost.subject}}">
-				<div class="editorContainer">
-					<div id="editor">
-						{{contentPost.msg | safe}}
-  					</div>
-				</div> 
-				<div id="divBeneathTheEditor">
-					<a href="#" class="button" onclick="SendEmail()">Send message</a>
-				</div>
-			</form>
+			<div id="mainContent">
+				{# the editor itself, embedded in a form, with a post's contents, and operation buttons #}
+				<h4>Contact Form</h4>
+            	<form method="post">
+					<label for="NewEmailSubject">Subject:</label>
+  					<input type="text" id="NewEmailSubject" name="label" value="{{contentPost.subject}}">
+					<div class="editorContainer">
+						<div id="editor">
+							{{contentPost.msg | safe}}
+  						</div>
+					</div> 
+					<div id="divBeneathTheEditor">
+						<a href="#" class="button" onclick="SendEmail()">Send message</a>
+					</div>
+				</form>
+			</div>
 		</main>
 
 		<aside>
 			<div id="aside">
+				<a href="#" class="button" onclick="Login();">Login</a>
+				<br/><br/>
+				<a href="#" class="button" onclick="Register();">Register</a>
 			</div>
 		</aside>
   
@@ -45,42 +50,26 @@
 		{{ frags[0].footer | safe }} 
 	</footer>
 	</div>
+	
+	{% include 'common_ifAccessDo.html' %}
 
 	<!-- Include the Quill library -->
 	<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 	
 	<script>
 
-		document.addEventListener("DOMContentLoaded", function() {
-			page_init();
-		  });
-		function page_init() {
-			const access_token = localStorage.getItem('token');
-			if (access_token) {
-				const options = { headers: { "Authorization": "Bearer " + access_token } }
-				fetch("/users/me", options)
-				.then(response => response.json())
-				.then( response => 
-					{
-						console.log(response)
-						if (response.hasOwnProperty('username')) {
-
-							document.getElementById("aside").innerHTML = 
+		document.addEventListener( "DOMContentLoaded", function(){page_init();} );
+		//
+		function page_init_work() {
+			document.getElementById("aside").innerHTML = 
 							`<a href="#" class="button" onclick="UserSettings()";">Settings</a>
 							<br/><br/>
 							<a href="#" class="button" onclick="Logout()">Logout</a>
 							`;
-						}
-				  })
-			}
-			else
-			{
-				document.getElementById("aside").innerHTML = 
-							`<a href="#" class="button" onclick="Login()";">Login</a>
-							<br/>
-							<a href="#" class="button" onclick="Register()";">Register</a>
-							`;
-			}
+		}
+		//
+		function page_init() {
+			ifAccessDo(page_init_work);
 		}
 
 		function UserSettings() { window.location.href = "/Settings"; }

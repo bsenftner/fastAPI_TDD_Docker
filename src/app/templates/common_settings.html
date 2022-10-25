@@ -1,0 +1,31 @@
+                
+                <p>Any changes trigger an email notification.</p>
+
+                <label for="email">Change email:</label>
+  				<input type="text" id="email" name="label" value="{{data.email}}">
+                <br/>
+				
+                <label for="email2">Change email again:</label>
+                <input type="text" id="email2" name="label" value="{{data.email}}">
+                <br/><br/>
+
+                <div id="userMsg">Both fields must match to change.</div>
+                <br/>
+                <a href="#" class="button" onclick="ChangeEmail()">Change email</a>
+
+                <br/><br/><br/><br/>
+
+                <label for="password">Change password:</label>
+  				<input type="password" id="password" name="label" value="">
+                <br/>
+                <label for="password2">Change password again:</label>
+  				<input type="password" id="password2" name="label" value="">
+                <br/><br/>
+                <div id="userMsg2">Both fields must match to change.</div>
+                <br/>
+                <a href="#" class="button" onclick="ChangePassword()">Change password</a>
+
+                <br/><br/><br/><br/>
+
+				<div id="userMsg3"><p>This freezes the account from any future activity.</p></div>
+                <a href="#" class="button" onclick="DisableAccount()">Disable Account</a>

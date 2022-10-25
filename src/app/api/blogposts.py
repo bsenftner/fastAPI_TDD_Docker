@@ -4,7 +4,7 @@
 from fastapi import APIRouter, HTTPException, Path, Depends, status
 
 from app.api import crud
-from app.api.users import User, get_current_active_user
+from app.api.users import User, get_current_active_user, user_has_role
 from app.api.models import BlogPostDB, BlogPostSchema
 
 from typing import List
@@ -18,6 +18,10 @@ router = APIRouter()
 async def create_blogpost(payload: BlogPostSchema, 
                           current_user: User = Depends(get_current_active_user)) -> dict:
     
+    if not user_has_role(current_user,"admin"):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
+                            detail="Not Authorized to create Blog Posts")
+        
     blogpost_id = await crud.post_blogpost(payload, current_user.id)
 
     response_object = {
@@ -57,6 +61,10 @@ async def update_blogpost(payload: BlogPostSchema, id: int = Path(..., gt=0),
         HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
                       detail='You are not the owner of this BlogPost')
         
+    if blogpost.owner != current_user.id and not user_has_role(current_user,"admin"):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
+                            detail="Not Authorized to change other's Blog Posts")
+        
     blogpost_id = await crud.put_blogpost(id, payload)
 
     response_object = {
@@ -76,6 +84,10 @@ async def delete_blogpost(id: int = Path(..., gt=0),
     if not blogpost:
         raise HTTPException(status_code=404, detail="BlogPost not found")
 
+    if blogpost.owner != current_user.id and not user_has_role(current_user,"admin"):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
+                            detail="Not Authorized to delete other's Blog Posts")
+        
     await crud.delete_blogpost(id)
 
     return blogpost

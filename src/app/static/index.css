@@ -63,8 +63,13 @@ body {
   background: #fff;
   color: #4a4a4a;
 }
-header, footer {
+header  {
+  text-align: left;
+}
+footer  {
   text-align: center;
+}
+header, footer {
   background-color: #4a4a4a;
   color: #f9f9f9;
 }
@@ -142,15 +147,20 @@ main {
   height: 75%; 
 } 
 
-input#NewPostTitle, NewEmailSubject {
+input#NewPostTitle {
   width: 80%;
   margin-bottom: 20px;
-}
-input#NewPostTitle, NewEmailSubject {
   font-size: 30px;
 }
+
 div#divBeneathTheEditor {
   padding-top: 60px; /* 52px; */
+}
+
+input#NewEmailSubject {
+  width: 60%;
+  margin-bottom: 10px;
+  font-size: 20px;
 }
 
 label {
@@ -192,7 +202,18 @@ footer {
 
 #blakeImg {
   float: left;
-  margin-left: 15%;
-  margin-right: -15%;
+  margin-left: 124px;
+  margin-right: 20px;
   margin-bottom: 20px;
+}
+
+
+label.chkbox {
+  padding-left: 100px;
+  font-weight: bold;
+  width: auto;
+}
+input.chkbox {
+  width: 26px;
+  height: 26px;
 }

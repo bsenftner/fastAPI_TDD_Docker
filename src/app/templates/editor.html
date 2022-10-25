@@ -53,37 +53,25 @@
 	</footer>
 	</div>
 
+	{% include 'common_ifAccessDo.html' %}
+
 	<!-- Include the Quill library -->
 	<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 	
 	<script>
 
-		document.addEventListener("DOMContentLoaded", function() {
-			page_init();
-		  });
-		function page_init() {
-			const access_token = localStorage.getItem('token');
-			if (access_token) {
-				const options = { 
-					// headers: { "Authorization": "Bearer " + access_token } // only needed when JWT is not in cookie
-				}
-				fetch("/users/me", options)
-				.then(response => response.json())
-				.then( response => 
-					{
-						console.log(response)
-						if (response.hasOwnProperty('username')) {
-
-							document.getElementById("aside").innerHTML = 
+		document.addEventListener( "DOMContentLoaded", function(){page_init();} );
+		//
+		function page_init_work() {
+			document.getElementById("aside").innerHTML = 
 							`<a href="#" class="button" onclick="UserSettings()">Settings</a>
 							<br/><br/>
 							<a href="#" class="button" onclick="Logout()">Logout</a>
 							`;
-						}
-						else { window.location.href = "/blog/{{ contentPost.id }}"; }
-				  })
-			}
-			else { window.location.href = "/blog/{{ contentPost.id }}"; }
+		}
+		//
+		function page_init() {
+			ifAccessDo(page_init_work);
 		}
 
 		// Initialize Quill editor 
@@ -115,106 +103,94 @@
 
 		function BlogEditCancel() { window.location.href = "/blog/{{ contentPost.id }}"; }
 
-		function BlogSubmit() {
-			const access_token = localStorage.getItem('token');
-			if (access_token)
-			{
-				// get the post label:
-				const newPostTitle = document.getElementById("NewPostTitle").value;
-				// Get HTML content
-				var newPostHTML = quill.root.innerHTML;
+		function BlogSubmitWork() {
+			// get the post label:
+			const newPostTitle = document.getElementById("NewPostTitle").value;
+			// Get HTML content
+			var newPostHTML = quill.root.innerHTML;
 
-				// post as new blog submission:
-				const params = {
-					"title": newPostTitle, 
-					"description": newPostHTML,
-				//	"submitter_id": 1,
-				};
-			
-				const options = {
-					method: 'POST',
-					headers: {
-				  		'Accept': 'application/json',
-				  		'Content-Type': 'application/json',
-				  		// "Authorization": "Bearer " + access_token // only needed when JWT is not in cookie
-					},
-					body: JSON.stringify( params )  
-				};
-				fetch( '/blogposts/', options )
-					.then( response => response.json() )
-					.then( response => {
-						// Do something with response.
-						// console.log( response )
-						window.location.href = "/blog/" + response.id.toString();
-					}); /* */
-			}
+			// post as new blog submission:
+			const params = {
+				"title": newPostTitle, 
+				"description": newPostHTML,
+			};
+		
+			const options = {
+				method: 'POST',
+				headers: {
+					  'Accept': 'application/json',
+					  'Content-Type': 'application/json',
+					  // "Authorization": "Bearer " + access_token // only needed when JWT is not in cookie
+				},
+				body: JSON.stringify( params )  
+			};
+			fetch( '/blogposts/', options )
+				.then( response => response.json() )
+				.then( response => {
+					// Do something with response.
+					// console.log( response )
+					window.location.href = "/blog/" + response.id.toString();
+				}); /* */
+		}
+		function BlogSubmit() {
+			ifAccessDo(BlogSubmitWork);
 		}
 
-		function BlogUpdate() {
-			
-			const access_token = localStorage.getItem('token');
-			if (access_token)
-			{
-				// get the post label:
-				const newPostTitle = document.getElementById("NewPostTitle").value;
-				// Get HTML content
-				var newPostHTML = quill.root.innerHTML;
-
-				const someData = {
-					"title": newPostTitle, 
-					"description": newPostHTML,
-				}
-			
-				const options = {
-					method: 'PUT', // Method itself
-					headers: {
+		function BlogUpdateWork() {
+			const someData = {
+				"title": document.getElementById("NewPostTitle").value, 
+				"description": quill.root.innerHTML,
+			}
+			//
+			const options = {
+				method: 'PUT', // Method itself
+				headers: {
 				 		'Content-type': 'application/json; charset=UTF-8', // Indicates the content 
 				 		// "Authorization": "Bearer " + access_token // only needed when JWT is not in cookie
-					},
-					body: JSON.stringify(someData) // We send data in JSON format
-			   	}
-			   
-			   	// make the HTTP put request using fetch api
-			   	fetch('/blogposts/{{ contentPost.id }}', options) 
-			   	// .then(response => response.json())
-			   	.then(response => 
-			   	{
-					window.location.href = "/blog/{{ contentPost.id }}";
-			   	}) 
-			   .catch(err => {
-					// Do something with the error
-					console.log(err) 
-					alert( err )
-					window.location.href = "/blog/{{ contentPost.id }}";
-				}) 
+				},
+				body: JSON.stringify(someData) // We send data in JSON format
 			}
-			else { alert("Not Authorized.") }
+			   
+			// make the HTTP put request using fetch api
+			fetch('/blogposts/{{ contentPost.id }}', options) 
+			// .then(response => response.json())
+			.then(response => 
+			{
+				window.location.href = "/blog/{{ contentPost.id }}";
+			}) 
+			.catch(err => {
+				// Do something with the error
+				console.log(err) 
+				alert( err )
+				window.location.href = "/blog/{{ contentPost.id }}";
+			}) 
+		}
+		function BlogUpdate() {
+			ifAccessDo(BlogUpdateWork);
 		}
 
-		function BlogDelete() {
-			const access_token = localStorage.getItem('token');
-			if (access_token)
-			{
-				const options = { 
-					method: 'DELETE',
-					// headers: { "Authorization": "Bearer " + access_token } // only needed when JWT is not in cookie
-				};
-				fetch( '/blogposts/{{ contentPost.id }}', options )
-					.then( response => response.json() )
-					.then( response => {
-						// Do something with response:
-						console.log( response )
-						if (response.id != '{{ contentPost.id }}')
-						{ 
-							console.log( "DELETE ERROR!" )
-							alert( "DELETE ERROR!" )
-							
-						}
-						window.location.href = "/";
+		function BlogDeleteWork() {
+			const options = { 
+				method: 'DELETE',
+				// headers: { "Authorization": "Bearer " + access_token } // only needed when JWT is not in cookie
+			};
+			fetch( '/blogposts/{{ contentPost.id }}', options )
+				.then( response => response.json() )
+				.then( response => {
+					// Do something with response:
+					console.log( response )
+					if (response.id != '{{ contentPost.id }}')
+					{ 
+						console.log( "DELETE ERROR!" )
+						alert( "DELETE ERROR!" )
+						
+					}
+					window.location.href = "/";
 
-					} ); 
-			}
-			else { alert("Not Authorized.") }
+				} ); 
+		}
+		function BlogDelete() {
+			ifAccessDo(BlogDeleteWork);
 		}
 
 		function UserSettings() { window.location.href = "/Settings"; }

@@ -52,7 +52,7 @@ notes = Table(
     metadata,
     Column("id", Integer, primary_key=True),
     Column("owner", Integer, index=True),
-    Column("title", String),
+    Column("title", String, index=True),
     Column("description", String),      # describe the data here
     Column("data", String),             # data saved as string of encoded json
     Column("created_date", DateTime, default=func.now(), nullable=False),
