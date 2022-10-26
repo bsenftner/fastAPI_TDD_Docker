@@ -1,0 +1,26 @@
+<script>
+
+    function RefreshAccessTokenWork() { 
+        fetch("/refresh")
+        .then(response => response.text())
+        .then( data =>  {
+            console.log(data);
+            const jsonData = JSON.parse(data);
+			if (jsonData.access_token) {
+				localStorage.setItem('token', jsonData.access_token);
+                window.location.reload();
+			}
+            else if (jsonData.detail)
+			{
+				document.getElementById("userMsg").innerHTML += 
+					'<p>' + jsonData.detail + '</p>';
+			}
+        })
+    }
+    function RefreshAccessToken() { 
+        ifAccessDo(RefreshAccessTokenWork);
+    }
+    
+    setInterval(RefreshAccessToken,1000*60*5); // once every 5 minutes
+
+</script>

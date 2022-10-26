@@ -86,9 +86,11 @@
 		{{ frags[0].footer | safe }} 
 	</footer>
 	</div>
+	
+	{% include 'common_ifAccessDo.html' %}
 
 	<script>
-		
+
 		document.addEventListener("DOMContentLoaded", function() {
 			page_init();
 		  });
@@ -123,6 +125,8 @@
 	</script>
 
 	{% include 'common_logout.html' %}
+
+	{% include 'common_refresh.html' %}
 
 </body>
 </html>
