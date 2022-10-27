@@ -2,7 +2,7 @@ from fastapi import HTTPException, Depends, status, Request
 
 from app.config import settings 
 from app.api.models import UserInDB
-from app.db import users, database
+from app.db import users_tb, database
 from app.api import encrypt 
 #
 # from fastapi.security import OAuth2PasswordBearer
@@ -22,7 +22,7 @@ oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token", scheme_name="JW
 async def get_user(username: str) -> UserInDB:
     # print(f"get_user: looking for {username}")
     
-    query = users.select().where(users.c.username == username)
+    query = users_tb.select().where(users_tb.c.username == username)
     user = await database.fetch_one(query)
     if not user:
         print(f"get_user: no such user")
@@ -44,7 +44,7 @@ async def get_user(username: str) -> UserInDB:
 
 # -------------------------------------------------------------------------------------
 async def get_user_by_email(email: str) -> UserInDB:
-    query = users.select().where(users.c.email == email)
+    query = users_tb.select().where(users_tb.c.email == email)
     user = await database.fetch_one(query)
     if not user:
         print(f"get_user_by_email: no such user")

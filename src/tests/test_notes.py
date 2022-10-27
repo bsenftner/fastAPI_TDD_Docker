@@ -7,8 +7,8 @@ from app.api import crud
 # ----------------------------------------------------------------------------------------------
 # use the pytest monkeypatch fixture to mock out the crud.post operation: 
 def test_create_note(test_app, monkeypatch):
-    test_request_payload = {"title": "something", "description": "something else"}
-    test_response_payload = {"id": 1, "title": "something", "description": "something else"}
+    test_request_payload = {"title": "something", "description": "something else", "data":"{'datum':10}"}
+    test_response_payload = {"id": 1, "title": "something", "description": "something else", "data":"{'datum':10}"}
 
     async def mock_post(payload):
         return 1

@@ -13,9 +13,12 @@ def test_create_blogpost(test_app, monkeypatch):
     async def mock_post(payload):
         return 1
 
+    mock_user_id = 1
+    
     monkeypatch.setattr(crud, "post_blogpost", mock_post)
 
-    response = test_app.post("/blogposts/", data=json.dumps(test_request_payload),)
+
+    response = test_app.post("/blogposts/", data=json.dumps(test_request_payload), kwargs = {'user_id': mock_user_id})
 
     assert response.status_code == 201
     assert response.json() == test_response_payload

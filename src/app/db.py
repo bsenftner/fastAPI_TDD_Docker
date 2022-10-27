@@ -25,7 +25,7 @@ engine = create_engine(DATABASE_URL) # , future=True) adding the future paramete
 # metadata is a container for tables
 metadata = MetaData()
 
-blogposts = Table(
+blogposts_tb = Table(
     "blogposts",
     metadata,
     Column("id", Integer, primary_key=True),
@@ -35,7 +35,7 @@ blogposts = Table(
     Column("created_date", DateTime, default=func.now(), nullable=False),
 )
 
-users = Table(
+users_tb = Table(
     "users",
     metadata,
     Column("id", Integer, primary_key=True),
@@ -47,7 +47,7 @@ users = Table(
     Column("created_date", DateTime, default=func.now(), nullable=False),
 )
 
-notes = Table(
+notes_tb = Table(
     "notes",
     metadata,
     Column("id", Integer, primary_key=True),

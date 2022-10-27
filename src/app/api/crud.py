@@ -1,5 +1,5 @@
 from app.api.models import NoteSchema, BlogPostSchema
-from app.db import notes, blogposts, database
+from app.db import notes_tb, blogposts_tb, database
 
 from sqlalchemy import asc  
 
@@ -7,7 +7,7 @@ from sqlalchemy import asc
 # for creating new notes
 async def post_note(payload: NoteSchema, owner: int):
     # Creates a SQLAlchemy insert object expression query
-    query = notes.insert().values(title=payload.title, 
+    query = notes_tb.insert().values(title=payload.title, 
                                   description=payload.description,
                                   data=payload.data,
                                   owner=owner)
@@ -17,40 +17,40 @@ async def post_note(payload: NoteSchema, owner: int):
 # -----------------------------------------------------------------------------------------
 # for getting notes:
 async def get_note(id: int):
-    query = notes.select().where(id == notes.c.id)
+    query = notes_tb.select().where(id == notes_tb.c.id)
     return await database.fetch_one(query=query)
 
 # -----------------------------------------------------------------------------------------
 # for getting notes by their title:
 async def get_note_by_title(title: str):
-    query = notes.select().where(title == notes.c.title)
+    query = notes_tb.select().where(title == notes_tb.c.title)
     return await database.fetch_one(query=query)
 
 # -----------------------------------------------------------------------------------------
 # returns all notes:
 async def get_all_notes():
-    query = notes.select().order_by(asc(notes.c.id))
+    query = notes_tb.select().order_by(asc(notes_tb.c.id))
     return await database.fetch_all(query=query)
 
 # -----------------------------------------------------------------------------------------
 # update a note:
 async def put_note(id: int, payload: NoteSchema, owner: int):
     query = (
-        notes
+        notes_tb
         .update()
-        .where(id == notes.c.id)
+        .where(id == notes_tb.c.id)
         .values(title=payload.title, 
                 description=payload.description, 
                 data=payload.data,
                 owner=owner)
-        .returning(notes.c.id)
+        .returning(notes_tb.c.id)
     )
     return await database.execute(query=query)
 
 # -----------------------------------------------------------------------------------------
 # delete a note:
 async def delete_note(id: int):
-    query = notes.delete().where(id == notes.c.id)
+    query = notes_tb.delete().where(id == notes_tb.c.id)
     return await database.execute(query=query)
 
 
@@ -59,7 +59,7 @@ async def delete_note(id: int):
 # for creating new blogposts
 async def post_blogpost(payload: BlogPostSchema, user_id: int):
     # Creates a SQLAlchemy insert object expression query
-    query = blogposts.insert().values(owner=user_id, 
+    query = blogposts_tb.insert().values(owner=user_id, 
                                       title=payload.title, 
                                       description=payload.description)
     # Executes the query and returns the generated ID
@@ -68,29 +68,29 @@ async def post_blogpost(payload: BlogPostSchema, user_id: int):
 # -----------------------------------------------------------------------------------------
 # for getting blogposts:
 async def get_blogpost(id: int):
-    query = blogposts.select().where(id == blogposts.c.id)
+    query = blogposts_tb.select().where(id == blogposts_tb.c.id)
     return await database.fetch_one(query=query)
 
 # -----------------------------------------------------------------------------------------
 # returns all blogposts:
 async def get_all_blogposts():
-    query = blogposts.select().order_by(asc(blogposts.c.id))
+    query = blogposts_tb.select().order_by(asc(blogposts_tb.c.id))
     return await database.fetch_all(query=query)
 
 # -----------------------------------------------------------------------------------------
 # update a blogposts:
 async def put_blogpost(id: int, payload: BlogPostSchema):
     query = (
-        blogposts
+        blogposts_tb
         .update()
-        .where(id == blogposts.c.id)
+        .where(id == blogposts_tb.c.id)
         .values(title=payload.title, description=payload.description)
-        .returning(blogposts.c.id)
+        .returning(blogposts_tb.c.id)
     )
     return await database.execute(query=query)
 
 # -----------------------------------------------------------------------------------------
 # delete a blogpost:
 async def delete_blogpost(id: int):
-    query = blogposts.delete().where(id == blogposts.c.id)
+    query = blogposts_tb.delete().where(id == blogposts_tb.c.id)
     return await database.execute(query=query)
