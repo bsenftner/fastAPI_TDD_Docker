@@ -19,6 +19,8 @@ docs_build
 venv
 docs.zip
 archive.zip
+*.mp4
+*.mov
 
 # vim temporary files
 *~

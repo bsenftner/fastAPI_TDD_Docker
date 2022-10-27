@@ -6,8 +6,8 @@ import json
 from typing import List
 
 from app.api import crud
-from app.api.models import NoteDB, NoteSchema
-from app.api.users import User, get_current_active_user, user_has_role
+from app.api.models import User, NoteDB, NoteSchema
+from app.api.users import get_current_active_user, user_has_role
 
 
 

@@ -18,5 +18,12 @@ passlib[bcrypt]==1.7.4
 python-dotenv==0.21.0
 
 # dev
+# basic test framework
 pytest==6.2.3
 requests==2.25.1
+# provides utilities for testing asynchronous code
+# pytest-asyncio
+# provides an async request client for testing endpoints
+# httpx
+# allows testing async applications without having to spin up an ASGI server
+# asgi-lifespan

@@ -1,13 +1,37 @@
-# see: https://codevoweb.com/restful-api-with-python-fastapi-access-and-refresh-tokens/
-# describes this file's setup, and usage 
-
 from pydantic import BaseSettings
+#
+# One of pydantic's most useful applications is settings management.
+# If you create a model that inherits from BaseSettings, the model initialiser will 
+# attempt to determine the values of any fields not passed as keyword arguments by 
+# reading from the environment. (Default values will still be used if the matching 
+# environment variable is not set.) 
+#
+# Dotenv (.env) support
+# Basically place settings & secrets inside a .env file. Then create a class inheriting
+# from BaseSettings with an inner class named 'Config' with a member field 'env_file'
+# holding the path to the .env file. The .env file's contents will be loaded into the 
+# same named class member fields. 
+#
+# Note: dotenv file parsing requires python-dotenv to be installed. This can be done 
+# with either pip install python-dotenv or pip install pydantic[dotenv].
+
+# old method directly used dotenv, but using new method we get type checking. 
+# old method: 
+'''
+from dotenv import dotenv_values 
+envConfig = dotenv_values(str(BASE_PATH / ".env"))  
+#
+print('envConfig is')
+for key, value in envConfig.items():
+    print(key, ' : ', value)
+'''
 
 from pathlib import Path
 #
-ENV_PATH = Path(__file__).resolve().parent
-# print(f'config: env_path is {ENV_PATH}')
+BASE_PATH = Path(__file__).resolve().parent
+# print(f'config: BASE_PATH is {BASE_PATH}')
 
+# see head of file comment, we're auto-loading Settings via a .env file
 class Settings(BaseSettings):
 
     JWT_SECRET_KEY: str
@@ -25,8 +49,9 @@ class Settings(BaseSettings):
     MAIL_SERVER: str
     MAIL_FROM_NAME: str
 
+    # the presence of 
     class Config:
-        env_file = str(ENV_PATH) + '/.env'
+        env_file = str(BASE_PATH) + '/.env'
 
 
 settings = Settings()

@@ -7,7 +7,7 @@ from fastapi import status
 from typing import Optional
 from typing import Dict
 
-
+# ---------------------------------------------------------------------------------------
 class OAuth2PasswordBearerWithCookie(OAuth2):
     def __init__(
         self,

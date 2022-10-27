@@ -4,8 +4,8 @@
 from fastapi import APIRouter, HTTPException, Path, Depends, status
 
 from app.api import crud
-from app.api.users import User, get_current_active_user, user_has_role
-from app.api.models import BlogPostDB, BlogPostSchema
+from app.api.users import get_current_active_user, user_has_role
+from app.api.models import User, BlogPostDB, BlogPostSchema
 
 from typing import List
 

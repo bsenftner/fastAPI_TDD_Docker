@@ -3,10 +3,6 @@ from app.api.models import NoteSchema, BlogPostSchema
 from app.api import crud
 
 
-
-
-# ---------------------------------------------------------------------------------------
-
 # ---------------------------------------------------------------------------------------
 # Called by app startup event, this ensures site_config exists in the db:
 async def initialize_database_data( ):

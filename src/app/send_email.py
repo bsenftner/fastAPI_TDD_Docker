@@ -1,16 +1,12 @@
-import os
 from fastapi import BackgroundTasks
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from fastapi.responses import JSONResponse
 from pydantic import EmailStr, BaseModel
 from typing import List
 from jinja2 import Environment, select_autoescape, PackageLoader
-from app.config import settings 
 
-import json
+from app import config
 
-from pathlib import Path
-BASE_PATH = Path(__file__).resolve().parent
 
 # ----------------------------------------------------------------------------------------------
 env = Environment(
@@ -25,12 +21,12 @@ class EmailSchema(BaseModel):
 
 # ----------------------------------------------------------------------------------------------
 conf = ConnectionConfig(
-    MAIL_USERNAME=settings.MAIL_USERNAME,
-    MAIL_PASSWORD=settings.MAIL_PASSWORD,
-    MAIL_PORT=settings.MAIL_PORT,
-    MAIL_SERVER=settings.MAIL_SERVER,
-    MAIL_FROM=settings.MAIL_FROM,
-    MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
+    MAIL_USERNAME=config.settings.MAIL_USERNAME,
+    MAIL_PASSWORD=config.settings.MAIL_PASSWORD,
+    MAIL_PORT=config.settings.MAIL_PORT,
+    MAIL_SERVER=config.settings.MAIL_SERVER,
+    MAIL_FROM=config.settings.MAIL_FROM,
+    MAIL_FROM_NAME=config.settings.MAIL_FROM_NAME,
     MAIL_STARTTLS = True,
     MAIL_SSL_TLS = False,
     USE_CREDENTIALS=True,
@@ -87,3 +83,44 @@ def send_email_background(background_tasks: BackgroundTasks, subject: str, email
     fm = FastMail(conf)
     background_tasks.add_task( fm.send_message, message, template_name='basic_email.html' )
     return JSONResponse(status_code=200, content={"message": "email has been queued to be sent."})
+
+
+
+
+
+'''
+    
+
+# define a router for the html returning endpoints: 
+router = APIRouter()
+
+from app.send_email import send_email_async, send_email_background
+# ------------------------------------------------------------------------------------------------------------------
+@router.get('/send-email/asynchronous')
+async def send_email_asynchronous(current_user: User = Depends(users.get_current_active_user)):
+    await send_email_async('bsenftner@earthlink.net',
+                           { 'msg': { 'subject': 'the title', 'body': 'this is the body'}},
+                           'basic_email.html')
+    return 'Success'
+  
+
+
+
+# ------------------------------------------------------------------------------------------------------------------
+@router.get('/send-email/backgroundtasks')
+def send_email_backgroundtasks(background_tasks: BackgroundTasks, current_user: User = Depends(users.get_current_active_user)):
+    send_email_background(background_tasks, 
+                          'Hello World',   
+                          'someemail@gmail.com', 
+                          { 'msg': { 'subject': 'the title', 'body': 'this is the body'}})
+    return 'Success'
+
+  
+
+
+# and include these locally implemented html routes in the app:
+app.include_router(router)
+
+
+
+'''
