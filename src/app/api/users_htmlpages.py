@@ -10,7 +10,7 @@ import string
 
 from pydantic import EmailStr
 
-from app.config import settings 
+from app.config import get_settings 
 from app.api import users 
 from app.db import database
 import app.send_email
@@ -40,6 +40,8 @@ async def login_for_access_token(response: Response,
     refresh_token = users.create_refresh_token(form_data.username)
     
     refresh_cookie_value = refresh_token
+    
+    settings = get_settings() # application config settings
     
     # Store refresh and access tokens in cookie
     response.set_cookie('access_token', 
@@ -74,6 +76,8 @@ async def refresh_token(response: Response, request: Request):
         access_token = users.create_access_token(username)
         access_cookie_value = 'Bearer ' + access_token
 
+        settings = get_settings() # application config settings
+        
         # Store refresh and access tokens in cookie
         response.set_cookie('access_token', 
                         access_cookie_value, 

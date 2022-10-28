@@ -16,7 +16,7 @@ from app.send_email import send_email_async
 from app.page_frags import FRAGS 
 
 
-TEMPLATES = Jinja2Templates(directory=str(config.BASE_PATH / "templates"))
+TEMPLATES = Jinja2Templates(directory=str(config.get_base_path() / "templates"))
 
 
 # define a router for the html returning endpoints: 
@@ -26,7 +26,7 @@ router = APIRouter()
    
 # ------------------------------------------------------------------------------------------------------------------
 # added to get favicon served:
-favicon_path = config.BASE_PATH / 'favicon.ico'
+favicon_path = config.get_base_path() / 'favicon.ico'
 @router.get("/favicon.ico", status_code=200, include_in_schema=False) 
 def favicon():
     """

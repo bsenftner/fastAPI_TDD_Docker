@@ -1,6 +1,6 @@
 from fastapi import HTTPException, Depends, status, Request
 
-from app.config import settings 
+from app.config import get_settings, log
 from app.api.models import UserInDB
 from app.db import users_tb, database
 from app.api import encrypt 
@@ -20,12 +20,12 @@ oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token", scheme_name="JW
 
 # -------------------------------------------------------------------------------------
 async def get_user(username: str) -> UserInDB:
-    # print(f"get_user: looking for {username}")
+    # log.info(f"get_user: looking for {username}")
     
     query = users_tb.select().where(users_tb.c.username == username)
     user = await database.fetch_one(query)
     if not user:
-        print(f"get_user: no such user")
+        log.info(f"get_user: no such user")
         return False
     
     username = user['username']
@@ -47,7 +47,7 @@ async def get_user_by_email(email: str) -> UserInDB:
     query = users_tb.select().where(users_tb.c.email == email)
     user = await database.fetch_one(query)
     if not user:
-        print(f"get_user_by_email: no such user")
+        log.info(f"get_user_by_email: no such user")
         return False
     return UserInDB(username=user["username"], 
                     id=user["id"], 
@@ -69,6 +69,9 @@ async def authenticate_user(username: str, password: str):
 
 # -------------------------------------------------------------------------------------
 def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> str:
+    
+    settings = get_settings() # application config settings
+    
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
     else:
@@ -80,6 +83,9 @@ def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> 
 
 # -------------------------------------------------------------------------------------
 def create_refresh_token(subject: Union[str, Any], expires_delta: int = None) -> str:
+    
+    settings = get_settings() # application config settings
+    
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
     else:
@@ -105,11 +111,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
+        settings = get_settings() # application config settings
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
         username: str = payload.get("sub")
-        # print(f"get_current_user: username is {username}")
+        # log.info(f"get_current_user: username is {username}")
         expTime: str = payload.get("exp")
-        # print(f"get_current_user: exp is {expTime}")
+        # log.info(f"get_current_user: exp is {expTime}")
         if username is None:
             raise credentials_exception
         if expTime is None:
@@ -127,7 +134,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     
     user = await get_user(username) # token_data.username)
     if user is None:
-        print("get_current_user: user is None!")
+        log.info("get_current_user: user is None!")
         raise credentials_exception
     return user
 
@@ -141,7 +148,7 @@ async def get_refresh_user(request: Request):
     )
     try:
         cookies = request.cookies # json.loads(request.cookies)
-        
+        settings = get_settings() # application config settings
         payload = jwt.decode(cookies['refresh_token'], settings.JWT_SECRET_REFRESH_KEY, algorithms=[settings.JWT_ALGORITHM]) 
         username: str = payload.get("sub")
         expTime: str = payload.get("exp")

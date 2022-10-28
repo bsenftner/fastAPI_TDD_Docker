@@ -23,7 +23,7 @@ app.add_middleware(
     )
     
 # enable automatic serving of contents of "static" directory: 
-app.mount("/static", StaticFiles(directory=str(config.BASE_PATH / "static")), name="static") 
+app.mount("/static", StaticFiles(directory=str(config.get_base_path() / "static")), name="static") 
 
 # isolate these activities into their own file:
 from app.startup import initialize_database_data

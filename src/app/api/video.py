@@ -1,21 +1,28 @@
 from fastapi import APIRouter, Header, Response
-from pathlib import Path
+# from pathlib import Path
+
+from app import config
 
 # create a local router for paths created in this file
 router = APIRouter()
 
-BASE_PATH = Path(__file__).resolve().parent.parent
-CHUNK_SIZE = 1024*1024
 
 # ------------------------------------------------------------------------------------------------------------------
 # endpoint to play video files located inside the "app/static/video" directory
 @router.get("/{video_file}", status_code=200) # , include_in_schema=False) 
 async def video_endpoint(video_file: str, range: str = Header(None)):
+    
     start, end = range.replace("bytes=", "").split("-")
+    
     start = int(start)
+    
+    CHUNK_SIZE = 1024*1024
     end = int(end) if end else start + CHUNK_SIZE
-    video_path = BASE_PATH / 'static/video' / video_file
-    print(f"video path is {video_path}")
+    
+    video_path = config.get_base_path() / 'static/video' / video_file
+    
+    config.log.info(f"video path is {video_path}")
+    
     with open(video_path, "rb") as video:
         video.seek(start)
         data = video.read(end - start)

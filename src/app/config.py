@@ -1,7 +1,13 @@
 import logging
-
 from pydantic import BaseSettings
-#
+from pathlib import Path
+from functools import lru_cache
+
+
+# set up the logger:
+log = logging.getLogger("uvicorn")
+
+
 # One of pydantic's most useful applications is settings management.
 # If you create a model that inherits from BaseSettings, the model initialiser will 
 # attempt to determine the values of any fields not passed as keyword arguments by 
@@ -29,10 +35,14 @@ for key, value in envConfig.items():
 '''
 
 # use pathlib to generate the "base path" of the application:
-from pathlib import Path
 #
-BASE_PATH = Path(__file__).resolve().parent
+@lru_cache()
+def get_base_path() -> Path:
+    base_path = Path(__file__).resolve().parent
+    return base_path
+
 # print(f'config: BASE_PATH is {BASE_PATH}')
+
 
 # see head of file comment, we're auto-loading Settings via a .env file
 class Settings(BaseSettings):
@@ -58,12 +68,10 @@ class Settings(BaseSettings):
     # the presence of env_file within this child Config class 
     # tells Pydantic's BaseSettings to load our .env file
     class Config:
-        env_file = str(BASE_PATH) + '/.env'
+        env_file = str(get_base_path()) + '/.env'
 
-
-settings = Settings()
-
-
-# set up the logger:
-log = logging.getLogger("uvicorn")
+@lru_cache()
+def get_settings() -> BaseSettings:
+    log.info("Loading config settings from the environment...")
+    return Settings()
 

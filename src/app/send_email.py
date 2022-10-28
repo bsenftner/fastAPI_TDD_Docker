@@ -5,14 +5,18 @@ from pydantic import EmailStr, BaseModel
 from typing import List
 from jinja2 import Environment, select_autoescape, PackageLoader
 
-from app import config
+from functools import lru_cache
+
+from app.config import get_settings 
 
 
 # ----------------------------------------------------------------------------------------------
-env = Environment(
-    loader=PackageLoader('app', 'templates'),
-    autoescape=select_autoescape(['html', 'xml'])
-)
+@lru_cache()
+def get_jinja_env() -> Environment:
+    return Environment(
+        loader=PackageLoader('app', 'templates'),
+        autoescape=select_autoescape(['html', 'xml'])
+    )
 
 # ----------------------------------------------------------------------------------------------
 class EmailSchema(BaseModel):
@@ -20,18 +24,21 @@ class EmailSchema(BaseModel):
    
 
 # ----------------------------------------------------------------------------------------------
-conf = ConnectionConfig(
-    MAIL_USERNAME=config.settings.MAIL_USERNAME,
-    MAIL_PASSWORD=config.settings.MAIL_PASSWORD,
-    MAIL_PORT=config.settings.MAIL_PORT,
-    MAIL_SERVER=config.settings.MAIL_SERVER,
-    MAIL_FROM=config.settings.MAIL_FROM,
-    MAIL_FROM_NAME=config.settings.MAIL_FROM_NAME,
-    MAIL_STARTTLS = True,
-    MAIL_SSL_TLS = False,
-    USE_CREDENTIALS=True,
-)
-
+@lru_cache()
+def get_emailConnectionConfig() -> ConnectionConfig:
+    settings = get_settings() # application config settings
+    return ConnectionConfig(
+        MAIL_USERNAME=settings.MAIL_USERNAME,
+        MAIL_PASSWORD=settings.MAIL_PASSWORD,
+        MAIL_PORT=settings.MAIL_PORT,
+        MAIL_SERVER=settings.MAIL_SERVER,
+        MAIL_FROM=settings.MAIL_FROM,
+        MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
+        MAIL_STARTTLS = True,
+        MAIL_SSL_TLS = False,
+        USE_CREDENTIALS=True,
+    )
+    
 # ----------------------------------------------------------------------------------------------
 async def send_email_async(email_to: str, params: dict, templateName: str):
     
@@ -43,7 +50,7 @@ async def send_email_async(email_to: str, params: dict, templateName: str):
     # template = env.get_template('basic_email.html')
     
     # here the passed template name is used to load the template:
-    template = env.get_template(templateName)
+    template = get_jinja_env().get_template(templateName)
     #
     # # the format of the msg dictionary is reliant on the template,
     # but in general they are something like:
@@ -62,9 +69,11 @@ async def send_email_async(email_to: str, params: dict, templateName: str):
             subtype="html"
     )
     
+    conf = get_emailConnectionConfig()
+    #
     # make the connection:
     fm = FastMail(conf)
-    
+    #
     # send the email:
     await fm.send_message(message)
     
@@ -78,10 +87,16 @@ def send_email_background(background_tasks: BackgroundTasks, subject: str, email
         recipients=[email_to],
         body=body,
         subtype='html',
-    )    
-    
+    ) 
+       
+    conf = get_emailConnectionConfig()
+    #
+    # make the connection:
     fm = FastMail(conf)
+    #
+    # send the email:
     background_tasks.add_task( fm.send_message, message, template_name='basic_email.html' )
+    
     return JSONResponse(status_code=200, content={"message": "email has been queued to be sent."})
 
 
