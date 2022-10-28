@@ -1,3 +1,5 @@
+import logging
+
 from pydantic import BaseSettings
 #
 # One of pydantic's most useful applications is settings management.
@@ -26,6 +28,7 @@ for key, value in envConfig.items():
     print(key, ' : ', value)
 '''
 
+# use pathlib to generate the "base path" of the application:
 from pathlib import Path
 #
 BASE_PATH = Path(__file__).resolve().parent
@@ -34,6 +37,9 @@ BASE_PATH = Path(__file__).resolve().parent
 # see head of file comment, we're auto-loading Settings via a .env file
 class Settings(BaseSettings):
 
+    ENVIRONMENT: str                # dev, staging, prod
+    TESTING: bool                   # in test mode or not
+    
     JWT_SECRET_KEY: str
     JWT_SECRET_REFRESH_KEY: str
     ACCESS_TOKEN_EXPIRES_MINUTES: int
@@ -49,10 +55,15 @@ class Settings(BaseSettings):
     MAIL_SERVER: str
     MAIL_FROM_NAME: str
 
-    # the presence of 
+    # the presence of env_file within this child Config class 
+    # tells Pydantic's BaseSettings to load our .env file
     class Config:
         env_file = str(BASE_PATH) + '/.env'
 
 
 settings = Settings()
+
+
+# set up the logger:
+log = logging.getLogger("uvicorn")
 

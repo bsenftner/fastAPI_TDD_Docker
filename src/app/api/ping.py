@@ -1,10 +1,14 @@
 from fastapi import APIRouter
 
+from app import config
+
+
 router = APIRouter()
 
 
 @router.get("/ping")
 async def pong():
-    # some async operation could happen here
-    # example: `notes = await get_all_notes()`
-    return {"ping": "pong!"}
+    return {"ping": "pong!",
+            "environment": config.settings.ENVIRONMENT,
+            "testing": config.settings.TESTING,
+           }

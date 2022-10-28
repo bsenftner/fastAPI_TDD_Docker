@@ -1,3 +1,7 @@
 pycache__
 *.pyc
 *.log
+env
+.dockerignore
+Dockerfile
+Dockerfile.prod
