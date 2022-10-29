@@ -7,7 +7,7 @@ from jinja2 import Environment, select_autoescape, PackageLoader
 
 from functools import lru_cache
 
-from app.config import get_settings 
+from app.config import get_settings
 
 
 # ----------------------------------------------------------------------------------------------
@@ -26,7 +26,8 @@ class EmailSchema(BaseModel):
 # ----------------------------------------------------------------------------------------------
 @lru_cache()
 def get_emailConnectionConfig() -> ConnectionConfig:
-    settings = get_settings() # application config settings
+    # 'settings' is application config settings
+    settings = get_settings()
     return ConnectionConfig(
         MAIL_USERNAME=settings.MAIL_USERNAME,
         MAIL_PASSWORD=settings.MAIL_PASSWORD,
@@ -40,7 +41,10 @@ def get_emailConnectionConfig() -> ConnectionConfig:
     )
     
 # ----------------------------------------------------------------------------------------------
-async def send_email_async(email_to: str, params: dict, templateName: str):
+async def send_email_async(email_to: str, 
+                           params: dict, 
+                           templateName: str
+                          ) -> JSONResponse:
     
     # print(json.dumps(params, indent = 4))
     
@@ -81,7 +85,12 @@ async def send_email_async(email_to: str, params: dict, templateName: str):
     
 
 # ----------------------------------------------------------------------------------------------
-def send_email_background(background_tasks: BackgroundTasks, subject: str, email_to: str, body: dict):
+def send_email_background( background_tasks: BackgroundTasks, 
+                           subject: str, 
+                           email_to: str, 
+                           body: dict
+                         ):
+    
     message = MessageSchema(
         subject=subject,
         recipients=[email_to],

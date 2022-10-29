@@ -1,12 +1,15 @@
 from fastapi import HTTPException, Depends, status, Request
 
 from app.config import get_settings, log
-from app.api.models import UserInDB
-from app.db import users_tb, database
-from app.api import encrypt 
+from app.api.models import UserInDB, UserReg
+# from app.db import users_tb, database
+from app.api import encrypt, crud
 #
 # from fastapi.security import OAuth2PasswordBearer
 from app.api.utils import OAuth2PasswordBearerWithCookie
+
+from email_validator import validate_email, EmailNotValidError
+from app.send_email import send_email_async
 
 from jose import JWTError, jwt
 from typing import Any, Union
@@ -21,9 +24,7 @@ oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token", scheme_name="JW
 # -------------------------------------------------------------------------------------
 async def get_user(username: str) -> UserInDB:
     # log.info(f"get_user: looking for {username}")
-    
-    query = users_tb.select().where(users_tb.c.username == username)
-    user = await database.fetch_one(query)
+    user = await crud.get_user_by_name(username)
     if not user:
         log.info(f"get_user: no such user")
         return False
@@ -44,8 +45,7 @@ async def get_user(username: str) -> UserInDB:
 
 # -------------------------------------------------------------------------------------
 async def get_user_by_email(email: str) -> UserInDB:
-    query = users_tb.select().where(users_tb.c.email == email)
-    user = await database.fetch_one(query)
+    user = await crud.get_user_by_email(email)
     if not user:
         log.info(f"get_user_by_email: no such user")
         return False
@@ -104,7 +104,7 @@ def user_has_role( user: UserInDB, role: str):
 
 
 # -------------------------------------------------------------------------------------
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInDB:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -132,7 +132,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise credentials_exception
     
-    user = await get_user(username) # token_data.username)
+    user = await get_user(username) 
     if user is None:
         log.info("get_current_user: user is None!")
         raise credentials_exception
@@ -140,7 +140,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 # -------------------------------------------------------------------------------------
-async def get_refresh_user(request: Request):
+async def get_refresh_user(request: Request) -> UserInDB:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -175,8 +175,103 @@ async def get_refresh_user(request: Request):
 
 
 # -------------------------------------------------------------------------------------
-async def get_current_active_user(current_user: UserInDB = Depends(get_current_user)):
+async def get_current_active_user(current_user: UserInDB = Depends(get_current_user)) -> UserInDB:
     if user_has_role(current_user, 'disabled'):
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
+
+
+
+# -------------------------------------------------------------------------------------
+async def validate_email_address(email: str):
+    try:
+        validation = validate_email( email, check_deliverability=True)
+        # get Unicode normalized version of email address:
+        email = validation.email
+        
+    except EmailNotValidError as e:
+        return { "success": False, "msg": str(e) }
+        
+    return { "success": True, "msg": email }
+
+# -------------------------------------------------------------------------------------
+async def validate_new_user_info(user: UserReg):
+    
+    existingUser = await get_user(user.username)
+    if existingUser:
+        return { "success": False, 
+                 "status_code": status.HTTP_409_CONFLICT, 
+                 "msg": "Username already in use."
+               }
+    
+    ret = await validate_email_address(user.email)
+    if ret['success']:
+        user.email = ret['msg']
+    else:
+        return { "success": False, 
+                 "status_code": status.HTTP_406_NOT_ACCEPTABLE, 
+                 "msg": ret['msg']
+               }
+    '''
+    try:
+        validation = validate_email( user.email, check_deliverability=True)
+        # get Unicode normalized version of email address:
+        user.email = validation.email
+        
+    except EmailNotValidError as e:
+        return { "success": False, 
+                 "status_code": status.HTTP_406_NOT_ACCEPTABLE, 
+                 "msg": str(e)
+                }
+    '''
+    
+    existingUser = await get_user_by_email(user.email)
+    if existingUser:
+        return { "success": False, 
+                 "status_code": status.HTTP_409_CONFLICT, 
+                 "msg": "Email already in use."
+               }
+    
+    return { "success": True, 
+             "status_code": status.HTTP_200_OK, 
+             "msg": user.email 
+           }
+    
+    
+# -------------------------------------------------------------------------------------
+async def send_email_validation_email(username: str, email: str, verify_code: str):
+    
+    body = r'''<p>Hello {name}</p>
+<p>Here is your email verification code:<\p>
+<p>{code}<\p>
+<p>You will be asked to enter this code upon your next login. 
+Email verification enables posting and account changes.</p>
+<p>-Blake Senftner</p>'''
+    body = body.format(name=username, code=verify_code)
+
+    params = { 'msg': { 'subject': 'Verification email',
+                        'body': body }
+             }
+    # print(json.dumps(params, indent = 4))
+    
+    await send_email_async(email, params, 'verify_email.html')
+    
+       
+# -------------------------------------------------------------------------------------
+async def send_password_changed_email(username: str, email: str, new_password: str):
+    
+    body = r'''<p>Hello {name}</p>
+<p>Your username at my website is:<\p>
+<p>{name}<\p>
+<p>Your password has recently changed and is now:<\p>
+<p>{password}<\p>
+<p>Use these to login to my Blog. Note, this email is the only location this password is plaintext.</p>
+<p>-Blake Senftner</p>'''
+    body = body.format(name=username, password=new_password)
+
+    params = { 'msg': { 'subject': 'Password changed email',
+                        'body': body }
+    }
+    # print(json.dumps(params, indent = 4))
+    await send_email_async(email, params, 'verify_email.html')

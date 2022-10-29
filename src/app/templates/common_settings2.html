@@ -66,12 +66,13 @@
 						// console.log( response )
 						document.getElementById("userMsg2").innerHTML = 
 							'<p>Password successfully changed.<br/>Expect an email with updated account info.</p>';
-					}); /* */
+					}); 
 			}
 		}
 		function ChangePassword() {
 			ifAccessDo(ChangePasswordWork);
 		}
+
 
 		function DisableAccountWork() {
 			const options = { 
@@ -83,18 +84,11 @@
 				.then( response => {
 					// Do something with response:
 					console.log( response )
-					if (response.id != '1')
-					{ 
-						console.log( "DELETE ERROR!" )
-						alert( "DELETE ERROR!" )
-						
-					}
-					Logout();
-
+					window.location.href = "/";
 				} ); 
 		}
 		function DisableAccount() {
-			ifAccessDo(ChangePasswordWork);
+			ifAccessDo(DisableAccountWork);
 		}
 
 	</script>

@@ -89,6 +89,7 @@
  <label for="vcode">Verification code:</label>
  <input type="text" id="vcode" name="label" value="">
  <br/><br/>
+ <div id="userVerifyMsg"></div>
  <div id="divLoginButtons">
 	<a href="#" class="button" onclick="Cancel()">Cancel</a>
 	<a href="#" class="button" onclick="VerifyEmail()">Verify Email</a>
@@ -121,10 +122,13 @@
 				.then( response => {
 					// Do something with response.
 					console.log( response )
-					if (response.status=='ok')
-					{
+					if (response.status=='Ok' || response.status=="Already verified") {
 						document.getElementById("mainContent").innerHTML = 
 								"<h4>Email verified, thank you.</h4>";
+					}
+					else{
+						document.getElementById("userVerifyMsg").innerHTML = 
+								"<h4>" + response.detail + "</h4>";
 					}
 				}); /* */
 		}
@@ -140,28 +144,33 @@
             // get the user's info:
 			const loginUser = document.getElementById("username").value;
 			const loginPass = document.getElementById("password").value;
-
-            const formData = new FormData();
-            formData.append('username', loginUser);
-            formData.append('password', loginPass);
-            //
-			const options = { method: 'POST', body: formData };
-			//
-            fetch('/token', options)
-            .then(response => response.text())
-            .then(data => { 
-                console.log(data);
-                const jsonData = JSON.parse(data);
-				if (jsonData.access_token) {
-					localStorage.setItem('token', jsonData.access_token);
-                	window.location.reload();
-				}
-                else if (jsonData.detail)
-				{
-					document.getElementById("userMsg").innerHTML += 
-						'<p>' + jsonData.detail + '</p>';
-				}
-            });
+			if (loginUser.length < 8 || loginPass.length < 12) {
+				document.getElementById("userMsg").innerHTML += 
+						'<p>Bad username or password.</p>';
+			}
+			else {
+				const formData = new FormData();
+            	formData.append('username', loginUser);
+            	formData.append('password', loginPass);
+				//
+				const options = { method: 'POST', body: formData };
+				//
+            	fetch('/token', options)
+            	.then(response => response.text())
+            	.then(data => { 
+                	console.log(data);
+                	const jsonData = JSON.parse(data);
+					if (jsonData.access_token) {
+						localStorage.setItem('token', jsonData.access_token);
+                		window.location.reload();
+					}
+                	else if (jsonData.detail)
+					{
+						document.getElementById("userMsg").innerHTML += 
+							'<p>' + jsonData.detail + '</p>';
+					}
+            	});
+			}
         }
 
 		function ResetPassword() { 

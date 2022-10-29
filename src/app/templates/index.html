@@ -84,16 +84,19 @@
 				.then( response => 
 					{
 						console.log(response)
-						if (response.hasOwnProperty('username')) {
+						if (response.hasOwnProperty('roles')) {
 
-							document.getElementById("mainContent").innerHTML += 
+							if (response.roles.includes("admin")) {
+								document.getElementById("mainContent").innerHTML += 
 								'<a href="#" class="button" onclick="BlogEdit()">Edit</a>';
 
-							document.getElementById("aside").innerHTML = 
-							`<a href="#" class="button" onclick="UserSettings()">Settings</a>
-							<br/><br/>
-							<a href="#" class="button" onclick="Logout()">Logout</a>
-							`;
+								document.getElementById("aside").innerHTML = 
+								`<a href="#" class="button" onclick="UserSettings()">Settings</a>
+								<br/><br/>
+								<a href="#" class="button" onclick="Logout()">Logout</a>
+								`;
+							}
+
 						}
 				  })
 			}

@@ -3,6 +3,7 @@ from pydantic import BaseSettings
 from pathlib import Path
 from functools import lru_cache
 
+import os
 
 # set up the logger:
 log = logging.getLogger("uvicorn")
@@ -49,6 +50,8 @@ class Settings(BaseSettings):
 
     ENVIRONMENT: str                # dev, staging, prod
     TESTING: bool                   # in test mode or not
+    
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
     
     JWT_SECRET_KEY: str
     JWT_SECRET_REFRESH_KEY: str

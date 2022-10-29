@@ -13,11 +13,13 @@ python-multipart==0.0.5
 python-jose==3.3.0
 passlib[bcrypt]==1.7.4
 python-dotenv==0.21.0
+email-validator
 
 # dev
 # basic test framework
 pytest==6.2.3
-requests==2.25.1
+# requests==2.25.1
+requests==2.26.0
 # provides utilities for testing asynchronous code
 # pytest-asyncio
 # provides an async request client for testing endpoints

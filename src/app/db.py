@@ -1,4 +1,4 @@
-import os
+# import os
 
 from sqlalchemy import (
     Column,
@@ -15,12 +15,12 @@ from sqlalchemy.orm import relationship
 
 from databases import Database
 
+from app.config import get_settings
 
-DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 # SQLAlchemy
-engine = create_engine(DATABASE_URL) # , future=True) adding the future parameter enables SQLAlchemy 2.0 syntax
+engine = create_engine(get_settings().DATABASE_URL) # , future=True) adding the future parameter enables SQLAlchemy 2.0 syntax
 
 # metadata is a container for tables
 metadata = MetaData()
@@ -60,7 +60,7 @@ notes_tb = Table(
 
 
 # databases query builder
-database = Database(DATABASE_URL)
+database = Database(get_settings().DATABASE_URL)
 
     
 # create db tables if they don't already exist:

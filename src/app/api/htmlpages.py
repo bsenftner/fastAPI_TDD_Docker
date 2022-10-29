@@ -63,7 +63,7 @@ async def register( request: Request ):
     
 # ------------------------------------------------------------------------------------------------------------------
 # serve login page thru a Jinja2 template:
-@router.get("/login", status_code=200, response_class=HTMLResponse)
+@router.get("/login", status_code=status.HTTP_200_OK, response_class=HTMLResponse)
 async def login( request: Request ):
 
     blogPostList = await crud.get_all_blogposts()
@@ -76,7 +76,7 @@ async def login( request: Request ):
 
 # ------------------------------------------------------------------------------------------------------------------
 # serve the requested page thru a Jinja2 template:
-@router.get("/blog/{post_id}", status_code=200, response_class=HTMLResponse)
+@router.get("/blog/{post_id}", status_code=status.HTTP_200_OK, response_class=HTMLResponse)
 async def blogPage( request: Request, post_id: int ):
     
     blogpost = await crud.get_blogpost(post_id)
@@ -96,7 +96,7 @@ async def blogPage( request: Request, post_id: int ):
 
 # ------------------------------------------------------------------------------------------------------------------
 # serve blog post page with an editor on it thru a template:
-@router.get("/Editor/{post_id}", status_code=200, response_class=HTMLResponse)
+@router.get("/Editor/{post_id}", status_code=status.HTTP_200_OK, response_class=HTMLResponse)
 async def editor( request: Request, post_id: int, current_user: User = Depends(users.get_current_active_user) ):
     
     blogpost = await crud.get_blogpost(post_id)
@@ -112,13 +112,14 @@ async def editor( request: Request, post_id: int, current_user: User = Depends(u
     
 # ------------------------------------------------------------------------------------------------------------------
 # serve a user profile page thru a template:
-@router.get("/Settings", status_code=200, response_class=HTMLResponse)
+@router.get("/Settings", status_code=status.HTTP_200_OK, response_class=HTMLResponse)
 async def user_settings_page( request: Request, current_user: User = Depends(users.get_current_active_user) ):
     
     # default info available to the page: 
     page_data = {
         'username': current_user.username,
         'email': current_user.email,
+        'roles': current_user.roles,
     }
     
     # list of blog posts:
@@ -153,7 +154,7 @@ async def send_contact_email_asynchronous(msg: ContactMsg):
 
 # ------------------------------------------------------------------------------------------------------------------
 # serve an auth requiring contact page with an editor on it thru a template:
-@router.get("/Contactp", status_code=200, response_class=HTMLResponse)
+@router.get("/Contactp", status_code=status.HTTP_200_OK, response_class=HTMLResponse)
 async def contact_page_protected( request: Request, 
                                   current_user: User = Depends(users.get_current_active_user) ):
             
@@ -176,7 +177,7 @@ async def contact_page_protected( request: Request,
 
 # ------------------------------------------------------------------------------------------------------------------
 # serve a contact page with an editor on it thru a template:
-@router.get("/Contact", status_code=200, response_class=HTMLResponse)
+@router.get("/Contact", status_code=status.HTTP_200_OK, response_class=HTMLResponse)
 async def contact_page( request: Request ):
     
     # get site_config to check if current endpoint should be protected:
