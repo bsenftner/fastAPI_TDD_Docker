@@ -99,7 +99,7 @@ async def refresh_token(response: Response, request: Request):
             status_code=status.HTTP_200_OK, 
             summary="Get current logged in user data", 
             response_model=UserPublic)
-async def read_users_me(request: Request, current_user: User = Depends(users.get_current_active_user)):
+async def read_users_me(request: Request, current_user: UserInDB = Depends(users.get_current_active_user)):
     # print(request.cookies)
     return {"username": current_user.username, 
             "id": current_user.id, 
@@ -148,8 +148,7 @@ async def sign_up(user: UserReg):
              status_code=status.HTTP_200_OK, 
              summary="Logout current user", 
              response_model=UserPublic)
-async def logout(response: Response, current_user: User = Depends(users.get_current_active_user)):
-    # print("logout hit!")
+async def logout(response: Response, current_user: UserInDB = Depends(users.get_current_active_user)):
     response.set_cookie(key="access_token",value=f"Bearer 0", httponly=True)
     response.set_cookie(key="refresh_token",value=f"0", httponly=True)
     return {"username": current_user.username, 
