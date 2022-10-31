@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Path, Depends, status
 
 from app.api import crud
 from app.api.users import get_current_active_user, user_has_role
-from app.api.models import User, BlogPostDB, BlogPostSchema
+from app.api.models import UserInDB, BlogPostDB, BlogPostSchema
 
 from typing import List
 
@@ -16,7 +16,7 @@ router = APIRouter()
 # declare a POST endpoint on the root 
 @router.post("/", response_model=BlogPostDB, status_code=201)
 async def create_blogpost(payload: BlogPostSchema, 
-                          current_user: User = Depends(get_current_active_user)) -> dict:
+                          current_user: UserInDB = Depends(get_current_active_user)) -> BlogPostDB:
     
     if not user_has_role(current_user,"admin"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -35,27 +35,32 @@ async def create_blogpost(payload: BlogPostSchema,
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
 @router.get("/{id}/", response_model=BlogPostDB)
-async def read_blogpost(id: int = Path(..., gt=0),) -> dict:
+async def read_blogpost(id: int = Path(..., gt=0),) -> BlogPostDB:
     blogpost = await crud.get_blogpost(id)
-    if not blogpost:
+    if blogpost is None:
         raise HTTPException(status_code=404, detail="BlogPost not found")
     return blogpost
 
 # ----------------------------------------------------------------------------------------------
 # The response_model is a List with a BlogPostDB subtype. See import of List top of file. 
 @router.get("/", response_model=List[BlogPostDB])
-async def read_all_blogposts() -> dict:
+async def read_all_blogposts() -> List[BlogPostDB]:
     return await crud.get_all_blogposts()
 
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
 @router.put("/{id}/", response_model=BlogPostDB)
-async def update_blogpost(payload: BlogPostSchema, id: int = Path(..., gt=0), 
-                          current_user: User = Depends(get_current_active_user)) -> dict:
+async def update_blogpost(payload: BlogPostSchema, 
+                          id: int = Path(..., gt=0), 
+                          current_user: UserInDB = Depends(get_current_active_user)) -> BlogPostDB:
     
-    blogpost = await crud.get_blogpost(id)
-    if not blogpost:
+    blogpost: BlogPostDB = await crud.get_blogpost(id)
+
+    if blogpost is None:
         raise HTTPException(status_code=404, detail="BlogPost not found")
+
+    print(f"blogpost.id {blogpost.id}")
+    print(f"blogpost.owner {blogpost.owner}")
 
     if blogpost.owner != current_user.id:
         HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -79,9 +84,9 @@ async def update_blogpost(payload: BlogPostSchema, id: int = Path(..., gt=0),
 # Note: id's type is validated as greater than 0  
 @router.delete("/{id}/", response_model=BlogPostDB)
 async def delete_blogpost(id: int = Path(..., gt=0), 
-                          current_user: User = Depends(get_current_active_user)) -> dict:
-    blogpost = await crud.get_blogpost(id)
-    if not blogpost:
+                          current_user: UserInDB = Depends(get_current_active_user)) -> BlogPostDB:
+    blogpost: BlogPostDB = await crud.get_blogpost(id)
+    if blogpost is None:
         raise HTTPException(status_code=404, detail="BlogPost not found")
 
     if blogpost.owner != current_user.id and not user_has_role(current_user,"admin"):

@@ -6,7 +6,7 @@ import json
 from typing import List
 
 from app.api import crud
-from app.api.models import User, NoteDB, NoteSchema
+from app.api.models import UserInDB, NoteDB, NoteSchema
 from app.api.users import get_current_active_user, user_has_role
 
 
@@ -19,19 +19,19 @@ router = APIRouter()
 # This will receive a NoteSchema within payload 
 @router.post("/", response_model=NoteDB, status_code=201)
 async def create_note(payload: NoteSchema, 
-                      current_user: User = Depends(get_current_active_user)):
+                      current_user: UserInDB = Depends(get_current_active_user)) -> NoteDB:
     
     # ensure data is valid json:
     try:
-        jsonDict = json.load(payload.data)
+        jsonDict = json.loads(payload.data)
     except ValueError as e:
         error = e.__class__.__name__
         raise HTTPException( status_code=status.HTTP_400_BAD_REQUEST, detail=error)
    
     # I'm forcing all note titles to be unique:
-    note = await crud.get_note_by_title(payload.title)
+    note: NoteDB = await crud.get_note_by_title(payload.title)
     if note:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Note already exists")
     
     note_id = await crud.post_note(payload, current_user.id)
 
@@ -49,13 +49,13 @@ async def create_note(payload: NoteSchema,
 # Note: id's type is validated as greater than 0
 @router.get("/{id}/", response_model=NoteDB)
 async def read_note(id: int = Path(..., gt=0),
-                    current_user: User = Depends(get_current_active_user)):
+                    current_user: UserInDB = Depends(get_current_active_user)) -> NoteDB:
     
-    note = await crud.get_note(id)
-    if not note:
+    note: NoteDB = await crud.get_note(id)
+    if note is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
     
-    if user_has_role( current_user, "admin") or current_user.id == note.owner:
+    if current_user.id == note.owner or user_has_role( current_user, "admin"):
         return note
     
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -65,7 +65,7 @@ async def read_note(id: int = Path(..., gt=0),
 # return list of notes, only works for admin
 # The response_model is a List with a NoteDB subtype. See import of List top of file. 
 @router.get("/", response_model=List[NoteDB])
-async def read_all_notes(current_user: User = Depends(get_current_active_user)):
+async def read_all_notes(current_user: UserInDB = Depends(get_current_active_user)) -> List[NoteDB]:
     if user_has_role( current_user, "admin"):
         return await crud.get_all_notes()
     
@@ -79,10 +79,14 @@ async def read_all_notes(current_user: User = Depends(get_current_active_user)):
 # data is also tested for being valid json
 @router.put("/{id}/", response_model=NoteDB)
 async def update_note(payload: NoteSchema, id: int = Path(..., gt=0), 
-                      current_user: User = Depends(get_current_active_user)):
+                      current_user: UserInDB = Depends(get_current_active_user)) -> NoteDB:
     
     # print(f"Notes:PUT:: payload is {payload.data}!")
     # print(type(payload.data))
+    
+    note: NoteDB = await crud.get_note(id)
+    if note is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
     
     # ensure data is valid json:
     try:
@@ -90,10 +94,6 @@ async def update_note(payload: NoteSchema, id: int = Path(..., gt=0),
     except ValueError as e:
         error = e.__class__.__name__
         raise HTTPException( status_code=status.HTTP_400_BAD_REQUEST, detail=error)
-    
-    note = await crud.get_note(id)
-    if not note:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
 
     if note.owner != current_user.id and not user_has_role(current_user,"admin"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -104,7 +104,7 @@ async def update_note(payload: NoteSchema, id: int = Path(..., gt=0),
     response_object = {
         "id": note_id,
         "owner": note.owner,
-        "title": payload.title,
+        "title": note.title,                # note titles cannot be changed!
         "description": payload.description,
         "data": payload.data,
     }
@@ -115,7 +115,7 @@ async def update_note(payload: NoteSchema, id: int = Path(..., gt=0),
 # Note: id's type is validated as greater than 0  
 @router.delete("/{id}/", response_model=NoteDB)
 async def delete_note(id: int = Path(..., gt=0), 
-                      current_user: User = Depends(get_current_active_user)):
+                      current_user: UserInDB = Depends(get_current_active_user)) -> NoteDB:
     
     note = await crud.get_note(id)
     if not note:

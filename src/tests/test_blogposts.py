@@ -3,14 +3,15 @@ import json
 import pytest
 
 from app.api import crud
+from app.api.models import BlogPostDB
 
 # ----------------------------------------------------------------------------------------------
 # use the pytest monkeypatch fixture to mock out the crud.post operation: 
 def test_create_blogpost(test_app, monkeypatch):
     test_request_payload = {"title": "something", "description": "something else"}
-    test_response_payload = {"id": 1, "title": "something", "description": "something else"}
+    test_response_payload = {"id": 1, "owner": 1, "title": "something", "description": "something else"}
 
-    async def mock_post(payload):
+    async def mock_post(payload, user_id):
         return 1
 
     mock_user_id = 1
@@ -18,7 +19,8 @@ def test_create_blogpost(test_app, monkeypatch):
     monkeypatch.setattr(crud, "post_blogpost", mock_post)
 
 
-    response = test_app.post("/blogposts/", data=json.dumps(test_request_payload), kwargs = {'user_id': mock_user_id})
+    response = test_app.post("/blogposts/", 
+                             data=json.dumps(test_request_payload))
 
     assert response.status_code == 201
     assert response.json() == test_response_payload
@@ -33,7 +35,10 @@ def test_create_blogpost_invalid_json(test_app):
 
 # ----------------------------------------------------------------------------------------------
 def test_read_blogpost(test_app, monkeypatch):
-    test_data = {"id": 1, "title": "something", "description": "something else"}
+    test_data = {"id": 1, 
+                 "owner": 1, 
+                 "title": "something", 
+                 "description": "something else"}
 
     async def mock_get(id):
         return test_data
@@ -61,8 +66,8 @@ def test_read_blogpost_incorrect_id(test_app, monkeypatch):
 # ----------------------------------------------------------------------------------------------
 def test_read_all_blogposts(test_app, monkeypatch):
     test_data = [
-        {"title": "something", "description": "something else", "id": 1},
-        {"title": "someone", "description": "someone else", "id": 2},
+        {"owner": 1, "title": "something", "description": "something else", "id": 1},
+        {"owner": 1, "title": "someone", "description": "someone else", "id": 2},
     ]
 
     async def mock_get_all():
@@ -76,15 +81,18 @@ def test_read_all_blogposts(test_app, monkeypatch):
 
 # ----------------------------------------------------------------------------------------------
 def test_update_blogpost(test_app, monkeypatch):
-    test_update_data = {"title": "someone", "description": "someone else", "id": 1}
+    test_id = 1
+    
+    test_update_data = {"id": test_id, "owner": 1, "title": "someone", "description": "someone else"}
 
-    async def mock_get(id):
-        return True
+    async def mock_get(id) -> BlogPostDB:
+        bp = BlogPostDB(id=id, owner=1, title="someone", description="someone else")
+        return bp
 
     monkeypatch.setattr(crud, "get_blogpost", mock_get)
 
-    async def mock_put(id, payload):
-        return 1
+    async def mock_put(test_id, payload):
+        return test_id
 
     monkeypatch.setattr(crud, "put_blogpost", mock_put)
 
@@ -115,10 +123,11 @@ def test_update_blogpost_invalid(test_app, monkeypatch, id, payload, status_code
 
 # ----------------------------------------------------------------------------------------------
 def test_remove_blogpost(test_app, monkeypatch):
-    test_data = {"title": "something", "description": "something else", "id": 1}
-
-    async def mock_get(id):
-        return test_data
+    test_data = {"id": 1, "owner": 1, "title": "something", "description": "something else"}
+    
+    async def mock_get(id) -> BlogPostDB:
+        td = BlogPostDB(id=1, owner=1, title="something", description="something else")
+        return td
 
     monkeypatch.setattr(crud, "get_blogpost", mock_get)
 

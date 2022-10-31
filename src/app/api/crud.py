@@ -1,10 +1,11 @@
+from typing import List
+from sqlalchemy import asc 
+
 from app.api.models import NoteSchema, BlogPostSchema, UserReg, UserPublic
 from app.db import notes_tb, blogposts_tb, users_tb, database
+ 
 
-from sqlalchemy import asc  
-
-from app.api.models import Token, User, UserInDB, basicTextPayload
-from app.api import encrypt 
+from app.api.models import UserInDB, BlogPostDB, NoteDB
 
 
 # -----------------------------------------------------------------------------------------
@@ -20,19 +21,19 @@ async def post_note(payload: NoteSchema, owner: int):
 
 # -----------------------------------------------------------------------------------------
 # for getting notes:
-async def get_note(id: int):
+async def get_note(id: int) -> NoteDB:
     query = notes_tb.select().where(id == notes_tb.c.id)
     return await database.fetch_one(query=query)
 
 # -----------------------------------------------------------------------------------------
 # for getting notes by their title:
-async def get_note_by_title(title: str):
+async def get_note_by_title(title: str) -> NoteDB:
     query = notes_tb.select().where(title == notes_tb.c.title)
     return await database.fetch_one(query=query)
 
 # -----------------------------------------------------------------------------------------
 # returns all notes:
-async def get_all_notes():
+async def get_all_notes() -> List[NoteDB]:
     query = notes_tb.select().order_by(asc(notes_tb.c.id))
     return await database.fetch_all(query=query)
 
@@ -71,7 +72,7 @@ async def post_blogpost(payload: BlogPostSchema, user_id: int):
 
 # -----------------------------------------------------------------------------------------
 # for getting blogposts:
-async def get_blogpost(id: int):
+async def get_blogpost(id: int) -> BlogPostDB:
     query = blogposts_tb.select().where(id == blogposts_tb.c.id)
     return await database.fetch_one(query=query)
 

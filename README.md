@@ -1,12 +1,12 @@
-# FastAPI_TDD_Docker : BlogPosts and Data Notes
+# FastAPI_TDD_Docker : BlogPosts and Data Notes wrapped in a mini-CMS
 
-## Simple HTML GUI on top of FastAPI CRUD APIs for "blog posts" and "data notes" with tests & CI/CD via Docker
+## HTML w/ minimal JavaScript GUI on top of FastAPI CRUD APIs for "blog posts" and "data notes" with tests & CI/CD via Docker
 
-A "data note" is arbitary JSON with a title and description.
+A "data note" is arbitary JSON with a title and description. It's used for tracking site data, and providing data for visualizations.
 
-1. You'll need Docker; this was developed using WSL2-Ubuntu on Win10 with Docker Desktop 4.12.0 (85629)
-2. Via terminal navigate to `src\app` and create a file named `.env` in the same directory as main.py
-3. Enter `openssl rand -hex 32` to generate a random hex string, and again because you'll need two.
+1. You'll need Docker to use this repo; this was developed using WSL2-Ubuntu on Win10 with Docker Desktop 4.12.0 (85629)
+2. After getting your own copy of the repo, via a terminal navigate to `src\app` and create a file named `.env` in the same directory as main.py
+3. Enter `openssl rand -hex 32` to generate a random hex string, and again because you'll need two. These will be your secret hash strings.
 4. Edit the `.env` file to have contents like this:
 
     ```text
@@ -36,16 +36,21 @@ A "data note" is arbitary JSON with a title and description.
 6. Via your web browser visit `http://localhost:8002/docs` to use the OpenAPI GUI
 7. Run tests from project root with `docker compose exec web pytest .`
 
-   * And I realize the tests are failing; that's because I've not accounted for the newly added authentication on endpoints...
+   * Tests should pass.
+   * These are testing the CRUD REST endpoints, but there are more tests I should add that are not just CRUD operations.
 
 8. Visit `http://localhost:8002/register` to create the first user on the static GUI.
+
+9. Currently the "admin" account is hardcoded to my info, but you can change that by modifying the "/users/register" endpoint.
+
+   * Look in app/api/users_htmlpages.html around line 128, where the user roles are initialized. Just change that info to yours.
+   * Next version will have this "admin" info in the Settings/config .env file.
 
 This produces two Docker images, one hosting postgres and the other the FastAPI app.
 It is pretty basic at this point, quite easy to make your own. The file page_frags.py is the only one
 with text branding, and the single photo jpeg used so far is in that file too.
 
-The database itself is saved to the Docker host system. You can choose to take the app down deleting
-the database or preserving it.
+The database itself is saved to the Docker host system. You can choose to take the app down deleting the database or preserving it.
 The pair of containers can be taken down with the db deleted using:
 
 `docker compose down -v`

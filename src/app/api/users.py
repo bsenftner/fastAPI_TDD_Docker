@@ -213,18 +213,6 @@ async def validate_new_user_info(user: UserReg):
                  "status_code": status.HTTP_406_NOT_ACCEPTABLE, 
                  "msg": ret['msg']
                }
-    '''
-    try:
-        validation = validate_email( user.email, check_deliverability=True)
-        # get Unicode normalized version of email address:
-        user.email = validation.email
-        
-    except EmailNotValidError as e:
-        return { "success": False, 
-                 "status_code": status.HTTP_406_NOT_ACCEPTABLE, 
-                 "msg": str(e)
-                }
-    '''
     
     existingUser = await get_user_by_email(user.email)
     if existingUser:

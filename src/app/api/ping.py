@@ -10,6 +10,6 @@ router = APIRouter()
 async def pong():
     return {
         "ping": "pong!",
-        "environment": config.settings.ENVIRONMENT,
-        "testing": config.settings.TESTING,
+        "environment": config.get_settings().ENVIRONMENT,
+        "testing": config.get_settings().TESTING,
            }

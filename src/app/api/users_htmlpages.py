@@ -340,15 +340,6 @@ async def delete_user(current_user: UserInDB = Depends(users.get_current_active_
     # so its safe to directly disable:
     current_user.roles = current_user.roles + " disabled"
     id = await crud.put_user( current_user.id, current_user )
-    '''
-    query = users_tb.update().values( username=current_user.username, 
-                                      hashed_password=current_user.hashed_password,
-                                      verify_code=current_user.verify_code,
-                                      email=current_user.email,
-                                      roles=new_roles
-                                    ).returning(users_tb.c.id)
-    id = await database.execute(query=query)
-    '''
     if id!=current_user.id:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
