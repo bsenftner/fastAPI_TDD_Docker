@@ -19,11 +19,6 @@ def get_jinja_env() -> Environment:
     )
 
 # ----------------------------------------------------------------------------------------------
-class EmailSchema(BaseModel):
-   email: List[EmailStr]
-   
-
-# ----------------------------------------------------------------------------------------------
 @lru_cache()
 def get_emailConnectionConfig() -> ConnectionConfig:
     # 'settings' is application config settings

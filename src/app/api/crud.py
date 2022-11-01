@@ -1,8 +1,10 @@
 from typing import List
 from sqlalchemy import asc 
 
-from app.api.models import NoteSchema, BlogPostSchema, UserReg, UserPublic
-from app.db import notes_tb, blogposts_tb, users_tb, database
+from app.api.models import NoteSchema, BlogPostSchema, UserReg
+
+from app.db import DatabaseMgr, get_database_mgr
+# from app.db import notes_tb, blogposts_tb, users_tb, database
  
 
 from app.api.models import UserInDB, BlogPostDB, NoteDB
@@ -11,94 +13,105 @@ from app.api.models import UserInDB, BlogPostDB, NoteDB
 # -----------------------------------------------------------------------------------------
 # for creating new notes
 async def post_note(payload: NoteSchema, owner: int):
+    db_mgr = get_database_mgr()
     # Creates a SQLAlchemy insert object expression query
-    query = notes_tb.insert().values(title=payload.title, 
-                                  description=payload.description,
-                                  data=payload.data,
-                                  owner=owner)
+    query = db_mgr.get_notes_table().insert().values(title=payload.title, 
+                                                     description=payload.description,
+                                                     data=payload.data,
+                                                     owner=owner)
     # Executes the query and returns the generated ID
-    return await database.execute(query=query)
+    return await db_mgr.get_db().execute(query=query)
 
 # -----------------------------------------------------------------------------------------
 # for getting notes:
 async def get_note(id: int) -> NoteDB:
-    query = notes_tb.select().where(id == notes_tb.c.id)
-    return await database.fetch_one(query=query)
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_notes_table().select().where(id == db_mgr.get_notes_table().c.id)
+    return await db_mgr.get_db().fetch_one(query=query)
 
 # -----------------------------------------------------------------------------------------
 # for getting notes by their title:
 async def get_note_by_title(title: str) -> NoteDB:
-    query = notes_tb.select().where(title == notes_tb.c.title)
-    return await database.fetch_one(query=query)
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_notes_table().select().where(title == db_mgr.get_notes_table().c.title)
+    return await db_mgr.get_db().fetch_one(query=query)
 
 # -----------------------------------------------------------------------------------------
 # returns all notes:
 async def get_all_notes() -> List[NoteDB]:
-    query = notes_tb.select().order_by(asc(notes_tb.c.id))
-    return await database.fetch_all(query=query)
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_notes_table().select().order_by(asc(db_mgr.get_notes_table().c.id))
+    return await db_mgr.get_db().fetch_all(query=query)
 
 # -----------------------------------------------------------------------------------------
 # update a note:
 async def put_note(id: int, payload: NoteSchema, owner: int):
+    db_mgr = get_database_mgr()
     query = (
-        notes_tb
+        db_mgr.get_notes_table()
         .update()
-        .where(id == notes_tb.c.id)
+        .where(id == db_mgr.get_notes_table().c.id)
         .values(title=payload.title, 
                 description=payload.description, 
                 data=payload.data,
                 owner=owner)
-        .returning(notes_tb.c.id)
+        .returning(db_mgr.get_notes_table().c.id)
     )
-    return await database.execute(query=query)
+    return await db_mgr.get_db().execute(query=query)
 
 # -----------------------------------------------------------------------------------------
 # delete a note:
 async def delete_note(id: int):
-    query = notes_tb.delete().where(id == notes_tb.c.id)
-    return await database.execute(query=query)
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_notes_table().delete().where(id == db_mgr.get_notes_table().c.id)
+    return await db_mgr.get_db().execute(query=query)
 
 
 
 # -----------------------------------------------------------------------------------------
 # for creating new blogposts
 async def post_blogpost(payload: BlogPostSchema, user_id: int):
+    db_mgr = get_database_mgr()
     # Creates a SQLAlchemy insert object expression query
-    query = blogposts_tb.insert().values(owner=user_id, 
-                                      title=payload.title, 
-                                      description=payload.description)
+    query = db_mgr.get_blogposts_table().insert().values(owner=user_id, 
+                                                         title=payload.title, 
+                                                         description=payload.description)
     # Executes the query and returns the generated ID
-    return await database.execute(query=query)
+    return await db_mgr.get_db().execute(query=query)
 
 # -----------------------------------------------------------------------------------------
 # for getting blogposts:
 async def get_blogpost(id: int) -> BlogPostDB:
-    query = blogposts_tb.select().where(id == blogposts_tb.c.id)
-    return await database.fetch_one(query=query)
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_blogposts_table().select().where(id == db_mgr.get_blogposts_table().c.id)
+    return await db_mgr.get_db().fetch_one(query=query)
 
 # -----------------------------------------------------------------------------------------
 # returns all blogposts:
 async def get_all_blogposts():
-    query = blogposts_tb.select().order_by(asc(blogposts_tb.c.id))
-    return await database.fetch_all(query=query)
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_blogposts_table().select().order_by(asc(db_mgr.get_blogposts_table().c.id))
+    return await db_mgr.get_db().fetch_all(query=query)
 
 # -----------------------------------------------------------------------------------------
 # update a blogposts:
 async def put_blogpost(id: int, payload: BlogPostSchema):
+    db_mgr = get_database_mgr()
     query = (
-        blogposts_tb
+        db_mgr.get_blogposts_table()
         .update()
-        .where(id == blogposts_tb.c.id)
+        .where(id == db_mgr.get_blogposts_table().c.id)
         .values(title=payload.title, description=payload.description)
-        .returning(blogposts_tb.c.id)
+        .returning(db_mgr.get_blogposts_table().c.id)
     )
-    return await database.execute(query=query)
+    return await db_mgr.get_db().execute(query=query)
 
 # -----------------------------------------------------------------------------------------
 # delete a blogpost:
 async def delete_blogpost(id: int):
-    query = blogposts_tb.delete().where(id == blogposts_tb.c.id)
-    return await database.execute(query=query)
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_blogposts_table().delete().where(id == db_mgr.get_blogposts_table().c.id)
+    return await db_mgr.get_db().execute(query=query)
 
 
 
@@ -110,47 +123,52 @@ async def post_user(user: UserReg,
                     verify_code: str,
                     roles: str):
     '''crud action to create a new user via PRE-VALIDATED data'''
-    query = users_tb.insert().values( username=user.username, 
-                                   hashed_password=hashed_password,
-                                   verify_code=verify_code,
-                                   email=user.email,
-                                   roles=roles )
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_users_table().insert().values( username=user.username, 
+                                                      hashed_password=hashed_password,
+                                                      verify_code=verify_code,
+                                                      email=user.email,
+                                                      roles=roles )
     # Executes the query and returns the generated ID
-    return await database.execute(query)
+    return await db_mgr.get_db().execute(query)
     
 
 # -----------------------------------------------------------------------------------------
 # a few methods for getting users:
 async def get_user_by_id(id: int):
-    query = users_tb.select().where(id == users_tb.c.id)
-    return await database.fetch_one(query=query)
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_users_table().select().where(id == db_mgr.get_users_table().c.id)
+    return await db_mgr.get_db().fetch_one(query=query)
 
 async def get_user_by_name(username: str):
-    query = users_tb.select().where(users_tb.c.username == username)
-    return await database.fetch_one(query)
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_users_table().select().where(db_mgr.get_users_table().c.username == username)
+    return await db_mgr.get_db().fetch_one(query)
 
 
 async def get_user_by_email(email: str):
-    query = users_tb.select().where(users_tb.c.email == email)
-    return await database.fetch_one(query)
+    db_mgr = get_database_mgr()
+    query = db_mgr.get_users_table().select().where(db_mgr.get_users_table().c.email == email)
+    return await db_mgr.get_db().fetch_one(query)
 
 # -----------------------------------------------------------------------------------------
 # update a user passed an user id and an updated UserInDB. 
 # Note: the id field in the UserInDB is ignored. 
 async def put_user(id: int, user: UserInDB):
+    db_mgr = get_database_mgr()
     query = (
-        users_tb
+        db_mgr.get_users_table()
         .update()
-        .where(id == users_tb.c.id)
+        .where(id == db_mgr.get_users_table().c.id)
         .values( username=user.username, 
                  hashed_password=user.hashed_password,
                  verify_code=user.verify_code,
                  email=user.email,
                  roles=user.roles
-               ).returning(users_tb.c.id)
-        .returning(users_tb.c.id)
+               ).returning(db_mgr.get_users_table().c.id)
+        .returning(db_mgr.get_users_table().c.id)
     )
-    return await database.execute(query=query)
+    return await db_mgr.get_db().execute(query=query)
 
 # -----------------------------------------------------------------------------------------
 # note: there is no user delete, that is accomplished by disabling a user. 

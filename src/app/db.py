@@ -1,5 +1,3 @@
-# import os
-
 from sqlalchemy import (
     Column,
     DateTime,
@@ -17,52 +15,77 @@ from databases import Database
 
 from app.config import get_settings
 
+from functools import lru_cache
 
 
-# SQLAlchemy
-engine = create_engine(get_settings().DATABASE_URL) # , future=True) adding the future parameter enables SQLAlchemy 2.0 syntax
+# ----------------------------------------------------------------------------------------------
+class DatabaseMgr:
+    def __init__(self):
+        # SQLAlchemy
+        self.engine = create_engine(get_settings().DATABASE_URL) # , future=True) adding the future parameter enables SQLAlchemy 2.0 syntax
 
-# metadata is a container for tables
-metadata = MetaData()
+        # metadata is a container for tables
+        self.metadata = MetaData()
 
-blogposts_tb = Table(
-    "blogposts",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("owner", Integer, index=True),
-    Column("title", String),
-    Column("description", String),
-    Column("created_date", DateTime, default=func.now(), nullable=False),
-)
+        self.blogposts_tb = Table(
+            "blogposts",
+            self.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("owner", Integer, index=True),
+            Column("title", String),
+            Column("description", String),
+            Column("created_date", DateTime, default=func.now(), nullable=False),
+        )
 
-users_tb = Table(
-    "users",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("username", String, index=True),
-    Column("email", String(80), index=True),
-    Column("roles", String),
-    Column("hashed_password", String(80)),
-    Column("verify_code", String(16)),
-    Column("created_date", DateTime, default=func.now(), nullable=False),
-)
+        self.users_tb = Table(
+            "users",
+            self.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("username", String, index=True),
+            Column("email", String(80), index=True),
+            Column("roles", String),
+            Column("hashed_password", String(80)),
+            Column("verify_code", String(16)),
+            Column("created_date", DateTime, default=func.now(), nullable=False),
+        )
 
-notes_tb = Table(
-    "notes",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("owner", Integer, index=True),
-    Column("title", String, index=True),
-    Column("description", String),      # describe the data here
-    Column("data", String),             # data saved as string of encoded json
-    Column("created_date", DateTime, default=func.now(), nullable=False),
-)
+        self.notes_tb = Table(
+            "notes",
+            self.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("owner", Integer, index=True),
+            Column("title", String, index=True),
+            Column("description", String),      # describe the data here
+            Column("data", String),             # data saved as string of encoded json
+            Column("created_date", DateTime, default=func.now(), nullable=False),
+        )
+
+        # databases query builder
+        self.database = Database(get_settings().DATABASE_URL)
+
+        # create db tables if they don't already exist:
+        self.metadata.create_all(self.engine)
+        
+        
+    def get_db(self):
+        return self.database
+        
+    def get_blogposts_table(self):
+        return self.blogposts_tb
+        
+    def get_users_table(self):
+        return self.users_tb
+        
+    def get_notes_table(self):
+        return self.notes_tb
 
 
-# databases query builder
-database = Database(get_settings().DATABASE_URL)
+# ----------------------------------------------------------------------------------------------
+@lru_cache()
+def get_database_mgr() -> DatabaseMgr:
+    database_mgr = DatabaseMgr()
+    return database_mgr
 
-    
-# create db tables if they don't already exist:
-metadata.create_all(engine)
+
+
 

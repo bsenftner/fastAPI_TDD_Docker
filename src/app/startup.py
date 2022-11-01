@@ -6,7 +6,7 @@ from app.config import log
 
 # ---------------------------------------------------------------------------------------
 # Called by app startup event, this ensures site_config exists in the db:
-async def initialize_database_data( ):
+async def initialize_database_data( ) -> None:
     
     log.info('looking for site_config...')
     note = await crud.get_note_by_title('site_config')

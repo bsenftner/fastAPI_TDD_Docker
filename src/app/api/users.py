@@ -2,7 +2,6 @@ from fastapi import HTTPException, Depends, status, Request
 
 from app.config import get_settings, log
 from app.api.models import UserInDB, UserReg
-# from app.db import users_tb, database
 from app.api import encrypt, crud
 #
 # from fastapi.security import OAuth2PasswordBearer
