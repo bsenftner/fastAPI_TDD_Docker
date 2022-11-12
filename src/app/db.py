@@ -22,7 +22,13 @@ from functools import lru_cache
 class DatabaseMgr:
     def __init__(self):
         # SQLAlchemy
-        self.engine = create_engine(get_settings().DATABASE_URL) # , future=True) adding the future parameter enables SQLAlchemy 2.0 syntax
+        url = get_settings().DATABASE_URL
+        print(f"DatabaseMgr:__init__:: database_url = {url}")
+        if url and url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+            print(f"DatabaseMgr:__init__:: tweaked database_url = {url}")
+        #
+        self.engine = create_engine(url) # , future=True) adding the future parameter enables SQLAlchemy 2.0 syntax
 
         # metadata is a container for tables
         self.metadata = MetaData()
