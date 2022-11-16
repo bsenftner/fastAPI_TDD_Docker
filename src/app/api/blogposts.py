@@ -34,7 +34,7 @@ async def create_blogpost(payload: BlogPostSchema,
 
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
-@router.get("/{id}/", response_model=BlogPostDB)
+@router.get("/{id}", response_model=BlogPostDB)
 async def read_blogpost(id: int = Path(..., gt=0),) -> BlogPostDB:
     blogpost = await crud.get_blogpost(id)
     if blogpost is None:
@@ -49,11 +49,13 @@ async def read_all_blogposts() -> List[BlogPostDB]:
 
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
-@router.put("/{id}/", response_model=BlogPostDB)
+@router.put("/{id}", response_model=BlogPostDB)
 async def update_blogpost(payload: BlogPostSchema, 
                           id: int = Path(..., gt=0), 
                           current_user: UserInDB = Depends(get_current_active_user)) -> BlogPostDB:
-    
+   
+    print("update_blogpost: here!!")
+
     blogpost: BlogPostDB = await crud.get_blogpost(id)
 
     if blogpost is None:
@@ -82,7 +84,7 @@ async def update_blogpost(payload: BlogPostSchema,
 
 # ----------------------------------------------------------------------------------------------
 # Note: id's type is validated as greater than 0  
-@router.delete("/{id}/", response_model=BlogPostDB)
+@router.delete("/{id}", response_model=BlogPostDB)
 async def delete_blogpost(id: int = Path(..., gt=0), 
                           current_user: UserInDB = Depends(get_current_active_user)) -> BlogPostDB:
     blogpost: BlogPostDB = await crud.get_blogpost(id)

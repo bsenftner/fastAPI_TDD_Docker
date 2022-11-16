@@ -1,16 +1,31 @@
 version: '3.8'
 
-services:
+networks:
   web:
+    external: true
+  internal:
+    external: false
+
+services:
+  blog:
     build: ./src
     command: |
       bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000'
     volumes:
       - ./src/:/usr/src/app/
     ports:
-      - 8002:8000
+      - 8000:8000
     environment:
       - DATABASE_URL=postgresql://basic_blog:basic_blog@db/basic_blog_dev
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.blog.rule=Host(`blog.blakesenftner.com`)
+      - traefik.http.routers.blog.tls=true
+      - traefik.http.routers.blog.tls.certresolver=lets-encrypt
+    networks:
+      - internal
+      - web
+
   db:
     image: postgres:13-alpine
     volumes:
@@ -21,6 +36,11 @@ services:
       - POSTGRES_USER=basic_blog
       - POSTGRES_PASSWORD=basic_blog
       - POSTGRES_DB=basic_blog_dev
+    networks:
+      - internal
+    labels:
+      - traefik.enable=false
 
 volumes:
   postgres_data:
+

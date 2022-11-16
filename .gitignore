@@ -21,6 +21,7 @@ docs.zip
 archive.zip
 *.mp4
 *.mov
+acme.json
 
 # vim temporary files
 *~
