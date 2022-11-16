@@ -147,6 +147,7 @@
 			}
 			//
 			const options = {
+				credentials: 'include',
 				method: 'PUT', // Method itself
 				headers: {
 				 		'Content-type': 'application/json; charset=UTF-8', // Indicates the content 
@@ -156,7 +157,10 @@
 			}
 			   
 			// make the HTTP put request using fetch api
-			fetch('/blogposts/{{ contentPost.id }}', options) 
+			let domain = (new URL(window.location));
+			const prebsjnk = domain.origin;
+			const furl = prebsjnk + '/blogposts/{{ contentPost.id }}';
+			fetch(furl, options) 
 			// .then(response => response.json())
 			.then(response => 
 			{
@@ -191,7 +195,13 @@
 					}
 					window.location.href = "/";
 
-				} ); 
+				} )
+				.catch(err => {
+					// Do something with the error
+					console.log(err) 
+					alert( err )
+					window.location.href = "/blog/{{ contentPost.id }}";
+				});
 		}
 		function BlogDelete() {
 			ifAccessDo(BlogDeleteWork);
