@@ -41,6 +41,14 @@
 						<a href="#" class="button" onclick="BlogSubmit()">Submit A Completely New Blog Post</a>
 					</div>
 				</form>
+				<form>
+					<div id="divUpload">
+						<label>Select file to upload:</label>
+						<input type="file" id="NewPostUpload" name="label" >
+					</div>
+					<div id="divUploadMsg"></div>
+					<a href="#" class="button" onclick="UploadFile()">Upload file</a>
+				</form>
 			</div>
 		</main>
 
@@ -211,6 +219,44 @@
 		}
 		function BlogDelete() {
 			ifAccessDo(BlogDeleteWork);
+		}
+
+		function UploadFileWork() {
+			// Select your input type file and store it in a variable
+			const input = document.getElementById('NewPostUpload');
+
+			var data = new FormData()
+			data.append('file', input.files[0])
+
+			// This will upload the file after having read it
+			const upload = (file) => {
+				fetch('/upload', { // Your POST endpoint
+	  				method: 'POST',
+	  				headers: {
+							// Content-Type may need to be completely **omitted**
+							// or you may need something
+							// "Content-Type": "You will perhaps need to define a content-type here"
+	  					},
+	  				body: data // This is your file object
+				}).then(
+	  				response => response.json() // if the response is a JSON object
+				 ).then(
+	  				success => {
+						console.log( success.message) // Handle the success response object
+						document.getElementById("divUploadMsg").innerHTML = '<p>Success msg: ' +  success.message + '</p>';
+					}
+				 ).catch(
+	  				error => {
+						console.log( error ) // Handle the error response object
+						document.getElementById("divUploadMsg").innerHTML = '<p>Error msg: ' + error + '</p>';
+					}
+				);
+  			};
+  
+  			upload(input.files[0]);
+		}
+		function UploadFile() {
+			ifAccessDo(UploadFileWork);
 		}
 
 		function UserSettings() { window.location.href = "/Settings"; }

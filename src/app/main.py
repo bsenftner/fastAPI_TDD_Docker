@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import config
 from app.db import DatabaseMgr, get_database_mgr
-from app.api import blogposts, notes, ping, users_htmlpages, video, htmlpages
+from app.api import blogposts, notes, ping, users_htmlpages, video, htmlpages, upload
 
 
 # generate our "app"
@@ -59,7 +59,10 @@ def create_application() -> FastAPI:
     # install the video router into our app with a prefix & tag too:
     application.include_router(video.router, prefix="/video", tags=["video"])
 
-    # install the usershtmlpages router into our app with tag too:
+    # install the upload router into our app with a tag too:
+    application.include_router(upload.router, tags=["upload"])
+
+    # install the users htmlpages router into our app with tag too:
     application.include_router(users_htmlpages.router, tags=["user-pages"])
 
     # install the html pages router into our app with tag too:
