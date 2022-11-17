@@ -38,6 +38,14 @@ A "data note" is arbitary JSON with a title and description. It's used for track
     docker compose up -d --build
     ```
 
+    Note: if you are doing this on a live hosted server, you need to specify the production version:
+
+    ```text
+    docker compose -f docker-compose-prod.yml up -d --build
+    ```
+
+    the production docker compose includes the Traefik proxy with automated ssl cert generation.
+
 6. Via your web browser visit `http://localhost:8002/docs` to use the OpenAPI GUI
 7. Run tests from project root with `docker compose exec web pytest .`
 
@@ -66,6 +74,14 @@ Or, if you want to preserve the info in the database, just use:
 
 Next time you do step 5, above, the previous database info will still be there.
 
+Note: just like before, if this on a live hosted server, you need to specify the production yamls:
+
+  `docker compose -f docker-compose-prod.yml down -v`
+
+Or to take the app down preserving the production database:
+
+  `docker compose -f docker-compose-prod.yml down`
+  
 ## Notes
 
 - Uses JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
