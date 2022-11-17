@@ -77,7 +77,7 @@ async def read_all_notes(current_user: UserInDB = Depends(get_current_active_use
 # update a note, with protection: only works for owner and admins
 # Note: id's type is validated as greater than 0  
 # data is also tested for being valid json
-@router.put("/{id}/", response_model=NoteDB)
+@router.put("/{id}", response_model=NoteDB)
 async def update_note(payload: NoteSchema, id: int = Path(..., gt=0), 
                       current_user: UserInDB = Depends(get_current_active_user)) -> NoteDB:
     
@@ -113,7 +113,7 @@ async def update_note(payload: NoteSchema, id: int = Path(..., gt=0),
 # ----------------------------------------------------------------------------------------------
 # delete a note, with protection: only works for owner and admins
 # Note: id's type is validated as greater than 0  
-@router.delete("/{id}/", response_model=NoteDB)
+@router.delete("/{id}", response_model=NoteDB)
 async def delete_note(id: int = Path(..., gt=0), 
                       current_user: UserInDB = Depends(get_current_active_user)) -> NoteDB:
     

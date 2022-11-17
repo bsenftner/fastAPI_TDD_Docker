@@ -117,7 +117,7 @@
 				},
 				body: JSON.stringify( params )  
 			};
-			fetch( '/users/verify/', options )
+			fetch( '/users/verify', options )
 				.then( response => response.json() )
 				.then( response => {
 					// Do something with response.
