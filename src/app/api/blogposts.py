@@ -9,6 +9,7 @@ from app.api.models import UserInDB, BlogPostDB, BlogPostSchema
 
 from typing import List
 
+from app.config import log
 
 router = APIRouter()
 
@@ -22,13 +23,18 @@ async def create_blogpost(payload: BlogPostSchema,
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
                             detail="Not Authorized to create Blog Posts")
         
+    log.info(f"create_blogpost: posting {payload}")
+    
     blogpost_id = await crud.post_blogpost(payload, current_user.id)
 
+    log.info(f"create_blogpost: returning id {blogpost_id}")
+    
     response_object = {
         "id": blogpost_id,
         "owner": current_user.id,
         "title": payload.title,
         "description": payload.description,
+        "tags": payload.tags,
     }
     return response_object
 
@@ -63,6 +69,7 @@ async def update_blogpost(payload: BlogPostSchema,
 
     print(f"blogpost.id {blogpost.id}")
     print(f"blogpost.owner {blogpost.owner}")
+    print(f"blogpost.tags {blogpost.tags}")
 
     if blogpost.owner != current_user.id:
         HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -79,6 +86,7 @@ async def update_blogpost(payload: BlogPostSchema,
         "owner": current_user.id,
         "title": payload.title,
         "description": payload.description,
+        "tags": payload.tags,
     }
     return response_object
 

@@ -156,6 +156,13 @@ input#NewPostTitle {
   font-size: 30px;
 }
 
+input#NewPostTags {
+  width: 60%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
 div#divBeneathTheEditor {
   padding-top: 60px; /* 52px; */
 }
@@ -167,7 +174,7 @@ input#NewEmailSubject {
 }
 
 label {
-  width: 25%;
+  width: 8%;
   display: inline-block;
   font-size: 30px;
 }

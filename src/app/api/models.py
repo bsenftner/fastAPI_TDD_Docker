@@ -23,6 +23,7 @@ class NoteDB(NoteSchema):
 class BlogPostSchema(BaseModel):
     title: str = Field(..., min_length=3, max_length=80)
     description: str = Field(..., min_length=3, max_length=16384)
+    tags: str = Field(..., min_length=3, max_length=80)
 
 # A "BlogPost" in the database is simply an id plus our BlogPostSchema: 
 class BlogPostDB(BlogPostSchema):

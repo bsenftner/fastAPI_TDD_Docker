@@ -40,6 +40,7 @@ class DatabaseMgr:
             Column("owner", Integer, index=True),
             Column("title", String),
             Column("description", String),
+            Column("tags", String),
             Column("created_date", DateTime, default=func.now(), nullable=False),
         )
 

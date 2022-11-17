@@ -4,11 +4,10 @@ from sqlalchemy import asc
 from app.api.models import NoteSchema, BlogPostSchema, UserReg
 
 from app.db import DatabaseMgr, get_database_mgr
-# from app.db import notes_tb, blogposts_tb, users_tb, database
  
-
 from app.api.models import UserInDB, BlogPostDB, NoteDB
 
+from app.config import log
 
 # -----------------------------------------------------------------------------------------
 # for creating new notes
@@ -71,11 +70,13 @@ async def delete_note(id: int):
 # -----------------------------------------------------------------------------------------
 # for creating new blogposts
 async def post_blogpost(payload: BlogPostSchema, user_id: int):
+    log.info(f"post_blogpost: here!")
     db_mgr: DatabaseMgr = get_database_mgr()
     # Creates a SQLAlchemy insert object expression query
     query = db_mgr.get_blogposts_table().insert().values(owner=user_id, 
                                                          title=payload.title, 
-                                                         description=payload.description)
+                                                         description=payload.description,
+                                                         tags=payload.tags)
     # Executes the query and returns the generated ID
     return await db_mgr.get_db().execute(query=query)
 
@@ -101,7 +102,7 @@ async def put_blogpost(id: int, payload: BlogPostSchema):
         db_mgr.get_blogposts_table()
         .update()
         .where(id == db_mgr.get_blogposts_table().c.id)
-        .values(title=payload.title, description=payload.description)
+        .values(title=payload.title, description=payload.description, tags=payload.tags)
         .returning(db_mgr.get_blogposts_table().c.id)
     )
     return await db_mgr.get_db().execute(query=query)

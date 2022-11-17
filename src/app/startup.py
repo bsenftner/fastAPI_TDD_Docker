@@ -30,9 +30,12 @@ async def initialize_database_data( ) -> None:
         log.info(f"site config recovered: {note.data}")
         
     # ensure initial blog post exists
+    log.info("checking if initial blog post exists...")
     blogpost = await crud.get_blogpost(1)
     if not blogpost:
-        first_blogpost_payload = BlogPostSchema(title="hello", description="<p>world</p>")
+        log.info("creating first blog post payload...")
+        first_blogpost_payload = BlogPostSchema(title="hello", description="<p>world</p>", tags="debug")
+        log.info(f"posting {first_blogpost_payload}...")
         id = await crud.post_blogpost(first_blogpost_payload,1)
         log.info(f"created first blog post with id {id}.")
         
