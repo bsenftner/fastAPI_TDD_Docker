@@ -147,9 +147,10 @@ async def user_settings_page( request: Request, current_user: User = Depends(use
 # ------------------------------------------------------------------------------------------------------------------
 @router.post('/send-email/contact', response_model=ContactMsg)
 async def send_contact_email_asynchronous(msg: ContactMsg):
-    await send_email_async('bsenftner@earthlink.net', 
-                           { 'msg': { 'subject': msg.subject, 'body': msg.msg}},
-                           'basic_email.html')
+    settings = config.get_settings() # application config settings
+    await send_email_async( settings.ADMIN_EMAIL, 
+                            { 'msg': { 'subject': msg.subject, 'body': msg.msg}},
+                            'basic_email.html')
     return msg
 
 # ------------------------------------------------------------------------------------------------------------------
