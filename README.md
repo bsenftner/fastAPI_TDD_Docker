@@ -5,11 +5,17 @@
 A "data note" is arbitary JSON with a title and description. It's used for tracking site data, and providing data for visualizations.
 
 1. You'll need Docker to use this repo; this was developed using WSL2-Ubuntu on Win10 with Docker Desktop 4.12.0 (85629)
-   - If you intend to place this public & online, then you will also need a public hosting location, a domain you control, and an email address at that domain.
-   - The following steps describe how one would work with this repo locally.
+   - If you intend to place this public & online, then you will also need:
+     - a public hosting location,
+     - a domain you control,
+     - and an email address at that domain.
+   - The following steps describe how one would work with this repo locally, with variations for docker compose use on a hosting acct as well.
    - The difference when running in a hosting environment consists of running Traefik, a reverse proxy, in front of our app
    and Traefik handles routing between https and http to our app, as well as automated Let's Encrypt ssl cert generation.
-     - These steps are described in the notes section, bottom of this document.
+     - As far as you're concerned, you just need two things:
+       - make sure you do the steps outlined in the **Running on a public server** section, bottom of this document,
+       - and when using `docker compose` make sure to specify the production yaml files containing the Traefik configuration for the public server's ssl needs.
+         - those variations of yaml file use are included in the steps below.
 2. After getting your own copy of the repo, via a terminal navigate to `src\app` and create a file named `.env` in the same directory as main.py
 3. Enter `openssl rand -hex 32` to generate a random hex string, and again because you'll need two. These will be your secret hash strings.
 4. Edit the `.env` file to have contents like this:
@@ -33,7 +39,7 @@ A "data note" is arbitary JSON with a title and description. It's used for track
 
     Replace the values on the first two lines with the random hex strings generated in step 3.
 
-    The `ADMIN_USERNAME` and `ADMIN_EMAIL` lines should be modified to be the username and email you intend to you as the site's admin.
+    The `ADMIN_USERNAME` and `ADMIN_EMAIL` lines should be modified to be the username and email you intend to use as the site's admin.
 
     Unless you already have a programmatic email address you use and can get the various `MAIL_*`
     settings for above, I suggest looking up using GMail and their secure app email password system.
