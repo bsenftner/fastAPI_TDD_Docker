@@ -123,9 +123,13 @@ async def sign_up(user: UserReg):
     # when successful, validate_new_user_info() returns the Unicode normalized email in the msg return field:
     emailAddr = EmailStr(ret['msg'])
     
+    settings = get_settings() # application config settings
+    
     # basic "roles" setup:
     roles = 'user unverified'
-    if user.username=='bsenftner' and user.email=='bsenftner@earthlink.net':
+    #
+    # in app config the username and email of the admin/superuser is kept:
+    if user.username==settings.ADMIN_USERNAME and user.email==settings.ADMIN_EMAIL:
         roles += ' admin'
         
     # we store the hashed password in the db:

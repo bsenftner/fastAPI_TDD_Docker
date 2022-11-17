@@ -61,6 +61,9 @@ class Settings(BaseSettings):
 
     CLIENT_ORIGIN: str      # currently unused
     
+    ADMIN_USERNAME: str
+    ADMIN_EMAIL: str
+    
     MAIL_USERNAME: str
     MAIL_PASSWORD: str
     MAIL_FROM: str

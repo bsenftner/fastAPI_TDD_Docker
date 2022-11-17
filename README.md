@@ -21,6 +21,8 @@ A "data note" is arbitary JSON with a title and description. It's used for track
     REFRESH_TOKEN_EXPIRES_MINUTES=60
     JWT_ALGORITHM=HS256
     CLIENT_ORIGIN=http://localhost:8002
+    ADMIN_USERNAME=[admin-username]]
+    ADMIN_EMAIL=[admin-email-address]
     MAIL_USERNAME=[email-username-often-same-as-email-address]
     MAIL_PASSWORD=[email-password]
     MAIL_FROM=[email-from-account]
@@ -29,13 +31,17 @@ A "data note" is arbitary JSON with a title and description. It's used for track
     MAIL_FROM_NAME=[email-from-account-username]
     ```
 
-    Unless you already have a programmatic email address you use and can get the various
-    email settings for above, I suggest looking up using GMail and their secure app email password system.
+    Replace the values on the first two lines with the random hex strings generated in step 3.
+
+    The `ADMIN_USERNAME` and `ADMIN_EMAIL` lines should be modified to be the username and email you intend to you as the site's admin.
+
+    Unless you already have a programmatic email address you use and can get the various `MAIL_*`
+    settings for above, I suggest looking up using GMail and their secure app email password system.
 
 5. Navigate back the project's root, where the `docker-compose.yml` file is located and enter:
 
     ```text
-    docker compose up -d --build
+    docker compose -f docker-compose.yml up -d --build
     ```
 
     Note: if you are doing this on a live hosted server, you need to specify the production version:
@@ -52,35 +58,42 @@ A "data note" is arbitary JSON with a title and description. It's used for track
    - Tests should pass.
    - These are testing the CRUD REST endpoints, but there are more tests I should add that are not just CRUD operations.
 
-8. Visit `http://localhost:8002/register` to create the first user on the static GUI.
+8. Visit `http://localhost:8002/register` to create the first user on the website GUI.
 
-9. Currently the "admin" account is hardcoded to my info, but you can change that by modifying the "/users/register" endpoint.
+   - I suggest registering the admin account first, using the info supplied in the .env file (described step 4).
 
-   - Look in app/api/users_htmlpages.html around line 128, where the user roles are initialized. Just change that info to yours.
-   - Next version will have this "admin" info in the Settings/config .env file.
-
-This produces two Docker images, one hosting postgres and the other the FastAPI app.
+This produces two Docker containers, one hosting postgres and the other our FastAPI app.
 It is pretty basic at this point, quite easy to make your own. The file page_frags.py is the only one
 with text branding, and the single photo jpeg used so far is in that file too.
 
 The database itself is saved to the Docker host system. You can choose to take the app down deleting the database or preserving it.
 The pair of containers can be taken down with the db deleted using:
 
-`docker compose down -v`
+```text
+docker compose -f docker-compose.yml down -v
+```
 
 Or, if you want to preserve the info in the database, just use:
 
-`docker compose down`
+```text
+docker compose -f docker-compose.yml down
+```
 
 Next time you do step 5, above, the previous database info will still be there.
 
 Note: just like before, if this on a live hosted server, you need to specify the production yamls:
 
-  `docker compose -f docker-compose-prod.yml down -v`
+```text
+docker compose -f docker-compose-prod.yml down -v
+```
 
 Or to take the app down preserving the production database:
 
-  `docker compose -f docker-compose-prod.yml down`
+```text
+docker compose -f docker-compose-prod.yml down
+```
+
+For my own mental ease, I've adopted the practice of explicitly stating the yaml file to use to docker compose.
   
 ## Notes
 
@@ -106,19 +119,27 @@ Or to take the app down preserving the production database:
   - On the Settings page for admins there is a control to make the Contact page public or require login.
     - If not public, going to the Contact redirects to the homepage.
 
+### Running on a public server
+
 - When running this repo in public, before launching the app via docker compose, do these steps on your hosting acct:
   - Go to the Traefik directory and edit `traefik.toml`, line 15, to be the email address you control at the domain you control.
   - You need a secure password for your Traefik router admin account, so first install these tools:
 
-  `sudo apt-get install apache2-utils`
+    ```text
+    sudo apt-get install apache2-utils
+    ```
 
   - The utility needed is called `htpasswd` and you use it like this (replacing `secure_password` with your actual password):
 
-  `htpasswd -nb admin secure_password`
+    ```text
+    htpasswd -nb admin secure_password
+    ```
 
   - The output will look something like the below, save it for use in a bit:
 
-  `admin:$apr1$ruca84Hq$mbjdMZBAG.KWn7vfN/SNK/`
+    ```text
+    admin:$apr1$ruca84Hq$mbjdMZBAG.KWn7vfN/SNK/
+    ```
 
   - Now go to the Traefik directory again, this time edit `traefik_dynamic.toml`, line 3, to be
   that output generated by `htpasswd`. Put the `htpasswd` output inside the quotation marks.
