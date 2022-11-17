@@ -144,7 +144,7 @@
             // get the user's info:
 			const loginUser = document.getElementById("username").value;
 			const loginPass = document.getElementById("password").value;
-			if (loginUser.length < 8 || loginPass.length < 12) {
+			if (loginUser.length < 1 || loginPass.length < 12) {
 				document.getElementById("userMsg").innerHTML += 
 						'<p>Bad username or password.</p>';
 			}
