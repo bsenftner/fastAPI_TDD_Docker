@@ -1,6 +1,10 @@
 from fastapi import APIRouter, File, UploadFile, Depends, HTTPException, status
 import aiofiles
 
+# from pathlib import Path
+import glob
+from typing import List
+
 from app import config
 from app.api.users import get_current_active_user, user_has_role
 from app.api.models import UserInDB
@@ -11,15 +15,13 @@ router = APIRouter()
 
 # ------------------------------------------------------------------------------------------------------------------
 # endpoint for uploads, restricted to admin accounts
-@router.post("/upload", status_code=200)
+@router.post("/", status_code=200)
 async def upload(file: UploadFile = File(...), 
                  current_user: UserInDB = Depends(get_current_active_user)):
     
-    log.info(f"upload: here!")
-    
     if not user_has_role(current_user,"admin"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
-                            detail="Not Authorized to create Blog Posts")
+                            detail="Not Authorized to upload files")
         
     try:
         upload_path = config.get_base_path() / 'static/uploads' / file.filename
@@ -37,3 +39,31 @@ async def upload(file: UploadFile = File(...),
         await file.close()
 
     return {"message": f"Successfully uploaded {file.filename}"}
+
+# ----------------------------------------------------------------------------------------------
+# The response_model is a List with a str subtype. See import of List top of file. 
+@router.get("/", response_model=List[str])
+async def read_all_uploads(current_user: UserInDB = Depends(get_current_active_user)) -> List[str]:
+    
+    log.info(f"read_all_uploads: here!")
+    
+    if not user_has_role(current_user,"admin"):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
+                            detail="Not Authorized")
+    
+    upload_path = config.get_base_path() / 'static/uploads/*' 
+    
+    log.info(f"read_all_uploads: upload_path {upload_path}")
+    
+    # result = await glob.glob(upload_path)
+    
+    result = []
+    result.extend(glob.glob(str(upload_path)))
+    
+    # ret = []
+    # for res in result:
+    #     ret.append( res.name )
+        
+    log.info(f"read_all_uploads: got {result}")
+    
+    return result

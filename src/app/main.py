@@ -59,8 +59,8 @@ def create_application() -> FastAPI:
     # install the video router into our app with a prefix & tag too:
     application.include_router(video.router, prefix="/video", tags=["video"])
 
-    # install the upload router into our app with a tag too:
-    application.include_router(upload.router, tags=["upload"])
+    # install the upload router into our app with a prefix & tag too:
+    application.include_router(upload.router, prefix="/upload", tags=["upload"])
 
     # install the users htmlpages router into our app with tag too:
     application.include_router(users_htmlpages.router, tags=["user-pages"])
