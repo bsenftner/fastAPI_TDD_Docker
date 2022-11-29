@@ -29,26 +29,48 @@
 						<div id="editor">
 							{{contentPost.description | safe}}
   						</div>
-					</div> 
-					<label for="NewPostTags">Tags:</label>
-  					<input type="text" id="NewPostTags" name="label" value="{{contentPost.tags}}">
-					<div id="divBeneathTheEditor">
-						<a href="#" class="button" onclick="BlogEditCancel()">Cancel</a>
-						<a href="#" class="button" onclick="BlogUpdate()">Update</a>
-						<a href="#" class="button" onclick="BlogDelete()">Delete</a>
-						<br/>
-						<br/>
-						<a href="#" class="button" onclick="BlogSubmit()">Submit A Completely New Blog Post</a>
 					</div>
+					<pre id="editorDeltas">
+					</pre>
 				</form>
+				<div id="uploadList">
+					<div id="uploadSelectionDiv">
+						<label for="refSelectBox">Uploads:</label>
+						<select id="refSelectBox" onchange="onUploadSelectChangeFunc();"></select>
+					</div>
+					<div id="uploadInsertWidthDiv">
+						<label for="insertVideoWidth">Video width:</label>
+  						<input type="text" id="insertVideoWidth" name="label" value=640>
+					</div>
+					<div id="uploadInsertHeightDiv">
+						<label for="insertVideoHeight">Video height:</label>
+						<input type="text" id="insertVideoHeight" name="label" value=480>
+					</div>
+					<div id="uploadDeleteBttnDiv">
+						<a href="#" class="button" onclick="UploadedDelete()">Delete uploaded file</a>
+					</div>
+				</div>
 				<form>
 					<div id="divUpload">
-						<label>Select file to upload:</label>
-						<input type="file" id="NewPostUpload" name="label" >
+						<label>Add:</label>
+						<input type="file" id="NewPostUpload" name="label" onchange="onUploadChangeFunc();" >
 					</div>
 					<div id="divUploadMsg"></div>
-					<a href="#" class="button" onclick="UploadFile()">Upload file</a>
+					<div id="divUploadBttn">
+						<a href="#" class="button" id="uploadBttn" onclick="UploadFile()">Select a file first</a>
+					</div>
 				</form>
+				<div id="uploadTags">
+					<label for="NewPostTags">Post Tags:</label>
+  					<input type="text" id="NewPostTags" name="label" value="{{contentPost.tags}}">
+				</div>
+				<div id="divBeneathTheEditor">
+					<a href="#" class="button" onclick="BlogEditCancel()">Cancel</a>
+					<a href="#" class="button" onclick="BlogUpdate()">Update</a>
+					<a href="#" class="button" onclick="BlogDelete()">Delete</a>
+					<br/>
+					<a href="#" class="button" onclick="BlogSubmit()">Submit A Completely New Blog Post</a>
+				</div>
 			</div>
 		</main>
 
@@ -65,16 +87,68 @@
 
 	{% include 'common_ifAccessDo.html' %}
 
-	<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+	<!-- <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"> -->
+	<link href="//cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+	<!-- for html syntax hilighting -->
+	<link
+  		rel="stylesheet"
+  		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/github.min.css"
+	/>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/highlight.min.js"></script>
+	<script
+  		charset="UTF-8"
+  		src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/languages/xml.min.js">
+	</script>
 
 	{% include 'common_editStyle.html' %}
 
 	<!-- Include the Quill library -->
-	<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-	
+	<!-- <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script> -->
+	<!-- <script src="//cdn.quilljs.com/1.3.6/quill.min.js"></script> -->
+	<script src="https://unpkg.com/quill@1.3.7/dist/quill.js"></script>
+	<script src="https://unpkg.com/quill-html-edit-button@2.2.7/dist/quill.htmlEditButton.min.js"></script>
+
 	<script>
 
 		document.addEventListener( "DOMContentLoaded", function(){page_init();} );
+		//
+		// get list of uploaded files and populate upload selection list:
+		const get_uploads = () => {
+			fetch('/upload', { // GET endpoint
+				  method: 'GET',
+				  headers: {}
+			}).then(
+				  response => response.json() // if the response is a JSON object
+			 ).then(
+				  success => {
+					console.log( success ) // Handle the success response object
+					uploadSelectBox = document.getElementById("refSelectBox")
+					//
+					var i;
+					for (i = uploadSelectBox.options.length; i >= 0; i--) {
+						uploadSelectBox.remove(i);
+					}
+					//
+					var optn = document.createElement("OPTION");
+					optn.text = 'nothing';
+					optn.value = 0;
+					uploadSelectBox.options.add(optn);
+					//
+					var limit = success.length;
+					for (var i = 0; i < limit; i++) {
+						var optn = document.createElement("OPTION");
+						optn.text = success[i];
+						optn.value = success[i]; // i+1;
+						uploadSelectBox.options.add(optn);
+					}
+				}
+			 ).catch(
+				  error => {
+					console.log( error ) // Handle the error response object
+				}
+			);
+		  };
 		//
 		function page_init_work() {
 			document.getElementById("aside").innerHTML = 
@@ -82,13 +156,99 @@
 							<br/><br/>
 							<a href="#" class="button" onclick="Logout()">Logout</a>
 							`;
+			
+			ifAccessDo(get_uploads);
 		}
 		//
 		function page_init() {
 			ifAccessDo(page_init_work);
 		}
 
+		// called when the Input File's browse has been operated and it's value changed:
+		function onUploadChangeFunc() {
+			fileInputCtrl = document.getElementById("NewPostUpload")
+			selected = fileInputCtrl.value;
+			fileUploadButton = document.getElementById("uploadBttn")
+			fileUploadButton.innerHTML = 'Add "' + selected + '" to Uploads'
+		}
+
+		// called when the Uploaded files dropdown changes:
+		function onUploadSelectChangeFunc() {
+			uploadSelectBox = document.getElementById("refSelectBox")
+			selected = uploadSelectBox.value;
+			if (selected) {
+				// make the current clipboard the selected video playback url:
+				selected = '/video/' + selected;
+				navigator.clipboard.writeText(selected);
+			}
+		}
+
+
+
+		// called when a selected Uploaded file is to be inserted into the blog text:
+		function UploadedDelete() {
+			alert("boop!");
+		}
+
+
+
+
+		let DefaultVideo = Quill.import('formats/video');
+		//
+		class CentralizedVideo extends DefaultVideo {
+  			static create(value) {
+    			// Get node from superclass.
+    			let node = super.create(value);
+
+				// user fields:
+				let insertElemWidth  = document.getElementById("insertVideoWidth").value;
+				let insertElemHeight = document.getElementById("insertVideoHeight").value;
+				//
+    			// Set width and height.
+    			node.width = parseInt(insertElemWidth);
+    			node.height = parseInt(insertElemHeight);
+
+    			// Get url in correct format. Without it, the video will not work.
+    			value = this.extractVideoUrl(value);
+    			node.setAttribute('src', value);
+    
+    			node.classList.add('ql-align-center');
+
+    			return node;
+  			}
+
+  			static value(node){
+    			return node.getAttribute('src');
+  			}
+
+  			static extractVideoUrl(url) {
+    			// look for youtube urls:
+				let match =
+      				url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtube\.com\/watch.*v=([a-zA-Z0-9_-]+)/,) ||
+      				url.match(/^(?:(https?):\/\/)?(?:(?:www|m)\.)?youtu\.be\/([a-zA-Z0-9_-]+)/);
+				// if a youtube url, use their embed:
+    			if (match) {
+      				return `${match[1] || 'https'}://www.youtube.com/embed/${ match[2] }?showinfo=0`;
+    			}
+    			// if a vimeo url, use their embed:
+    			if ((match = url.match(/^(?:(https?):\/\/)?(?:www\.)?vimeo\.com\/(\d+)/))) {
+      				return `${match[1] || 'https'}://player.vimeo.com/video/${match[2]}/`;
+    			}
+				// just let raw video url pass thru:
+    			return url;
+  			}
+		}
+		//
+		Quill.register(CentralizedVideo);
+
+/**/
+
+
+
+		
 		// Initialize Quill editor 
+		Quill.register("modules/htmlEditButton", htmlEditButton);
+		//
 		var toolbarOptions = [
   				['bold', 'italic', 'underline', 'strike'],        // toggled buttons
   				['blockquote', 'code-block'],
@@ -97,20 +257,44 @@
   				[{ 'list': 'ordered'}, { 'list': 'bullet' }],
   				[{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
   				[{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-  				[{ 'direction': 'rtl' }],                         // text direction
+  			//	[{ 'direction': 'rtl' }],                         // text direction
 
   				[{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
   				[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
 
-  				[{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+			//  [ 'link', 'image', 'video', 'formula' ],	
+			    [ 'link', 'image', 'video' ],		  			  // add's image & video support
+  			
+			    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
   				[{ 'font': [] }],
   				[{ 'align': [] }],
 
-  				['clean']                                         // remove formatting button
+  				['clean'],                                        // remove formatting button
+
+			/*	[{'link': function(value) {
+								if (value) {
+					  				var href = prompt('Enter a URL the selections will link:');
+					  				this.quill.format('link', href);
+								} else {
+					  				this.quill.format('link', false);
+								}
+				  		  }
+				}] */
 			];
 		var quill = new Quill('#editor', {
 			modules: {
-				toolbar: toolbarOptions
+				toolbar: toolbarOptions,
+				htmlEditButton: {
+					debug: true, // logging, default:false
+    				msg: "Edit the content in HTML format", //Custom message to display in the editor, default: Edit HTML here, when you click "OK" the quill editor's contents will be replaced
+    				okText: "Ok", // Text to display in the OK button, default: Ok,
+    				cancelText: "Cancel", // Text to display in the cancel button, default: Cancel
+    				buttonHTML: "&lt;&gt;", // Text to display in the toolbar button, default: <>
+    				buttonTitle: "Show HTML source", // Text to display as the tooltip for the toolbar button, default: Show HTML source
+    				syntax: false, // Show the HTML with syntax highlighting. Requires highlightjs on window.hljs (similar to Quill itself), default: false
+				}, /**/
+			//	'image-tooltip': true,
+			//	'link-tooltip': true
 			},
 			theme: 'snow'
 		});
@@ -232,11 +416,7 @@
 			const upload = (file) => {
 				fetch('/upload', { // Your POST endpoint
 	  				method: 'POST',
-	  				headers: {
-							// Content-Type may need to be completely **omitted**
-							// or you may need something
-							// "Content-Type": "You will perhaps need to define a content-type here"
-	  					},
+	  				headers: {},
 	  				body: data // This is your file object
 				}).then(
 	  				response => response.json() // if the response is a JSON object
@@ -244,6 +424,15 @@
 	  				success => {
 						console.log( success.message) // Handle the success response object
 						document.getElementById("divUploadMsg").innerHTML = '<p>Success msg: ' +  success.message + '</p>';
+						// populate listbox for upload selection:
+						get_uploads();
+						//
+						// clear the file upload ctrl, now that the file has been uploaded
+						fileInputCtrl = document.getElementById("NewPostUpload")
+						fileInputCtrl.value = '';
+						//
+						fileUploadButton = document.getElementById("uploadBttn")
+						fileUploadButton.innerHTML = 'Select a file first'
 					}
 				 ).catch(
 	  				error => {

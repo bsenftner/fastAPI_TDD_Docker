@@ -60,10 +60,12 @@ async def read_all_uploads(current_user: UserInDB = Depends(get_current_active_u
     result = []
     result.extend(glob.glob(str(upload_path)))
     
-    # ret = []
-    # for res in result:
-    #     ret.append( res.name )
+    ret = []
+    for longPath in result:
+        parts = longPath.split('/')
+        count = len(parts)
+        ret.append( parts[count-1] )
         
-    log.info(f"read_all_uploads: got {result}")
+    log.info(f"read_all_uploads: got {ret}")
     
-    return result
+    return ret

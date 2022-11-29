@@ -163,6 +163,50 @@ input#NewPostTags {
   font-size: 18px;
 }
 
+input#NewPostUpload {
+  font-size: 20px;
+}
+div#uploadList {
+  font-size: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+div#uploadSelectionDiv {
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+div#uploadInsertWidthDiv, div#uploadInsertHeightDiv {
+  display: inline;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+div#uploadDeleteBttnDiv {
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+div#uploadInsertBttnDiv {
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+pre#editorDeltas {
+  font-size: small;
+}
+.ql-video.ql-align-center {
+  margin: 0 auto;
+}
+.ql-align-center {
+  text-align: center;
+}
+.ql-video {
+  display: block;
+  max-width: 100%;
+}
+
 div#divBeneathTheEditor {
   padding-top: 60px; /* 52px; */
 }
@@ -174,7 +218,7 @@ input#NewEmailSubject {
 }
 
 label {
-  width: 8%;
+  width: 12%;
   display: inline-block;
   font-size: 30px;
 }
@@ -215,6 +259,60 @@ footer {
   margin-left: 124px;
   margin-right: 20px;
   margin-bottom: 20px;
+}
+
+#GraveCaveImg {
+  display: inline;
+  margin-left: 20px;
+  margin-right: 0px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  height: 300px;
+}
+
+#FractalsBookImg {
+  display: inline;
+  margin-left: 20px;
+  margin-right: 0px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  height: 300px;
+}
+
+#MacImg {
+  display: inline;
+  margin-left: 20px;
+  margin-right: 0px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  height: 300px;
+}
+
+#HarvestImg {
+  display: inline;
+  margin-left: 20px;
+  margin-right: 0px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  height: 300px;
+}
+
+#TD0Img, #PSXImg, #TigerWoodsImg {
+  display: inline;
+  margin-left: 20px;
+  margin-right: 0px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  height: 300px;
+}
+
+#CatImg, #ScoobyImg, #GarfieldImg, #NarniaImg {
+  display: inline;
+  margin-left: 20px;
+  margin-right: 0px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  height: 300px;
 }
 
 
