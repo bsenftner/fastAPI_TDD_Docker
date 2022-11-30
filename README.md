@@ -27,7 +27,7 @@ A "data note" is arbitary JSON with a title and description. It's used for track
     REFRESH_TOKEN_EXPIRES_MINUTES=60
     JWT_ALGORITHM=HS256
     CLIENT_ORIGIN=http://localhost:8002
-    ADMIN_USERNAME=[admin-username]]
+    ADMIN_USERNAME=[admin-username]
     ADMIN_EMAIL=[admin-email-address]
     MAIL_USERNAME=[email-username-often-same-as-email-address]
     MAIL_PASSWORD=[email-password]
