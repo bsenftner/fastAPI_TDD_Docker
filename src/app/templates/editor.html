@@ -22,7 +22,7 @@
 		<main>
 			<div id="mainContent">
 				{# the editor itself, embedded in a form, with a post's contents, and operation buttons #}
-				<form method="post">
+				<form id="editorForm" method="post">
 					<label for="NewPostTitle">Title:</label>
   					<input type="text" id="NewPostTitle" name="label" value="{{contentPost.title}}">
 					<div class="editorContainer">
@@ -30,13 +30,14 @@
 							{{contentPost.description | safe}}
   						</div>
 					</div>
-					<pre id="editorDeltas">
-					</pre>
 				</form>
 				<div id="uploadList">
 					<div id="uploadSelectionDiv">
 						<label for="refSelectBox">Uploads:</label>
 						<select id="refSelectBox" onchange="onUploadSelectChangeFunc();"></select>
+					</div>
+					<div id="uploadSelectionMsg">
+						Selections load the local url for that item, ready for use with the video toolbar widget.
 					</div>
 					<div id="uploadInsertWidthDiv">
 						<label for="insertVideoWidth">Video width:</label>
@@ -46,9 +47,12 @@
 						<label for="insertVideoHeight">Video height:</label>
 						<input type="text" id="insertVideoHeight" name="label" value=480>
 					</div>
-					<div id="uploadDeleteBttnDiv">
-						<a href="#" class="button" onclick="UploadedDelete()">Delete uploaded file</a>
+					<div id="widthHeightMsg">
+						These width and height values are picked up by the toolbar video widget.
 					</div>
+			<!--	<div id="uploadDeleteBttnDiv">
+						<a href="#" class="button" onclick="UploadedDelete()">Delete selected upload file</a>
+					</div> -->
 				</div>
 				<form>
 					<div id="divUpload">

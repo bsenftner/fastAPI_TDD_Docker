@@ -168,19 +168,31 @@ input#NewPostUpload {
 }
 div#uploadList {
   font-size: 20px;
-  margin-top: 20px;
+  margin-top: 0px;
   margin-bottom: 20px;
 }
-
 div#uploadSelectionDiv {
   display: block;
-  margin-top: 20px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+div#uploadSelectionMsg, div#widthHeightMsg {
+  font-size: smaller;
   margin-bottom: 20px;
 }
 div#uploadInsertWidthDiv, div#uploadInsertHeightDiv {
   display: inline;
+  font-size: small;
   margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
+}
+div#uploadInsertWidthDiv label {
+  font-size: large;
+}
+div#uploadInsertHeightDiv label {
+  font-size: large;
+  margin-left: 20px;
+  margin-right: -20px;
 }
 div#uploadDeleteBttnDiv {
   display: block;
@@ -193,9 +205,6 @@ div#uploadInsertBttnDiv {
   margin-bottom: 20px;
 }
 
-pre#editorDeltas {
-  font-size: small;
-}
 .ql-video.ql-align-center {
   margin: 0 auto;
 }
