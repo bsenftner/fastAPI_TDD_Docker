@@ -100,6 +100,22 @@ docker compose -f docker-compose-prod.yml down
 ```
 
 For my own mental ease, I've adopted the practice of explicitly stating the yaml file to use to docker compose.
+
+## Database Backups
+
+Look in the `app/backups` directory for two scipts, one generates a backup of the database and the other restores a backup. These are run from the Docker host as follows:
+
+```text
+cd [your-docker-container's-app/backups-directory]
+./new_backup.sh [postgres-docker-container-id]
+```
+
+The above will generate a gzip compressed file named dump_[timestamp].gz. Below restores one of them:
+
+```text
+cd [your-docker-container's-app/backups-directory]
+./restore_backup.sh [database-backup.gz] [postgres-container-id]
+```
   
 ## Notes
 

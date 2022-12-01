@@ -1,6 +1,6 @@
 
 from fastapi import APIRouter, HTTPException, Depends, status, Request, Response
-from app.api.models import Token, User, UserInDB, UserPublic, UserReg, basicTextPayload
+from app.api.models import Token, UserInDB, UserPublic, UserReg, basicTextPayload
 from app.api import encrypt 
 
 from fastapi.security import OAuth2PasswordRequestForm
