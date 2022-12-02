@@ -279,7 +279,7 @@ footer {
   height: 300px;
 }
 
-#FractalsBookImg {
+#FractalsBookImg, #BULabImg {
   display: inline;
   margin-left: 20px;
   margin-right: 0px;
@@ -315,7 +315,7 @@ footer {
   height: 300px;
 }
 
-#CatImg, #ScoobyImg, #GarfieldImg, #NarniaImg {
+#CatImg, #ScoobyImg, #GarfieldImg, #NarniaImg, #AureusImg {
   display: inline;
   margin-left: 20px;
   margin-right: 0px;
@@ -324,6 +324,12 @@ footer {
   height: 300px;
 }
 
+#AvatarStoreVid {
+  margin-left: 20px;
+  margin-right: 0px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 
 label.chkbox {
   padding-left: 100px;
