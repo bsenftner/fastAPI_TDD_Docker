@@ -22,35 +22,36 @@
 				{# title and post contents, with an optional edit button #}
 				<H3> Welcome to my website and blog. </H3>
 				<p>I'm Blake Senftner. This website is my blog and career showcase. 
-				   I have been crazy lucky to be a part of our technology world for some time and write some amazing software.</p>
+				   I have been lucky to be a developer with some great teams and write some amazing software.</p>
 				<!-- -->
-				<img id="GraveCaveImg" src="/static/GraveCave.jpg"/>
+				<img id="GraveCaveImg" src="/static/GraveCave.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="MacImg" src="/static/OriginalMac.jpg"/>
+				<img id="MacImg" src="/static/OriginalMac.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="FractalsBookImg" src="/static/BeautyOfFractalsBook.jpg"/>
+				<img id="FractalsBookImg" src="/static/BeautyOfFractalsBook.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="BULabImg" src="/static/BUGraphicsLab.jpg"/>
+				<img id="BULabImg" src="/static/BUGraphicsLab.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="HarvestImg" src="/static/HarvestOfTheSun.jpg"/>
+				<img id="HarvestImg" src="/static/HarvestOfTheSun.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="TD0Img" src="/static/3D0_Logo_1996.jpg"/>
+				<img id="TD0Img" src="/static/3D0_Logo_1996.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="PSXImg" src="/static/PlayStation.jpg"/>
+				<img id="PSXImg" src="/static/PlayStation.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="TigerWoodsImg" src="/static/TigerWoodsPSX.jpg"/>
+				<img id="TigerWoodsImg" src="/static/TigerWoodsPSX.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="CatImg" src="/static/CatInTheHat.jpg"/>
+				<img id="CatImg" src="/static/CatInTheHat.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="ScoobyImg" src="/static/ScoobyDoo.jpg"/>
+				<img id="ScoobyImg" src="/static/ScoobyDoo.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="GarfieldImg" src="/static/Garfield.jpg"/>
+				<img id="GarfieldImg" src="/static/Garfield.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<img id="NarniaImg" src="/static/Narnia.jpg"/>
+				<img id="NarniaImg" src="/static/Narnia.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
-				<video id="AvatarStoreVid" controls muted autoplay width="534" height="300" src="/video/AvatarStore.mp4" type="video/mp4"></video>
+				<video id="AvatarStoreVid" controls muted width="434" height="200" src="/video/AvatarStore.mp4" type="video/mp4" 
+				       onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" ></video>
 				<!-- -->
-				<img id="AureusImg" src="/static/Aureus3Dv6.jpg"/>
+				<img id="AureusImg" src="/static/Aureus3Dv6.jpg" onmouseenter="bigImg(this)" onmouseleave="normalImg(this)" />
 				<!-- -->
                 <p>I had my first college programming class in '76, while in 5th grade. I've been writing software professionally since age 17, that being 1982. 
 				   It was during high school of '82 I founded a video game studio for the <b>Vic-20</b> and the <b>Commodore 64</b> home computers. We called  
@@ -81,7 +82,8 @@
 				<p>
 				   Over the 90's I worked on over 36 multmedia and/or 3D video game titles (including <b>Tiger Woods Golf</b>, <b>NCAA Football</b>, 
 				   <b>Brunswick Bowling</b> and more). As the 90's closed I became Director of Skunkworks for the Internet's first <b>Live Video Infrastructure 
-					Provider</b>; as one of the pioneers of <b>Live Internet Video</b> <em>five years before YouTube</em> I wrote code and produced live talk shows.
+					Provider</b>; as one of the pioneers of <b>Live Internet Video</b> <em>five years before YouTube</em> I wrote video codecs and produced live 
+					talk shows featuring underground L.A. bands.
 				</p>
 				<p>
                    After the domcom crash, I worked as a triplicate <em>digital artist / software engineer / financial analysis</em> for an <b>Academy Award</b> 
@@ -102,8 +104,9 @@
                 <p>If you want to send me a direct contact you will need to register an account.
                     You can register by clicking the link on the right-hand sidebar. 
                 </p>
-                <p>About this web site: I hand coded it myself. The backend is in Python using FastAPI, hosted inside Docker containers, and the front end is 
-					simply hand written static html/CSS with some mininal JavaScript for my own personal enjoyment.  
+                <p>About this web site: <a href="https://github.com/bsenftner/fastAPI_TDD_Docker">I hand coded it myself.</a> The backend is in Python using 
+				   FastAPI + Postgres, both hosted inside Docker containers. The front end is hand written static html/CSS, and mininal JavaScript over the
+				   <a href="https://github.com/julianshapiro/velocity">Velocity library</a>, for my own personal amusement.  
                 </p>
 			</div>
 			<h5>tags: home</h5>
@@ -125,7 +128,21 @@
 	
 	{% include 'common_ifAccessDo.html' %}
 
+	<!-- Include the Velocity library -->
+	<script src="//cdn.jsdelivr.net/npm/velocity-animate@2.0/velocity.min.js"></script>
+
 	<script>
+
+		function bigImg(x) {
+			// x.style.height = "363px";
+			Velocity(x, { height: "210px" }, 1000);
+		}
+		  
+		function normalImg(x) {
+			// x.style.height = "200px";
+			Velocity(x, { height: "200px" }, 1000);
+		}
+
 
 		document.addEventListener("DOMContentLoaded", function() {
 			page_init();
