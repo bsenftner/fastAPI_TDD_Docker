@@ -307,17 +307,17 @@
 
 		function BlogSubmitWork() {
 			// get the post label:
-			const newPostTitle = document.getElementById("NewPostTitle").value;
+			var newPostTitle = document.getElementById("NewPostTitle").value;
 			// Get HTML content
 			var newPostHTML = quill.root.innerHTML;
 			// get the post tags:
-			const newPostTags = document.getElementById("NewPostTags").value;
+			var newPostTags = document.getElementById("NewPostTags").value;
 
 			// post as new blog submission:
 			const params = {
 				"title": newPostTitle, 
 				"description": newPostHTML,
-				"tags": newPosTags,
+				"tags": newPostTags,
 			};
 		
 			const options = {
