@@ -51,7 +51,9 @@
 			<div id="mainContent">
 				{# title and post contents, with an optional edit button #}
 				<H1> {{contentPost.title}} </H1>
-				{{contentPost.description | safe}}
+				<div class="ql-editor">
+					{{contentPost.description | safe}}
+				</div>
 				<h5>tags: {{contentPost.tags}}</h5>
 			</div>
 			

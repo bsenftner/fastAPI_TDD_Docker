@@ -285,6 +285,15 @@
 				  		  }
 				}] */
 			];
+		//
+/*		function imageHandler() {
+				var range = this.quill.getSelection();
+				var value = prompt('What is the image URL');
+				if(value){
+					this.quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
+				}
+		} /**/
+		//
 		var quill = new Quill('#editor', {
 			modules: {
 				toolbar: toolbarOptions,
@@ -297,6 +306,9 @@
     				buttonTitle: "Show HTML source", // Text to display as the tooltip for the toolbar button, default: Show HTML source
     				syntax: false, // Show the HTML with syntax highlighting. Requires highlightjs on window.hljs (similar to Quill itself), default: false
 				}, /**/
+		/*		handlers: {
+					image: imageHandler
+				}  /**/
 			//	'image-tooltip': true,
 			//	'link-tooltip': true
 			},

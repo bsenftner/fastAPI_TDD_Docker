@@ -331,6 +331,14 @@ footer {
   margin-bottom: 20px;
 }
 
+#AvatarFaceCtrlsImg {
+  float: right;
+  margin-left: 20px;
+  margin-right: 0px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
 label.chkbox {
   padding-left: 100px;
   font-weight: bold;
@@ -339,4 +347,8 @@ label.chkbox {
 input.chkbox {
   width: 26px;
   height: 26px;
+}
+
+#mainContent h1 {
+  margin-bottom: -20px;
 }
