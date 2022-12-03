@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+{# 
+	This is a Jinja2 template for an html page
+	These lines are comments and are removed when the template is rendered. 
+#}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Blog of Blake Senftner</title>
+  <link rel="stylesheet" href="/static/index.css">
+
+  
+</head>
+<body>
+	<div class="grid">
+		{% include 'common_header.html' %}
+
+		{# the left sidebar #}
+		{% include 'common_lsidebar.html' %}
+
+		<main>
+			<div id="mainContent">
+				{# the editor itself, embedded in a form, with a post's contents, and operation buttons #}
+				<form id="editorForm" method="post">
+					<label for="NewPostTitle">Title:</label>
+  					<input type="text" id="NewPostTitle" name="label" value="{{contentPost.title}}">
+					<div class="editorContainer">
+						<div id="editor">
+							{{contentPost.description | safe}}
+  						</div>
+					</div>
+				</form>
+				<div id="uploadList">
+					<div id="uploadSelectionDiv">
+						<label for="refSelectBox">Uploads:</label>
+						<select id="refSelectBox" onchange="onUploadSelectChangeFunc();"></select>
+					</div>
+					<div id="uploadSelectionMsg">
+						Selections load the local url for that item, ready for use with the video toolbar widget.
+					</div>
+					<div id="uploadInsertWidthDiv">
+						<label for="insertVideoWidth">Video width:</label>
+  						<input type="text" id="insertVideoWidth" name="label" value=640>
+					</div>
+					<div id="uploadInsertHeightDiv">
+						<label for="insertVideoHeight">Video height:</label>
+						<input type="text" id="insertVideoHeight" name="label" value=480>
+					</div>
+					<div id="widthHeightMsg">
+						These width and height values are picked up by the toolbar video widget.
+					</div>
+					
+					
+					<div id="divImgLinkBttn">
+						<a href="#" class="button" id="imgLinkBttn" onclick="insertImageBlot()">Insert Image as link</a>
+					</div>
+					<div id="divImgLinkMsg">
+						The toolbar's image function embeds the image as base64 data, whereas this is just a link.
+					</div>
+
+			<!--	<div id="uploadDeleteBttnDiv">
+						<a href="#" class="button" onclick="UploadedDelete()">Delete selected upload file</a>
+					</div> -->
+				</div>
+				<form>
+					<div id="divUpload">
+						<label>Add:</label>
+						<input type="file" id="NewPostUpload" name="label" onchange="onUploadChangeFunc();" >
+					</div>
+					<div id="divUploadMsg"></div>
+					<div id="divUploadBttn">
+						<a href="#" class="button" id="uploadBttn" onclick="UploadFile()">Select a file first</a>
+					</div>
+				</form>
+				<div id="uploadTags">
+					<label for="NewPostTags">Post Tags:</label>
+  					<input type="text" id="NewPostTags" name="label" value="{{contentPost.tags}}">
+				</div>
+				<div id="divBeneathTheEditor">
+					<a href="#" class="button" onclick="BlogEditCancel()">Cancel</a>
+					<a href="#" class="button" onclick="BlogUpdate()">Update</a>
+					<a href="#" class="button" onclick="BlogDelete()">Delete</a>
+					<br/>
+					<a href="#" class="button" onclick="BlogSubmit()">Submit A Completely New Blog Post</a>
+				</div>
+			</div>
+		</main>
+
+		<aside>
+			<div id="aside">
+				<a href="#" class="button" onclick="Login()">Login</a>
+			</div>
+		</aside>
+  
+	<footer>
+		{{ frags[0].footer | safe }} 
+	</footer>
+	</div>
+
+	{% include 'common_ifAccessDo.html' %}
+
+	
+	<!-- for html syntax hilighting -->
+	<link
+  		rel="stylesheet"
+  		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/github.min.css"
+	/>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/highlight.min.js"></script>
+	<script
+  		charset="UTF-8"
+  		src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/languages/xml.min.js">
+	</script>
+
+	{% include 'common_editStyle.html' %}
+
+    <!-- include the TinyMCE editor -->
+	<script src="https://cdn.tiny.cloud/1/tpl8zzz2nyqln68299z0tf9u4m2p3hi6c9qxgr7gal0i454q/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+	<script>
+
+        // configure the TinyMCE editor 
+        tinymce.init({
+            selector: '#editor',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage tinycomments tableofcontents footnotes mergetags autocorrect',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [
+              { value: 'First.Name', title: 'First Name' },
+              { value: 'Email', title: 'Email' },
+            ]
+        });
+
+
+		document.addEventListener( "DOMContentLoaded", function(){page_init();} );
+		//
+		// get list of uploaded files and populate upload selection list:
+		const get_uploads = () => {
+			fetch('/upload', { // GET endpoint
+				  method: 'GET',
+				  headers: {}
+			}).then(
+				  response => response.json() // if the response is a JSON object
+			 ).then(
+				  success => {
+					console.log( success ) // Handle the success response object
+					uploadSelectBox = document.getElementById("refSelectBox")
+					//
+					var i;
+					for (i = uploadSelectBox.options.length; i >= 0; i--) {
+						uploadSelectBox.remove(i);
+					}
+					//
+					var optn = document.createElement("OPTION");
+					optn.text = 'nothing';
+					optn.value = 0;
+					uploadSelectBox.options.add(optn);
+					//
+					var limit = success.length;
+					for (var i = 0; i < limit; i++) {
+						var optn = document.createElement("OPTION");
+						optn.text = success[i];
+						optn.value = success[i]; // i+1;
+						uploadSelectBox.options.add(optn);
+					}
+				}
+			 ).catch(
+				  error => {
+					console.log( error ) // Handle the error response object
+				}
+			);
+		  };
+		//
+		function page_init_work() {
+			document.getElementById("aside").innerHTML = 
+							`<a href="#" class="button" onclick="UserSettings()">Settings</a>
+							<br/><br/>
+							<a href="#" class="button" onclick="Logout()">Logout</a>
+							`;
+			
+			ifAccessDo(get_uploads);
+		}
+		//
+		function page_init() {
+			ifAccessDo(page_init_work);
+		}
+
+		// called when the Input File's browse has been operated and it's value changed:
+		function onUploadChangeFunc() {
+			fileInputCtrl = document.getElementById("NewPostUpload")
+			selected = fileInputCtrl.value;
+			fileUploadButton = document.getElementById("uploadBttn")
+			fileUploadButton.innerHTML = 'Add "' + selected + '" to Uploads'
+		}
+
+		// called when the Uploaded files dropdown changes:
+		function onUploadSelectChangeFunc() {
+			uploadSelectBox = document.getElementById("refSelectBox")
+			selected = uploadSelectBox.value;
+			if (selected) {
+				// make the current clipboard the selected video playback url:
+				selected = '/video/' + selected;
+				navigator.clipboard.writeText(selected);
+			}
+		}
+
+
+
+		// called when a selected Uploaded file is to be inserted into the blog text:
+		function UploadedDelete() {
+			alert("boop!");
+		}
+
+
+
+
+		function BlogEditCancel() { window.location.href = "/blog/{{ contentPost.id }}"; }
+
+		function BlogSubmitWork() {
+			// get the post label:
+			var newPostTitle = document.getElementById("NewPostTitle").value;
+			// Get HTML content
+			var newPostHTML = tinymce.get("editor").getContent();
+			// get the post tags:
+			var newPostTags = document.getElementById("NewPostTags").value;
+
+			// post as new blog submission:
+			const params = {
+				"title": newPostTitle, 
+				"description": newPostHTML,
+				"tags": newPostTags,
+			};
+		
+			const options = {
+				method: 'POST',
+				headers: {
+					  'Accept': 'application/json',
+					  'Content-Type': 'application/json',
+					  // "Authorization": "Bearer " + access_token // only needed when JWT is not in cookie
+				},
+				body: JSON.stringify( params )  
+			};
+			fetch( '/blogposts/', options )
+				.then( response => response.json() )
+				.then( response => {
+					// Do something with response.
+					// console.log( response )
+					window.location.href = "/blog/" + response.id.toString();
+				}); /* */
+		}
+		function BlogSubmit() {
+			ifAccessDo(BlogSubmitWork);
+		}
+
+		function BlogUpdateWork() {
+			const someData = {
+				"title": document.getElementById("NewPostTitle").value, 
+				"description": tinymce.get("editor").getContent(),
+				"tags": document.getElementById("NewPostTags").value, 
+			}
+			//
+			const options = {
+				credentials: 'include',
+				method: 'PUT', // Method itself
+				headers: {
+				 		'Content-type': 'application/json; charset=UTF-8', // Indicates the content 
+				 		// "Authorization": "Bearer " + access_token // only needed when JWT is not in cookie
+				},
+				body: JSON.stringify(someData) // We send data in JSON format
+			}
+			   
+			// make the HTTP put request using fetch api
+			let domain = (new URL(window.location));
+			const prebsjnk = domain.origin;
+			const furl = prebsjnk + '/blogposts/{{ contentPost.id }}';
+			fetch(furl, options) 
+			// .then(response => response.json())
+			.then(response => 
+			{
+				window.location.href = "/blog/{{ contentPost.id }}";
+			}) 
+			.catch(err => {
+				// Do something with the error
+				console.log(err) 
+				alert( err )
+				window.location.href = "/blog/{{ contentPost.id }}";
+			}) 
+		}
+		function BlogUpdate() {
+			ifAccessDo(BlogUpdateWork);
+		}
+
+		function BlogDeleteWork() {
+			const options = { 
+				method: 'DELETE',
+				// headers: { "Authorization": "Bearer " + access_token } // only needed when JWT is not in cookie
+			};
+			fetch( '/blogposts/{{ contentPost.id }}', options )
+				.then( response => response.json() )
+				.then( response => {
+					// Do something with response:
+					console.log( response )
+					if (response.id != '{{ contentPost.id }}')
+					{ 
+						console.log( "DELETE ERROR!" )
+						alert( "DELETE ERROR!" )
+						
+					}
+					window.location.href = "/";
+
+				} )
+				.catch(err => {
+					// Do something with the error
+					console.log(err) 
+					alert( err )
+					window.location.href = "/blog/{{ contentPost.id }}";
+				});
+		}
+		function BlogDelete() {
+			ifAccessDo(BlogDeleteWork);
+		}
+
+		function UploadFileWork() {
+			// Select your input type file and store it in a variable
+			const input = document.getElementById('NewPostUpload');
+
+			var data = new FormData()
+			data.append('file', input.files[0])
+
+			// This will upload the file after having read it
+			const upload = (file) => {
+				fetch('/upload', { // Your POST endpoint
+	  				method: 'POST',
+	  				headers: {},
+	  				body: data // This is your file object
+				}).then(
+	  				response => response.json() // if the response is a JSON object
+				 ).then(
+	  				success => {
+						console.log( success.message) // Handle the success response object
+						document.getElementById("divUploadMsg").innerHTML = '<p>Success msg: ' +  success.message + '</p>';
+						// populate listbox for upload selection:
+						get_uploads();
+						//
+						// clear the file upload ctrl, now that the file has been uploaded
+						fileInputCtrl = document.getElementById("NewPostUpload")
+						fileInputCtrl.value = '';
+						//
+						fileUploadButton = document.getElementById("uploadBttn")
+						fileUploadButton.innerHTML = 'Select a file first'
+					}
+				 ).catch(
+	  				error => {
+						console.log( error ) // Handle the error response object
+						document.getElementById("divUploadMsg").innerHTML = '<p>Error msg: ' + error + '</p>';
+					}
+				);
+  			};
+  
+  			upload(input.files[0]);
+		}
+		function UploadFile() {
+			ifAccessDo(UploadFileWork);
+		}
+
+		function UserSettings() { window.location.href = "/Settings"; }
+
+	</script>
+
+	{% include 'common_logout.html' %}
+
+	{% include 'common_refresh.html' %}
+
+
+</body>
+</html>
