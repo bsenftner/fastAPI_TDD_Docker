@@ -50,6 +50,15 @@
 					<div id="widthHeightMsg">
 						These width and height values are picked up by the toolbar video widget.
 					</div>
+					
+					
+					<div id="divImgLinkBttn">
+						<a href="#" class="button" id="imgLinkBttn" onclick="insertImageBlot()">Insert Image as link</a>
+					</div>
+					<div id="divImgLinkMsg">
+						The toolbar's image function embeds the image as base64 data, whereas this is just a link.
+					</div>
+
 			<!--	<div id="uploadDeleteBttnDiv">
 						<a href="#" class="button" onclick="UploadedDelete()">Delete selected upload file</a>
 					</div> -->
@@ -194,6 +203,51 @@
 			alert("boop!");
 		}
 
+
+
+		var InlineBlot = Quill.import('blots/block');
+		//
+		class ImageBlot extends InlineBlot {
+  			static create(data) {
+    			console.log(data);
+    			const node = super.create(data);
+    			node.setAttribute('src', data.src);
+    			node.setAttribute('data-custom', data.custom);
+    			console.log(node);
+    			return node;
+  			}
+  			static value(domNode) {
+				const { src, custom } = domNode.dataset;
+				return { src, custom };
+			}
+		}
+		ImageBlot.blotName = 'imageBlot';
+		ImageBlot.className = 'image-blot';
+		ImageBlot.tagName = 'img';
+		//
+		Quill.register({ 'formats/imageBlot': ImageBlot });
+		//
+		function insertImageBlot() {
+			var range = this.quill.getSelection();
+			var url = prompt('What is the image URL');
+			console.log(1);
+			if (url) {
+				quill.insertEmbed(range.index, 'imageBlot', 
+					{
+			  			src: url, // any url
+			  			custom: 'hello-' + Date.now(), // any custom attr
+					}, 
+					'user');
+			}
+		};
+
+		/*		function imageHandler() {
+				var range = this.quill.getSelection();
+				var value = prompt('What is the image URL');
+				if(value){
+					this.quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
+				}
+		} /**/
 
 
 

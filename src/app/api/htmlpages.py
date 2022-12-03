@@ -106,7 +106,7 @@ async def editor( request: Request, post_id: int, current_user: User = Depends(u
     blogPostList = await crud.get_all_blogposts()
     
     return TEMPLATES.TemplateResponse(
-        "editor.html",
+        "tinymcEditor.html", # "editor.html",
         {"request": request, "contentPost": blogpost, "frags": FRAGS, "blogPosts": blogPostList}, 
     )
     
