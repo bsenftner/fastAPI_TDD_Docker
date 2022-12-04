@@ -38,25 +38,6 @@
 					<div id="uploadSelectionMsg">
 						Selections load the local url for that item, ready for use with the video toolbar widget.
 					</div>
-					<div id="uploadInsertWidthDiv">
-						<label for="insertVideoWidth">Video width:</label>
-  						<input type="text" id="insertVideoWidth" name="label" value=640>
-					</div>
-					<div id="uploadInsertHeightDiv">
-						<label for="insertVideoHeight">Video height:</label>
-						<input type="text" id="insertVideoHeight" name="label" value=480>
-					</div>
-					<div id="widthHeightMsg">
-						These width and height values are picked up by the toolbar video widget.
-					</div>
-					
-					
-					<div id="divImgLinkBttn">
-						<a href="#" class="button" id="imgLinkBttn" onclick="insertImageBlot()">Insert Image as link</a>
-					</div>
-					<div id="divImgLinkMsg">
-						The toolbar's image function embeds the image as base64 data, whereas this is just a link.
-					</div>
 
 			<!--	<div id="uploadDeleteBttnDiv">
 						<a href="#" class="button" onclick="UploadedDelete()">Delete selected upload file</a>
@@ -121,6 +102,7 @@
         // configure the TinyMCE editor 
         tinymce.init({
             selector: '#editor',
+            convert_urls: false,
             plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage tinycomments tableofcontents footnotes mergetags autocorrect',
             toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
             tinycomments_mode: 'embedded',
