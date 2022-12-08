@@ -5,7 +5,7 @@ html {
   font-family: sans-serif;
 }
 body {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   line-height: 1.618;
   max-width: 38em;
   margin: auto;
@@ -121,8 +121,8 @@ a.button:hover {
 .grid {
   display: grid;
   min-height: 100vh;
-  grid-gap: 1em;
-  grid-template-columns: 200px 1fr 150px;
+  grid-gap: 0.5em;
+  grid-template-columns: 170px 1fr 150px;
   grid-template-rows: min-content 1fr 3em;
 }
 
@@ -270,65 +270,29 @@ footer {
   margin-bottom: 20px;
 }
 
-#GraveCaveImg {
+#GraveCaveImg, #FractalsBookImg, #BULabImg, #MacImg, #HarvestImg {
   display: inline;
-  margin-left: 20px;
+  margin-left: 10px;
   margin-right: 0px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  height: 200px;
+  margin-top: 0px;
+  margin-bottom: 10px;
+  height: 170px;
 }
 
-#FractalsBookImg, #BULabImg {
+#TD0Img, #PSXImg, #TigerWoodsImg, #CatImg, #ScoobyImg, #GarfieldImg, #NarniaImg, #AureusImg {
   display: inline;
-  margin-left: 20px;
+  margin-left: 10px;
   margin-right: 0px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  height: 200px;
-}
-
-#MacImg {
-  display: inline;
-  margin-left: 20px;
-  margin-right: 0px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  height: 200px;
-}
-
-#HarvestImg {
-  display: inline;
-  margin-left: 20px;
-  margin-right: 0px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  height: 200px;
-}
-
-#TD0Img, #PSXImg, #TigerWoodsImg {
-  display: inline;
-  margin-left: 20px;
-  margin-right: 0px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  height: 200px;
-}
-
-#CatImg, #ScoobyImg, #GarfieldImg, #NarniaImg, #AureusImg {
-  display: inline;
-  margin-left: 20px;
-  margin-right: 0px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  height: 200px;
+  margin-top: 0px;
+  margin-bottom: 10px;
+  height: 170px;
 }
 
 #AvatarStoreVid {
-  margin-left: 20px;
+  margin-left: 10px;
   margin-right: 0px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 0px;
+  margin-bottom:10px;
 }
 
 #AvatarFaceCtrlsImg {
