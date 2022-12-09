@@ -17,10 +17,6 @@ RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
 
-
-# set work directory
-# WORKDIR /usr/src/app
-
 # set environment variables to prevent python from writing 
 # pyc files to disc and from buffering stdout and stderr:
 ENV PYTHONDONTWRITEBYTECODE 1

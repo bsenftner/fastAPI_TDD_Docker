@@ -12,8 +12,8 @@ router = APIRouter()
 @router.get("/{video_file}", status_code=200) # , include_in_schema=False) 
 async def video_endpoint(video_file: str, range: str = Header(None)):
     
-    config.log.info(f"video_file is >{video_file}<")
-    config.log.info(f"range is >{range}<")
+    # config.log.info(f"video_file is >{video_file}<")
+    # config.log.info(f"range is >{range}<")
     
     start, end = 0, 0
     if range:
@@ -26,10 +26,10 @@ async def video_endpoint(video_file: str, range: str = Header(None)):
     
     video_path = config.get_base_path() / 'static/uploads' / video_file
     
-    config.log.info(f"video path is {video_path}")
+    # config.log.info(f"video path is {video_path}")
     
     with open(video_path, "rb") as video:
-        config.log.info(f"video opened!")
+        # config.log.info(f"video opened!")
         video.seek(start)
         data = video.read(end - start)
         filesize = str(video_path.stat().st_size)

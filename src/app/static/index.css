@@ -288,6 +288,10 @@ footer {
   height: 170px;
 }
 
+.slide3DAS img {
+  height: 500px;
+}
+
 #AvatarStoreVid {
   margin-left: 10px;
   margin-right: 0px;
