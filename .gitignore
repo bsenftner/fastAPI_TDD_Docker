@@ -25,3 +25,4 @@ acme.json
 # vim temporary files
 *~
 .*.sw?
+src/app/backups/dump_09-12-2022_00_18_37.gz:Zone.Identifier

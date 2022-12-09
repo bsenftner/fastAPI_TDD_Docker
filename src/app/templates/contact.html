@@ -9,8 +9,6 @@
   <title>The Blog of Blake Senftner</title>
   <link rel="stylesheet" href="/static/index.css">
 
-  {# this loads the WYSIWYG Quill Editor's CSS #}
-  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
 <body>
 	<div class="grid">
@@ -53,14 +51,27 @@
 	
 	{% include 'common_ifAccessDo.html' %}
 
-	<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
 	{% include 'common_editStyle.html' %}
 
-	<!-- Include the Quill library -->
-	<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-	
+    <!-- include the TinyMCE editor -->
+	<script src="https://cdn.tiny.cloud/1/tpl8zzz2nyqln68299z0tf9u4m2p3hi6c9qxgr7gal0i454q/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
 	<script>
+
+        // configure the TinyMCE editor 
+        tinymce.init({
+            selector: '#editor',
+            convert_urls: false,
+            plugins: 'autolink linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste autocorrect',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | spellcheckdialog a11ycheck | align lineheight',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [
+              { value: 'First.Name', title: 'First Name' },
+              { value: 'Email', title: 'Email' },
+            ]
+        });
 
 		document.addEventListener( "DOMContentLoaded", function(){page_init();} );
 		//
@@ -82,33 +93,6 @@
 
 		function Register() { window.location.href = "/register"; }
 
-		// Initialize Quill editor 
-		var toolbarOptions = [
-  				['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-  				['blockquote', 'code-block'],
-
-  				[{ 'header': 1 }, { 'header': 2 }],               // custom button values
-  				[{ 'list': 'ordered'}, { 'list': 'bullet' }],
-  				[{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-  				[{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-  				[{ 'direction': 'rtl' }],                         // text direction
-
-  				[{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-  				[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-
-  				[{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-  				[{ 'font': [] }],
-  				[{ 'align': [] }],
-
-  				['clean']                                         // remove formatting button
-			];
-		var quill = new Quill('#editor', {
-			modules: {
-				toolbar: toolbarOptions
-			},
-			theme: 'snow'
-		});
-
 		function SendEmail() {
             // "let anyone" send contact messages
 			const access_token = 1 // localStorage.getItem('token');
@@ -117,7 +101,7 @@
 				// get the email subject:
 				const newEmailSubject = document.getElementById("NewEmailSubject").value;
 				// Get HTML content
-				var newEmailHTML = quill.root.innerHTML;
+				var newEmailHTML = tinymce.get("editor").getContent();
 
 				// post:
 				const params = {
