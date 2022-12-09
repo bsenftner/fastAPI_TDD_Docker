@@ -114,7 +114,7 @@
 
 		// get list of backup files and populate download selection list:
 		const get_available_backups = () => {
-			fetch('/backups', { // GET endpoint
+			fetch('/backups/', { // GET endpoint
 				  method: 'GET',
 				  headers: {}
 			}).then(
