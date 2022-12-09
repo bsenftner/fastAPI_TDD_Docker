@@ -27,6 +27,22 @@
                 <br/>
                 <a href="#" class="button" onclick="SaveAdminSettings()">Save Admin Settings</a>
   				
+				
+				<div id="backupList">
+					<div id="backupSelectionDiv">
+						<label for="refSelectBox">Available backups:</label>
+						<select id="refSelectBox" onchange="onBackupSelectChangeFunc();"></select>
+					</div>
+					<div id="backupSelectionMsg">
+						Select the backup file to download. 
+						<br/>
+						Create backups with the src/app/backups/new_backup.sh script on the container host. 
+					</div>
+					<br/>
+					<a href="#" class="button" id="backupDownloadBttn" onclick="DownloadBackup()">Please select a backup to download first</a>
+				</div>
+
+
 				{% include 'common_settings.html' %}
 
 			</div>
@@ -53,6 +69,8 @@
 			var state = "{{ data.protect_contact }}"
 			state = (state=="True")
 			document.getElementById("protect_contact").checked = state;
+
+			get_available_backups();
 		}
 		//
 		function page_init() {
@@ -92,6 +110,84 @@
 		}
 		function SaveAdminSettings() {
 			ifAccessDo(SaveAdminSettingsWork);
+		}
+
+		// get list of backup files and populate download selection list:
+		const get_available_backups = () => {
+			fetch('/backups', { // GET endpoint
+				  method: 'GET',
+				  headers: {}
+			}).then(
+				  response => response.json() // if the response is a JSON object
+			 ).then(
+				  success => {
+					console.log( success ) // Handle the success response object
+					downloadSelectBox = document.getElementById("refSelectBox")
+					//
+					var i;
+					for (i = downloadSelectBox.options.length; i >= 0; i--) {
+						downloadSelectBox.remove(i);
+					}
+					//
+					var optn = document.createElement("OPTION");
+					optn.text = 'nothing';
+					optn.value = 0;
+					downloadSelectBox.options.add(optn);
+					//
+					var limit = success.length;
+					for (var i = 0; i < limit; i++) {
+						var optn = document.createElement("OPTION");
+						optn.text = success[i];
+						optn.value = success[i]; // i+1;
+						downloadSelectBox.options.add(optn);
+					}
+				}
+			 ).catch(
+				  error => {
+					console.log( error ) // Handle the error response object
+				}
+			);
+		  };
+
+		// called when the backup files dropdown selection changes:
+		function onBackupSelectChangeFunc() {
+			let backupSelectBox = document.getElementById("refSelectBox")
+			let selected = backupSelectBox.value;
+			if (Number.isInteger(selected)) {
+				document.getElementById("backupDownloadBttn").innerHTML = 'Please select a backup to download first';
+			}
+			else {
+				document.getElementById("backupDownloadBttn").innerHTML = 'Download "' + selected + '"';
+			}
+		}
+
+		
+		function download_backup_work() {
+			let backupSelectBox = document.getElementById("refSelectBox")
+			let selected = backupSelectBox.value;
+			if (Number.isInteger(selected)) {
+				alert("Invalid backup selected, please select a backup to download from the pulldown selection")
+			}
+			else {
+				let url = '/backups/' + selected;
+				fetch(url, {
+					headers: {
+					  "Content-Type": "application/octet-stream",
+					},
+					credentials: 'include'
+			   })
+			   .then((res) => { return res.blob(); })
+			   .then((data) => {
+				 var a = document.createElement("a");
+				 a.href = window.URL.createObjectURL(data);
+				 a.download = selected;
+				 a.click();
+			   }); 
+			}
+		}
+
+		function DownloadBackup() {
+			ifAccessDo(download_backup_work);
 		}
 
 	</script>

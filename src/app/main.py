@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import config
 from app.db import DatabaseMgr, get_database_mgr
-from app.api import blogposts, notes, ping, users_htmlpages, video, htmlpages, upload
+from app.api import blogposts, notes, ping, users_htmlpages, video, htmlpages, upload, backups
 
 
 # generate our "app"
@@ -61,6 +61,9 @@ def create_application() -> FastAPI:
 
     # install the upload router into our app with a prefix & tag too:
     application.include_router(upload.router, prefix="/upload", tags=["upload"])
+
+    # install the backups router into our app with a prefix & tag too:
+    application.include_router(backups.router, prefix="/backups", tags=["backups"])
 
     # install the users htmlpages router into our app with tag too:
     application.include_router(users_htmlpages.router, tags=["user-pages"])

@@ -115,7 +115,7 @@
 
 
 		document.addEventListener( "DOMContentLoaded", function(){page_init();} );
-		//
+	
 		// get list of uploaded files and populate upload selection list:
 		const get_uploads = () => {
 			fetch('/upload', { // GET endpoint
@@ -159,8 +159,8 @@
 							<br/><br/>
 							<a href="#" class="button" onclick="Logout()">Logout</a>
 							`;
-			
-			ifAccessDo(get_uploads);
+
+			get_uploads();
 		}
 		//
 		function page_init() {

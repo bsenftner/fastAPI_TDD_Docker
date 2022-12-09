@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Header, Response
-# from pathlib import Path
 
 from app import config
 
@@ -9,7 +8,7 @@ router = APIRouter()
 
 # ------------------------------------------------------------------------------------------------------------------
 # endpoint to play video files located inside the "app/static/video" directory
-@router.get("/{video_file}", status_code=200) # , include_in_schema=False) 
+@router.get("/{video_file}", status_code=200) 
 async def video_endpoint(video_file: str, range: str = Header(None)):
     
     # config.log.info(f"video_file is >{video_file}<")

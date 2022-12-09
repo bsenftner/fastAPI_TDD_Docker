@@ -308,7 +308,7 @@ footer {
 }
 
 label.chkbox {
-  padding-left: 100px;
+  padding-left: 20px;
   font-weight: bold;
   width: auto;
 }
@@ -319,4 +319,29 @@ input.chkbox {
 
 #mainContent h1 {
   margin-bottom: -20px;
+}
+
+div#backupList {
+  padding: 20px 0px;
+}
+div#backupList label, div#userSettings label {
+  width: 350px;
+}
+div#userSettings {
+  padding: 20px 0px;
+}
+div#userSettings a#changeEmailBttn {
+  margin-bottom: 20px;
+}
+div#userEmail, div#userEmail2, div#userPassword, div#userPassword2 {
+  padding: 10px 0px;
+}
+div#userSettings div#userMsg, div#userSettings div#userMsg2 {
+  margin-bottom: 10px;
+}
+div#userSettings div#userMsg3 {
+  margin-bottom: -10px;
+}
+div#userMsg3 {
+  margin-top: 40px;
 }

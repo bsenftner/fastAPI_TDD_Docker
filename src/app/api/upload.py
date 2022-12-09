@@ -1,7 +1,6 @@
 from fastapi import APIRouter, File, UploadFile, Depends, HTTPException, status
 import aiofiles
 
-# from pathlib import Path
 import glob
 from typing import List
 
@@ -45,7 +44,7 @@ async def upload(file: UploadFile = File(...),
 @router.get("/", response_model=List[str])
 async def read_all_uploads(current_user: UserInDB = Depends(get_current_active_user)) -> List[str]:
     
-    log.info(f"read_all_uploads: here!")
+    # log.info(f"read_all_uploads: here!")
     
     if not user_has_role(current_user,"admin"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, 
@@ -53,7 +52,7 @@ async def read_all_uploads(current_user: UserInDB = Depends(get_current_active_u
     
     upload_path = config.get_base_path() / 'static/uploads/*' 
     
-    log.info(f"read_all_uploads: upload_path {upload_path}")
+    # log.info(f"read_all_uploads: upload_path {upload_path}")
     
     # result = await glob.glob(upload_path)
     
