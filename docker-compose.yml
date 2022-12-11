@@ -6,7 +6,7 @@ services:
     command: |
       bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --reload --host 0.0.0.0 --port 8000'
     volumes:
-      - ./src/:/usr/src/app/
+      - ./src/:/home/app/web
     ports:
       - 8002:8000
     environment:
