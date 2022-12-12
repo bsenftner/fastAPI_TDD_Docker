@@ -21,8 +21,8 @@ WORKDIR $APP_HOME
 # pyc files to disc and from buffering stdout and stderr:
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV ENVIRONMENT=dev
-ENV TESTING=0
+ENV ENVIRONMENT dev
+ENV TESTING 0
 
 # copy requirements file
 COPY ./requirements.txt $APP_HOME/requirements.txt
