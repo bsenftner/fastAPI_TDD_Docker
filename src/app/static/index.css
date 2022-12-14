@@ -345,3 +345,10 @@ div#userSettings div#userMsg3 {
 div#userMsg3 {
   margin-top: 40px;
 }
+
+#RandHLogo {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  margin-bottom:10px;
+}
