@@ -43,7 +43,9 @@
 		document.addEventListener( "DOMContentLoaded", function(){page_init();} );
 		//
 		function page_init_work() {
-			console.log( "access granted." )
+			
+			document.getElementsByTagName("nav")[0].innerHTML += 
+							'<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
 		}
 		//
 		function page_init() {

@@ -6,6 +6,7 @@ from app import config
 from app.db import DatabaseMgr, get_database_mgr
 from app.api import blogposts, notes, ping, users_htmlpages, video, htmlpages, upload, backups
 
+# import sentry_sdk
 
 # generate our "app"
 def create_application() -> FastAPI:

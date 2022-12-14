@@ -37,7 +37,7 @@
   </style>
 
 </head>
-<body onload="slidesInit()">
+<body>
 	<div class="grid">
 		{% include 'common_header.html' %}
 
@@ -48,11 +48,17 @@
 		<main>
 			<div id="mainContent">
 				{# title and post contents, with an optional edit button #}
-				<H1> {{contentPost.title}} </H1>
+				<H1> Contacting me </H1>
 				<div class="ql-editor">
-					{{contentPost.description | safe}}
+					<p>&nbsp;</p>
+                        <ol>
+                            <li>Create an account,</li>
+                            <li>Login with that account,</li>
+                            <li>The link you used to get to this page will go to an e-mail form that sends me an e-mail.</li>
+                        </ol>
+                    <p>Sorry, but this is how I'm getting around malicious use.&nbsp;</p>
+                    <p>-Blake</p>
 				</div>
-				<h5>tags: {{contentPost.tags}}</h5>
 			</div>
 			
 		</main>
@@ -78,56 +84,10 @@
 
 	<script>
 		
-		// if any slides are present on the page, we're on the first one:
-		var activeSlide = 0;
-		var slContainer = document.getElementById("slidesContainer");
-		var slPrev = document.getElementById("slidesPrev");
-		var slNext = document.getElementById("slidesNext");
-		//
-		function prevSlide() {
-			const collection = document.getElementsByClassName("slide");
-			collection[activeSlide].style.display = "none";
-			activeSlide--;
-			if (activeSlide < 0) {
-				activeSlide = collection.length - 1;
-			}
-			collection[activeSlide].style.display = "block";
-		}
-		//
-		function nextSlide() {
-			const collection = document.getElementsByClassName("slide");
-			collection[activeSlide].style.display = "none";
-			activeSlide++;
-			if (activeSlide >= collection.length) {
-				activeSlide = 0;
-			}
-			collection[activeSlide].style.display = "block";
-		}
-		//
-		function slidesInit() {
-			// reset these globals:
-			activeSlide = 0;
-		 	slContainer = document.getElementById("slidesContainer");
-			slPrev = document.getElementById("slidesPrev");
-			slNext = document.getElementById("slidesNext");
-			// handle any slides on the page:
-			if (slContainer && slPrev && slNext)
-			{
-				const collection = document.getElementsByClassName("slide");
-				for (let i = 1; i < collection.length; i++) {
-					collection[i].style.display = "none";
-				}
-				//
-				slPrev.addEventListener("click", prevSlide);
-				//
-				slNext.addEventListener("click", nextSlide);
-			}
-		}
+		
 
 		document.addEventListener("DOMContentLoaded", function() {
 			page_init();
-			slidesInit();
-			setTimeout( slidesInit, 3000 );
 		  });
 		function page_init() {
 			const access_token = localStorage.getItem('token');
@@ -140,13 +100,7 @@
 						console.log(response)
 						if (response.hasOwnProperty('roles')) {
 
-							// user is at least logged in 
-							document.getElementsByTagName("nav")[0].innerHTML += 
-							'<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
-
 							if (response.roles.includes("admin")) {
-								document.getElementById("mainContent").innerHTML += 
-								'<a href="#" class="button" onclick="BlogEdit()">Edit</a>';
 
 								document.getElementById("aside").innerHTML = 
 								`<a href="#" class="button" onclick="UserSettings()">Settings</a>
@@ -158,21 +112,10 @@
 						}
 				  })
 			}
-			else {
-				// user is not logged in 
-				document.getElementsByTagName("nav")[0].innerHTML += 
-				'<br/><br/><a href="#" class="button" onclick="Contact()">Contact</a>';
-			}
 
 			
 			
 		}
-
-		function BlogEdit() { window.location.href = "/Editor/{{ contentPost.id }}"; }
-
-		function UserContact() { window.location.href = "/Contact"; }
-
-		function Contact() { window.location.href = "/precontact"; }
 
 		function Login() { window.location.href = "/login"; }
 

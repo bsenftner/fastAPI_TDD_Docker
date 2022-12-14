@@ -73,6 +73,11 @@
 					{
 						console.log(response)
 						if (response.hasOwnProperty('username')) {
+
+							// user is at least logged in 
+							document.getElementsByTagName("nav")[0].innerHTML += 
+							'<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
+							
 							document.getElementById("mainContent").innerHTML = 
 								"<h4>Welcome back, " + response.username + "</h4>";
 							
@@ -98,6 +103,11 @@
 							}
 						}
 				  })
+			}
+			else {
+				// user is not logged in 
+				document.getElementsByTagName("nav")[0].innerHTML += 
+				'<br/><br/><a href="#" class="button" onclick="Contact()">Contact</a>';
 			}
 		}
 
@@ -138,6 +148,10 @@
 		function Register() { window.location.href = "/register"; }
 
 		function UserSettings() { window.location.href = "/Settings"; }
+
+		function UserContact() { window.location.href = "/Contact"; }
+
+		function Contact() { window.location.href = "/precontact"; }
 		
 		function Login() { 
             

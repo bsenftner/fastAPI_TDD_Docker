@@ -1,13 +1,11 @@
 # pull official base image
-FROM python:3.9.4-alpine
-
-
+# FROM python:3.9.4-alpine
+FROM python:3.9.6-alpine
 
 # create directory for the app user
 RUN mkdir -p /home/app
 
 # create the app user
-# RUN addgroup --system app && adduser --system --group app
 RUN addgroup -S app && adduser -S app -G app
 
 # create the appropriate directories

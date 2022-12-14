@@ -66,6 +66,10 @@
 		document.addEventListener( "DOMContentLoaded", function(){page_init();} );
 		//
 		function page_init_work() {
+
+			document.getElementsByTagName("nav")[0].innerHTML += 
+							'<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
+							
 			var state = "{{ data.protect_contact }}"
 			state = (state=="True")
 			document.getElementById("protect_contact").checked = state;
