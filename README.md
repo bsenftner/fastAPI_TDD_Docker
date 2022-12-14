@@ -116,7 +116,11 @@ The above will generate a gzip compressed file named dump_[timestamp].gz. Below 
 cd [your-docker-container's-app/backups-directory]
 ./restore_backup.sh [database-backup.gz] [postgres-container-id]
 ```
-  
+
+The web site's Settings page has a pulldown selection and button to download existing database backups from a browser.
+Backups still need to be created by logging into the container host and running `new_backup.sh`.
+The Settings page download feature is convenience.
+
 ## Notes
 
 - Uses JWT Bearer Token Authentication, using both local storage and httpOnly cookies.
