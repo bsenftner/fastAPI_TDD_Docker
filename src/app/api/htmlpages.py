@@ -222,3 +222,17 @@ async def precontact( request: Request ):
           "blogPosts": blogPostList }, 
     )
     
+# ------------------------------------------------------------------------------------------------------------------
+# serve the requested page thru a Jinja2 template:
+@router.get("/a3da_basic", status_code=status.HTTP_200_OK, response_class=HTMLResponse)
+async def a3da_basic( request: Request ):
+
+    blogPostList = await crud.get_all_blogposts()
+    
+    return TEMPLATES.TemplateResponse(
+        "a3da_basic.html",
+        { "request": request, 
+          "frags": FRAGS, 
+          "blogPosts": blogPostList }, 
+    )
+    
