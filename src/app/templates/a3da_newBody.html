@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+{# 
+	This is a Jinja2 template for an html page
+	These lines are comments and are removed when the template is rendered. 
+#}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Blog of Blake Senftner</title>
+  <link rel="stylesheet" href="/static/index.css">
+
+  <style>
+    div#mainContent {
+	  box-sizing: border-box;
+	  font-family: Helvetica, Arial, sans-serif;
+	  font-size: 16px;
+	  height: 50%;
+	  margin: 0px;
+	  position: relative;
+	}
+
+    #ctrlPanel {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        align-items: center;
+    }
+
+    #ethnicity_ctrls {
+        width: 50%;
+        margin-right: 10px;
+    }
+
+    #bodyShapCtrls {
+        width: 50%;
+    }
+
+    #bodyShapCtrls .slidercaption {
+        width: 110px;
+    }
+
+    #view_ctrls {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        align-items: center;
+    }
+
+    .slidercontainer {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        align-items: left;
+    }
+
+    .slidercaption {
+        display: inline;
+        font-weight: bold;
+        width: 100px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+      
+    .slider {
+        -webkit-appearance: none;
+        flex-grow: 4;
+        height: 25px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+      
+    .slider:hover {
+        opacity: 1;
+    }
+      
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        background: #04AA6D;
+        cursor: pointer;
+    }
+      
+    .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        background: #04AA6D;
+        cursor: pointer;
+    }
+
+    #view_ctrls .button {
+        min-width: 170px;
+    }
+
+    #view_ctrls .slidercaption {
+        min-width: 110px;
+    }
+  </style>
+
+  <!-- Remove this when import maps will be widely supported -->
+<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "/static/three/build/three.module.js"
+    }
+  }
+</script>
+
+</head>
+<body>
+	<div class="grid">
+		{% include 'common_header.html' %}
+
+		{# the left sidebar #}
+		{% include 'common_lsidebar.html' %}
+
+		{# the main content area #}
+		<main>
+			<div id="mainContent"></div>
+            <div id="view_ctrls">
+                <a href="#" class="button" onclick="viewAtLoad()">Load View</a>
+                <a href="#" class="button" onclick="viewFace()">Face View</a>
+                <a href="#" class="button" onclick="viewFull45()">Full Body 45</a>
+                <a href="#" class="button" onclick="viewMid45()">Mid Body View 45</a>
+                <div class="slidercontainer">
+                    <div class="slidercaption">Camera Lens:</div>
+                    <input type="range" min="20" max="120" value="45" class="slider" id="cam_fov" oninput="camFOVChanged()">
+                </div>
+            </div>
+            <div id="ctrlPanel">
+                <div id="ethnicity_ctrls">
+                    <h4>Ethnicity:</h4>
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Asian:</div>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_asian" oninput="ethnicityChangedAsian()">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">African:</div>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_african" oninput="ethnicityChangedAfrican()">
+                    </div>
+                        
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Caucasian:</div>
+                        <input type="range" min="0" max="100" value="100" class="slider" id="sldr_caucasian" oninput="ethnicityChangedCaucasian()">
+                    </div>
+                </div>
+                <div id="bodyShapCtrls">
+                    <h4>Body Shape:</h4>
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Thin 2 Heavy:</div>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_thin2Heavy">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Muscularity:</div>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_muscularity">
+                    </div>
+                </div>
+            </div>
+		</main>
+
+		{# the right sidebar #}
+		<aside>
+			<div id="aside">
+				<a href="#" class="button" onclick="Login()">Login</a>
+				<br/>
+				<a href="#" class="button" onclick="Register()">Register</a>
+			</div>
+		</aside>
+  
+	<footer>
+		{{ frags[0].footer | safe }} 
+	</footer>
+	</div>
+
+    <script>
+		function UserContact() { window.location.href = "/Contact"; }
+
+		function Contact() { window.location.href = "/precontact"; }
+
+		function Login() { window.location.href = "/login"; }
+
+		function Register() { window.location.href = "/register"; }
+
+		function UserSettings() { window.location.href = "/Settings"; }
+	</script>
+	
+    <script>
+        
+		let gCamera, gScene, gParentObj, gCamCtrls, gProgressCube;
+        let gMeshObjs = [];
+
+		const gNewAvatarSceneInfo = { 
+			'cam': {
+				'pos': { 'x': 0, 'y': 40, 'z': 50 },
+				'target': { 'x': 0, 'y': 20, 'z': 0 },
+				'helper': false,
+			},
+			'obj': {
+				'url': 'static/a3da/avatar2022.glb',
+				'scale': 20,
+			}
+		};
+
+
+        function camFOVChanged() {
+            if (typeof gCamera !== 'undefined') {
+                let camFovSldr = document.getElementById("cam_fov");
+                gCamera.fov = parseFloat(camFovSldr.value);
+                gCamera.updateProjectionMatrix();
+                console.log( "camera FOV is " + camFovSldr.value);
+            }
+        }
+
+
+
+        // position camera where the scene loads:
+        function viewAtLoad() {
+            if (typeof gCamCtrls !== 'undefined') {
+                let si = gNewAvatarSceneInfo;
+                gCamera.position.set( si.cam.pos.x, si.cam.pos.y, si.cam.pos.z );
+                //
+                document.getElementById("cam_fov").value = "45";
+                camFOVChanged();
+                //
+                gCamCtrls.target.set( si.cam.target.x, si.cam.target.y, si.cam.target.z );
+			    gCamCtrls.update();
+            }
+        }
+
+        // position camera to view the face:
+        function viewFace() {
+            if (typeof gCamCtrls !== 'undefined') {
+                gCamera.position.set( 0, 33, 8 );
+                gCamCtrls.target.set( 0, 33.34, -1.3478 );
+			    gCamCtrls.update();
+            }
+        }
+
+        // position camera:
+        function viewFull45() {
+            if (typeof gCamCtrls !== 'undefined') {
+                gCamera.position.set( 32, 32.275, 41.568 );
+                gCamCtrls.target.set( 0.15, 18.554, 0.3714 );
+			    gCamCtrls.update();
+            }
+        }
+
+        // position camera:
+        function viewMid45() {
+            if (typeof gCamCtrls !== 'undefined') {
+                gCamera.position.set( 19.4734, 32.3731, 20.0688 );
+                gCamCtrls.target.set( -0.45, 25.875, -2.2695 );
+			    gCamCtrls.update();
+            }
+        }
+
+        function ethnicityChangedAsian() {
+            let mainSldr = document.getElementById("sldr_asian");
+            let otherSldr1 = document.getElementById("sldr_african");
+            let otherSldr2 = document.getElementById("sldr_caucasian");
+            ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
+            setBodyShape( mainSldr, otherSldr1 );
+        }
+
+        function ethnicityChangedAfrican() {
+            let otherSldr1 = document.getElementById("sldr_asian");
+            let mainSldr = document.getElementById("sldr_african");
+            let otherSldr2 = document.getElementById("sldr_caucasian");
+            ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
+            setBodyShape( otherSldr1, mainSldr );
+        }  
+
+        function ethnicityChangedCaucasian() {
+            let otherSldr1 = document.getElementById("sldr_asian");
+            let otherSldr2 = document.getElementById("sldr_african");
+            let mainSldr = document.getElementById("sldr_caucasian");
+            ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
+            setBodyShape( otherSldr1, otherSldr2 );
+        }
+
+        function ethnicityChanged( mainSldr, otherSldr1, otherSldr2 ) {
+            let mainValue = parseFloat(mainSldr.value);
+            let other1Value = parseFloat(otherSldr1.value);
+            let other2Value = parseFloat(otherSldr2.value);
+            let s = mainValue + other1Value + other2Value;
+            if (s != 0) {
+                let d = (s - 100.0) * 0.5;
+                other1Value -= d;
+                other2Value -= d;
+                s = mainValue + other1Value + other2Value;
+                mainValue = mainValue / s * 100;
+                other1Value = other1Value / s * 100;
+                other2Value = other2Value / s * 100;
+            }
+            else {
+                mainValue = 100;
+                other1Value = 0;
+                other2Value = 0;
+            }
+            mainSldr.value = mainValue;
+            otherSldr1.value = other1Value;
+            otherSldr2.value = other2Value;
+        }
+
+        function setBodyShape( asianCtrl, africanCtrl ) {
+            if (typeof gScene !== 'undefined') {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let asianKey = av_body.morphTargetDictionary.FemaleAsian;
+                let africanKey = av_body.morphTargetDictionary.FemaleBlack;
+                av_body.morphTargetInfluences[asianKey] = parseFloat(asianCtrl.value) / 100.0;
+                av_body.morphTargetInfluences[africanKey] = parseFloat(africanCtrl.value) / 100.0;
+            }
+        }
+
+    </script>
+
+	<script src="/static/stats.js/build/stats.min.js"></script>
+
+	<script type="module">
+
+		document.addEventListener("DOMContentLoaded", function() {
+			page_init();
+			DoThree( gNewAvatarSceneInfo );
+		  },{ once: true });
+
+
+		import {
+			PerspectiveCamera, CameraHelper,
+			Scene, Color, Fog, HemisphereLight, DirectionalLight,
+			BoxGeometry, PlaneGeometry,
+			MeshNormalMaterial,
+			MeshStandardMaterial, MeshPhongMaterial, MeshBasicMaterial,
+			Mesh, AnimationMixer, GridHelper, Object3D,
+			WebGLRenderer,
+			Clock, MathUtils
+		} from 'three';
+
+		import { OrbitControls } from '/static/three/examples/jsm/controls/OrbitControls.js';
+		import { DRACOLoader } from '/static/three/examples/jsm/loaders/DRACOLoader.js';
+		import { GLTFLoader } from '/static/three/examples/jsm/loaders/GLTFLoader.js';
+
+
+		// dumps a gltf scene graph
+		function dumpObject(obj, lines = [], isLast = true, prefix = '') {
+			const localPrefix = isLast ? '└─' : '├─';
+			lines.push(`${prefix}${prefix ? localPrefix : ''}${obj.name || '*no-name*'} [${obj.type}]`);
+			const newPrefix = prefix + (isLast ? '  ' : '│ ');
+			const lastNdx = obj.children.length - 1;
+			obj.children.forEach((child, ndx) => {
+			  const isLast = ndx === lastNdx;
+			  dumpObject(child, lines, isLast, newPrefix);
+			});
+			return lines;
+		}
+
+		// collects the mesh objects, placing them into 'meshObjs[]':
+		function getMeshObjects(obj, meshObjs = [], isLast = true) {
+			if (obj.type=='Mesh')
+				meshObjs.push(obj);
+			//
+			const lastNdx = obj.children.length - 1;
+			obj.children.forEach((child, ndx) => {
+			  const isLast = ndx === lastNdx;
+			  getMeshObjects(child, meshObjs, isLast);
+			});
+			return meshObjs;
+		}
+	
+
+        function removeObject3D(object3D) {
+            if (!(object3D instanceof Object3D)) return false;
+        
+            // for better memory management and performance
+            if (object3D.geometry) object3D.geometry.dispose();
+        
+            if (object3D.material) {
+                if (object3D.material instanceof Array) {
+                    // for better memory management and performance
+                    object3D.material.forEach(material => material.dispose());
+                } else {
+                    // for better memory management and performance
+                    object3D.material.dispose();
+                }
+            }
+            object3D.removeFromParent(); // the parent might be the scene or another Object3D, but it is sure to be removed this way
+            return true;
+        }
+
+		function DoThree( sceneInfo  ) {
+
+			let renderer, stats;
+
+			const clock = new Clock();
+	
+			DoThreeInit( sceneInfo );
+			animate();
+	
+			function DoThreeInit( sceneInfo ) {
+	
+				const container = document.createElement( 'div' );
+				//
+				let mainTag = document.getElementById("mainContent")
+				mainTag.appendChild( container );
+	
+				gCamera = new PerspectiveCamera( 45, mainTag.offsetWidth / mainTag.offsetHeight, 1, 2000 );
+                // now set by viewAtLoad();
+				// gCamera.position.set( sceneInfo.cam.pos.x, sceneInfo.cam.pos.y, sceneInfo.cam.pos.z );
+
+				gScene = new Scene();
+				gScene.background = new Color( 0xa0a0a0 );
+				gScene.fog = new Fog( 0xa0a0a0, 200, 1000 );
+	
+				const hemiLight = new HemisphereLight( 0xffffff, 0x444444 );
+				hemiLight.position.set( 0, 200, 300 );
+				gScene.add( hemiLight );
+	
+
+				const dirLight = new DirectionalLight( 0xcccccc );
+				dirLight.position.set( 70, 50, 100 );
+				dirLight.castShadow = true;
+				dirLight.shadow.camera.top = 40;
+				dirLight.shadow.camera.bottom = - 20;
+				dirLight.shadow.camera.left = - 20;
+				dirLight.shadow.camera.right = 20;
+				gScene.add( dirLight );
+	
+				if (sceneInfo.cam.helper)
+					gScene.add( new CameraHelper( dirLight.shadow.camera ) );
+	
+                    
+				const dirLight2 = new DirectionalLight( 0xaaaaaa );
+				dirLight2.position.set( -70, 50, -100 );
+				dirLight2.castShadow = true;
+				dirLight2.shadow.camera.top = 40;
+				dirLight2.shadow.camera.bottom = - 20;
+				dirLight2.shadow.camera.left = - 20;
+				dirLight2.shadow.camera.right = 20;
+				gScene.add( dirLight2 );
+	
+				if (sceneInfo.cam.helper)
+					gScene.add( new CameraHelper( dirLight2.shadow.camera ) );
+	
+
+				// ground
+				const mesh = new Mesh( new PlaneGeometry( 2000, 2000 ), new MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+				mesh.rotation.x = - Math.PI / 2;
+				mesh.receiveShadow = true;
+				gScene.add( mesh );
+	
+				const grid = new GridHelper( 2000, 20, 0x000000, 0x000000 );
+				grid.material.opacity = 0.2;
+				grid.material.transparent = true;
+				gScene.add( grid );
+	
+
+                const geometry = new BoxGeometry( 50, 2, 2 ); // width, height, depth
+                const material = new MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.5 } );
+                gProgressCube = new Mesh( geometry, material );
+                gProgressCube.position.set( 0, 15, 0 );
+                gScene.add( gProgressCube );
+
+				// Instantiate a loader
+				const loader = new GLTFLoader();
+				//
+				let loadProgFract = 0;
+				let loadProgress = loadProgFract;
+				let lastLoadProgress = loadProgress;
+
+				// Optional: Provide a DRACOLoader instance to decode compressed mesh data
+				const dracoLoader = new DRACOLoader();
+				dracoLoader.setDecoderPath( '/static/three/examples/js/libs/draco/' );
+				loader.setDRACOLoader( dracoLoader ); /**/
+
+				// Load a glTF resource
+				loader.load(
+					sceneInfo.obj.url,
+					// called when the resource is loaded
+					function ( gltf ) {
+
+                        gProgressCube.material.opacity = 0.5;
+
+						gParentObj = gltf.scene;
+						gParentObj.scale.set( sceneInfo.obj.scale, sceneInfo.obj.scale, sceneInfo.obj.scale );
+
+						console.log(dumpObject(gParentObj).join('\n'));
+
+						getMeshObjects(gParentObj, gMeshObjs);
+						let count = gMeshObjs.length;
+						for (let i = 0; i < count; i++) {
+							console.log("gMeshObjs[" + i + "] has name " + gMeshObjs[i].name);
+							gMeshObjs[i].castShadow = true;
+							gMeshObjs[i].receiveShadow  = false;
+						}
+
+				/*		gltf.parser.getDependencies( 'material' ).then( ( materials ) => {
+
+							console.log( materials );
+						
+						} ); /* */
+			
+						gScene.add(gParentObj);
+                        removeObject3D(gProgressCube)
+					},
+					// called while loading is progressing
+					function ( xhr ) {
+
+                        loadProgFract = xhr.loaded / xhr.total;
+
+                        gProgressCube.scale.set( loadProgFract, 1, 1 );
+                        gProgressCube.material.opacity = loadProgFract;
+                        
+						loadProgress = loadProgFract * 100;
+						if (loadProgress <= lastLoadProgress + 10)
+							return;
+						
+						console.log( loadProgress + '% loaded' );
+
+						lastLoadProgress += 10;
+
+					},
+					// called when loading has errors
+					function ( error ) {
+
+						console.log( 'An error happened' );
+
+					}
+				);
+	
+				renderer = new WebGLRenderer( { antialias: true } );
+
+				renderer.shadowMap.enabled = true;
+
+				renderer.setPixelRatio( window.devicePixelRatio );
+
+				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
+
+				container.appendChild( renderer.domElement );
+	
+				
+				gCamCtrls = new OrbitControls( gCamera, renderer.domElement );
+				// now set by viewAtLoad();
+				// gCamCtrls.target.set( sceneInfo.cam.target.x, sceneInfo.cam.target.y, sceneInfo.cam.target.z );
+				// gCamCtrls.update(); /**/
+                viewAtLoad();
+
+				window.addEventListener( 'resize', onWindowResize );
+	
+				// stats
+				stats = new Stats();
+				container.appendChild( stats.dom );
+			}
+	
+			function onWindowResize() {
+	
+				let mainTag = document.getElementById("mainContent")
+				
+				gCamera.aspect = mainTag.clientWidth / mainTag.clientHeight;
+
+				gCamera.updateProjectionMatrix();
+	
+				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
+			}
+	
+			function animate() {
+	
+				requestAnimationFrame( animate );
+				
+				const delta = clock.getDelta();
+	
+				renderer.render( gScene, gCamera );
+	
+				stats.update();
+			}
+		}
+
+
+
+        
+		function page_init() {
+            let initialized = false;
+			const access_token = localStorage.getItem('token');
+			if (typeof access_token !== 'undefined') {
+				const options = { headers: { "Authorization": "Bearer " + access_token } }
+				fetch("/users/me", options)
+				.then(response => response.json())
+				.then( response => {
+
+					if (response.hasOwnProperty('roles')) {
+
+						// user is logged in:
+						document.getElementsByTagName("nav")[0].innerHTML += 
+							'<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
+
+						if (response.roles.includes("admin")) {
+
+							document.getElementById("aside").innerHTML = 
+								`<a href="#" class="button" onclick="UserSettings()">Settings</a>
+								<br/><br/>
+								<a href="#" class="button" onclick="Logout()">Logout</a>
+								`;
+						}
+
+						initialized = true;
+					}
+				});
+			}
+			
+            if (!initialized) {
+				// user is not logged in:
+				document.getElementsByTagName("nav")[0].innerHTML += 
+				'<br/><br/><a href="#" class="button" onclick="Contact()">Contact</a>';
+
+                initialized = true;
+			}
+		}
+
+	</script>
+	
+	{% include 'common_logout.html' %}
+
+	{% include 'common_refresh.html' %}
+	
+</body>
+</html>
