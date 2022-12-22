@@ -8,29 +8,29 @@ function Logout() {
         .then((response) => {
             if (!response.ok) {
                 window.location.href = '/';
-              }
+            }
             return response.json();
         })
         .then( response => 
-            {
-                console.log(response)
-                if (response.hasOwnProperty('username')) {
+        {
+            if (response.hasOwnProperty('username')) {
 
-                    localStorage.removeItem('token');
+                localStorage.removeItem('token');
                     
-                    document.getElementById("mainContent").innerHTML = 
+                document.getElementById("mainContent").innerHTML = 
                         "<h4>By now, " + response.username + ".</h4>";
                     
-                    if (window.location.href != '/login')
-                    {
-                        window.location.href = '/login';
-                    }
-                    else{
-                        document.getElementById("aside").innerHTML = 
-                            '<a href="#" class="button" onclick="window.location.reload();">Re-login</a>';
-                    }
+                if (window.location.href != '/login')
+                {
+                    window.location.href = '/login';
                 }
-              })
+                else {
+                    document.getElementById("aside").innerHTML = 
+                            '<a href="#" class="button" onclick="window.location.reload();">Re-login</a>';
+                }
+            }
+        }
+    );
 }
 
 </script>

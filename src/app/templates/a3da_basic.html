@@ -14,7 +14,7 @@
 	  box-sizing: border-box;
 	  font-family: Helvetica, Arial, sans-serif;
 	  font-size: 16px;
-	  height: 100%;
+	  height: 50%;
 	  margin: 0px;
 	  position: relative;
 	}
@@ -60,51 +60,7 @@
 	</footer>
 	</div>
 
-	
-	<script src="/static/stats.js/build/stats.min.js"></script>
-
-	<script type="module">
-
-		// import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
-
-		document.addEventListener("DOMContentLoaded", function() {
-			page_init();
-			DoThree();
-		  });
-		function page_init() {
-			const access_token = localStorage.getItem('token');
-			if (access_token) {
-				const options = { headers: { "Authorization": "Bearer " + access_token } }
-				fetch("/users/me", options)
-				.then(response => response.json())
-				.then( response => 
-					{
-						console.log(response)
-						if (response.hasOwnProperty('roles')) {
-
-							// user is at least logged in 
-							document.getElementsByTagName("nav")[0].innerHTML += 
-							'<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
-
-							if (response.roles.includes("admin")) {
-
-								document.getElementById("aside").innerHTML = 
-								`<a href="#" class="button" onclick="UserSettings()">Settings</a>
-								<br/><br/>
-								<a href="#" class="button" onclick="Logout()">Logout</a>
-								`;
-							}
-
-						}
-				  })
-			}
-			else {
-				// user is not logged in 
-				document.getElementsByTagName("nav")[0].innerHTML += 
-				'<br/><br/><a href="#" class="button" onclick="Contact()">Contact</a>';
-			}
-		}
-
+	<script>
 		function UserContact() { window.location.href = "/Contact"; }
 
 		function Contact() { window.location.href = "/precontact"; }
@@ -114,70 +70,59 @@
 		function Register() { window.location.href = "/register"; }
 
 		function UserSettings() { window.location.href = "/Settings"; }
+	</script>
+	
+	<script src="/static/stats.js/build/stats.min.js"></script>
+
+	<script type="module">
+		
+		const gObamaA3DASceneInfo = { 
+			'cam': {
+				'pos': { 'x': 0, 'y': 15, 'z': 50 },
+				'target': { 'x': 0, 'y': 13, 'z': 0 },
+				'helper': true,
+			},
+			'obj': {
+				'url': 'static/a3da/Auto3DAvatarObama2.glb',
+				'scale': 1,
+			}
+		};
+
+		
+		const gNewAvatarSceneInfo = { 
+			'cam': {
+				'pos': { 'x': 0, 'y': 40, 'z': 50 },
+				'target': { 'x': 0, 'y': 20, 'z': 0 },
+				'helper': false,
+			},
+			'obj': {
+				'url': 'static/a3da/avatar2022.glb',
+				'scale': 20,
+			}
+		};
+
+
+		document.addEventListener("DOMContentLoaded", function() {
+			page_init();
+			DoThree( gObamaA3DASceneInfo );
+		  },{ once: true });
+
 
 		import {
-			PerspectiveCamera, // CameraHelper,
+			PerspectiveCamera, CameraHelper,
 			Scene, Color, Fog, HemisphereLight, DirectionalLight,
 			BoxGeometry, PlaneGeometry,
 			MeshNormalMaterial,
 			MeshStandardMaterial, MeshPhongMaterial,
-			Mesh, GridHelper,
+			Mesh, AnimationMixer, GridHelper,
 			WebGLRenderer,
-			Clock
+			Clock, MathUtils
 		} from 'three';
 
 		import { OrbitControls } from '/static/three/examples/jsm/controls/OrbitControls.js';
 		import { DRACOLoader } from '/static/three/examples/jsm/loaders/DRACOLoader.js';
 		import { GLTFLoader } from '/static/three/examples/jsm/loaders/GLTFLoader.js';
 
-		function DoThree2() {
-			// init
-			const container = document.createElement( 'div' );
-			//
-			let mainTag = document.getElementById("mainContent")
-			mainTag.appendChild( container );
-
-			const camera = new PerspectiveCamera( 70, mainTag.offsetWidth / mainTag.offsetHeight, 0.01, 10 );
-			camera.position.z = 1;
-
-			const scene = new Scene();
-
-			const geometry = new BoxGeometry( 0.2, 0.2, 0.2 );
-			const material = new MeshNormalMaterial();
-
-			const mesh = new Mesh( geometry, material );
-			scene.add( mesh );
-
-			const renderer = new WebGLRenderer( { antialias: true } );
-
-			renderer.setSize( mainTag.offsetWidth, mainTag.offsetHeight );
-			renderer.setAnimationLoop( animation );
-			
-			container.appendChild( renderer.domElement );
-			window.addEventListener( 'resize', onWindResize );
-
-			// animation
-			function animation( time ) {
-
-				mesh.rotation.x = time / 2000;
-				mesh.rotation.y = time / 1000;
-
-				renderer.render( scene, camera );
-			}
-
-			function onWindResize() {
-
-				let mainTag = document.getElementById("mainContent")
-				
-				camera.aspect = mainTag.offsetWidth / mainTag.offsetHeight;
-
-				camera.updateProjectionMatrix();
-	
-
-				// renderer.setSize( mainTag.innerWidth, mainTag.innerHeight );
-				renderer.setSize( mainTag.offsetWidth, mainTag.offsetHeight );
-			}
-		}
 
 		// dumps a gltf scene graph
 		function dumpObject(obj, lines = [], isLast = true, prefix = '') {
@@ -192,7 +137,23 @@
 			return lines;
 		}
 
-		function DoThree() {
+		// collects the mesh objects, placing them into 'meshObjs[]':
+		let gMeshObjs = [];
+		function getMeshObjects(obj, meshObjs = [], isLast = true) {
+			if (obj.type=='Mesh')
+				meshObjs.push(obj);
+			//
+			const lastNdx = obj.children.length - 1;
+			obj.children.forEach((child, ndx) => {
+			  const isLast = ndx === lastNdx;
+			  getMeshObjects(child, meshObjs, isLast);
+			});
+			return meshObjs;
+		}
+	
+		let gParentObj, gCamCtrls, gEyeRot = 0;
+
+		function DoThree( sceneInfo  ) {
 
 			let camera, scene, renderer, stats;
 
@@ -200,10 +161,10 @@
 	
 			let mixer;
 	
-			init();
+			DoThreeInit( sceneInfo );
 			animate();
 	
-			function init() {
+			function DoThreeInit( sceneInfo ) {
 	
 				const container = document.createElement( 'div' );
 				//
@@ -211,26 +172,28 @@
 				mainTag.appendChild( container );
 	
 				camera = new PerspectiveCamera( 45, mainTag.offsetWidth / mainTag.offsetHeight, 1, 2000 );
-				camera.position.set( 100, 200, 300 );
-	
+				camera.position.set( sceneInfo.cam.pos.x, sceneInfo.cam.pos.y, sceneInfo.cam.pos.z );
+
 				scene = new Scene();
 				scene.background = new Color( 0xa0a0a0 );
 				scene.fog = new Fog( 0xa0a0a0, 200, 1000 );
 	
 				const hemiLight = new HemisphereLight( 0xffffff, 0x444444 );
-				hemiLight.position.set( 0, 200, 0 );
+				hemiLight.position.set( 0, 200, 300 );
 				scene.add( hemiLight );
 	
+
 				const dirLight = new DirectionalLight( 0xffffff );
-				dirLight.position.set( 0, 150, 500 );
+				dirLight.position.set( 70, 50, 100 );
 				dirLight.castShadow = true;
-				dirLight.shadow.camera.top = 180;
-				dirLight.shadow.camera.bottom = - 100;
-				dirLight.shadow.camera.left = - 120;
-				dirLight.shadow.camera.right = 120;
+				dirLight.shadow.camera.top = 40;
+				dirLight.shadow.camera.bottom = - 20;
+				dirLight.shadow.camera.left = - 20;
+				dirLight.shadow.camera.right = 20;
 				scene.add( dirLight );
 	
-				// scene.add( new CameraHelper( dirLight.shadow.camera ) );
+				if (sceneInfo.cam.helper)
+					scene.add( new CameraHelper( dirLight.shadow.camera ) );
 	
 				// ground
 				const mesh = new Mesh( new PlaneGeometry( 2000, 2000 ), new MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
@@ -247,6 +210,9 @@
 
 				// Instantiate a loader
 				const loader = new GLTFLoader();
+				//
+				let loadProgress = 0;
+				let lastLoadProgress = loadProgress;
 
 				// Optional: Provide a DRACOLoader instance to decode compressed mesh data
 				const dracoLoader = new DRACOLoader();
@@ -255,33 +221,47 @@
 
 				// Load a glTF resource
 				loader.load(
-					// resource URL
-					'static/a3da/newObama3.glb',
+				//	'static/a3da/newObama3.glb',
+				//	'static/a3da/morphs_gltf/animGeo.0000.glb',
+				//	'static/a3da/Auto3DAvatarObama.glb',
+				//	'static/a3da/Auto3DAvatarObama2.glb',
+				//	'static/a3da/avatar2022.glb',
+					sceneInfo.obj.url,
 					// called when the resource is loaded
 					function ( gltf ) {
 
-						const root = gltf.scene;
-						console.log(dumpObject(root).join('\n'));
+						gParentObj = gltf.scene;
+						gParentObj.scale.set( sceneInfo.obj.scale, sceneInfo.obj.scale, sceneInfo.obj.scale );
+
+						console.log(dumpObject(gParentObj).join('\n'));
+
+						getMeshObjects(gParentObj, gMeshObjs);
+						let count = gMeshObjs.length;
+						for (let i = 0; i < count; i++) {
+							console.log("gMeshObjs[" + i + "] has name " + gMeshObjs[i].name);
+							gMeshObjs[i].castShadow = true;
+							gMeshObjs[i].receiveShadow  = false;
+						}
 
 						gltf.parser.getDependencies( 'material' ).then( ( materials ) => {
 
 							console.log( materials );
 						
 						} );
+			
+						scene.add(gParentObj);
 
-						scene.add(root);
-						/*
-						gltf.animations; // Array<THREE.AnimationClip>
-						gltf.scene; // THREE.Group
-						gltf.scenes; // Array<THREE.Group>
-						gltf.cameras; // Array<THREE.Camera>
-						gltf.asset; // Object
-							*/
 					},
 					// called while loading is progressing
 					function ( xhr ) {
 
-						console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+						loadProgress = xhr.loaded / xhr.total * 100;
+						if (loadProgress <= lastLoadProgress + 10)
+							return;
+						
+						console.log( loadProgress + '% loaded' );
+
+						lastLoadProgress += 10;
 
 					},
 					// called when loading has errors
@@ -293,35 +273,27 @@
 				);
 
 
-				/*
-				const geometry = new BoxGeometry( 50.0, 50.0, 50.0 );
-				const material = new MeshNormalMaterial();
-
-				const boxMesh = new Mesh( geometry, material );
-				scene.add( boxMesh ); /* */
-
-
 	
 				renderer = new WebGLRenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-
-				// renderer.setSize( mainTag.offsetWidth, mainTag.offsetHeight );
-				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
 
 				renderer.shadowMap.enabled = true;
+
+				renderer.setPixelRatio( window.devicePixelRatio );
+
+				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
+
 				container.appendChild( renderer.domElement );
 	
 				
-				const controls = new OrbitControls( camera, renderer.domElement );
-				controls.target.set( 0, 100, 0 );
-				controls.update(); /**/
+				gCamCtrls = new OrbitControls( camera, renderer.domElement );
+				gCamCtrls.target.set( sceneInfo.cam.target.x, sceneInfo.cam.target.y, sceneInfo.cam.target.z );
+				gCamCtrls.update(); /**/
 	
 				window.addEventListener( 'resize', onWindowResize );
 	
 				// stats
 				stats = new Stats();
 				container.appendChild( stats.dom );
-	
 			}
 	
 			function onWindowResize() {
@@ -333,8 +305,8 @@
 
 				camera.updateProjectionMatrix();
 	
-				console.log( "mainTag.offsetWidth is " + mainTag.offsetWidth)
-				console.log( "mainTag.offsetHeight is " + mainTag.offsetHeight)
+				// console.log( "mainTag.offsetWidth is " + mainTag.offsetWidth)
+				// console.log( "mainTag.offsetHeight is " + mainTag.offsetHeight)
 
 				// renderer.setSize( mainTag.offsetWidth, mainTag.offsetHeight );
 				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
@@ -344,6 +316,14 @@
 	
 				requestAnimationFrame( animate );
 	
+				/*
+				let rEye = scene.getObjectByName('av_EyeRight');
+				if (rEye) {
+					rEye.rotateY( gEyeRot );
+				    gEyeRot += MathUtils.degToRad(0.001); 
+				} /**/
+				
+
 				const delta = clock.getDelta();
 	
 				if ( mixer ) mixer.update( delta );
@@ -352,6 +332,45 @@
 	
 				stats.update();
 	
+			}
+		}
+
+
+		function page_init() {
+            let initialized = false;
+			const access_token = localStorage.getItem('token');
+			if (typeof access_token !== 'undefined') {
+				const options = { headers: { "Authorization": "Bearer " + access_token } }
+				fetch("/users/me", options)
+				.then(response => response.json())
+				.then( response => {
+
+					if (response.hasOwnProperty('roles')) {
+
+						// user is logged in:
+						document.getElementsByTagName("nav")[0].innerHTML += 
+							'<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
+
+						if (response.roles.includes("admin")) {
+
+							document.getElementById("aside").innerHTML = 
+								`<a href="#" class="button" onclick="UserSettings()">Settings</a>
+								<br/><br/>
+								<a href="#" class="button" onclick="Logout()">Logout</a>
+								`;
+						}
+
+						initialized = true;
+					}
+				});
+			}
+			
+            if (!initialized) {
+				// user is not logged in:
+				document.getElementsByTagName("nav")[0].innerHTML += 
+				'<br/><br/><a href="#" class="button" onclick="Contact()">Contact</a>';
+
+                initialized = true;
 			}
 		}
 
