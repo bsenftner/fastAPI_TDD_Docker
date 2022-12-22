@@ -158,12 +158,12 @@
                     <h4>Body Shape:</h4>
                     <div class="slidercontainer">
                         <div class="slidercaption">Thin 2 Heavy:</div>
-                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_thin2Heavy">
+                        <input type="range" min="0" max="200" value="0" class="slider" id="sldr_thin2Heavy" oninput="thin2HeavyChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Muscularity:</div>
-                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_muscularity">
+                        <input type="range" min="0" max="300" value="0" class="slider" id="sldr_muscularity" oninput="muscularityChanged()">
                     </div>
                 </div>
             </div>
@@ -201,6 +201,7 @@
         let gMeshObjs = [];
 
 		const gNewAvatarSceneInfo = { 
+            'inited': false,
 			'cam': {
 				'pos': { 'x': 0, 'y': 40, 'z': 50 },
 				'target': { 'x': 0, 'y': 20, 'z': 0 },
@@ -209,7 +210,10 @@
 			'obj': {
 				'url': 'static/a3da/avatar2022.glb',
 				'scale': 20,
-			}
+			},
+            'race': {
+                'asian': 0.0, 'african': 0.0, 'caucasian': 1.0
+            }
 		};
 
 
@@ -265,6 +269,7 @@
             }
         }
 
+        // the first in a series of functions related to Ethnicity Modification:
         function ethnicityChangedAsian() {
             let mainSldr = document.getElementById("sldr_asian");
             let otherSldr1 = document.getElementById("sldr_african");
@@ -272,7 +277,7 @@
             ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
             setBodyShape( mainSldr, otherSldr1 );
         }
-
+        //
         function ethnicityChangedAfrican() {
             let otherSldr1 = document.getElementById("sldr_asian");
             let mainSldr = document.getElementById("sldr_african");
@@ -280,7 +285,7 @@
             ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
             setBodyShape( otherSldr1, mainSldr );
         }  
-
+        //
         function ethnicityChangedCaucasian() {
             let otherSldr1 = document.getElementById("sldr_asian");
             let otherSldr2 = document.getElementById("sldr_african");
@@ -288,7 +293,9 @@
             ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
             setBodyShape( otherSldr1, otherSldr2 );
         }
-
+        //
+        // common logic for the normalization & updating of the ethnicity controls
+        // when any one ethnicity range slider has been modified:
         function ethnicityChanged( mainSldr, otherSldr1, otherSldr2 ) {
             let mainValue = parseFloat(mainSldr.value);
             let other1Value = parseFloat(otherSldr1.value);
@@ -311,15 +318,84 @@
             mainSldr.value = mainValue;
             otherSldr1.value = other1Value;
             otherSldr2.value = other2Value;
-        }
 
+		    gNewAvatarSceneInfo.race.asian = parseFloat(document.getElementById("sldr_asian").value) / 100.0;
+		    gNewAvatarSceneInfo.race.african = parseFloat(document.getElementById("sldr_african").value) / 100.0;
+		    gNewAvatarSceneInfo.race.caucasian = parseFloat(document.getElementById("sldr_caucasian").value) / 100.0;
+        }
+        //
+        // last routine related to Ethnicity Modifications;
+        // this sets the avatar face's ethnicity characteristics / shape:
+        // (Note the default ethnicity is Caucasian, so the other ethnicities are expressed
+        // as the percentage-wise morphs to Asian and African, morphs away from Caucasian.)
         function setBodyShape( asianCtrl, africanCtrl ) {
-            if (typeof gScene !== 'undefined') {
+            if (gNewAvatarSceneInfo.inited) {
                 let av_body = gScene.getObjectByName('av_FemaleAvatar');
                 let asianKey = av_body.morphTargetDictionary.FemaleAsian;
                 let africanKey = av_body.morphTargetDictionary.FemaleBlack;
                 av_body.morphTargetInfluences[asianKey] = parseFloat(asianCtrl.value) / 100.0;
                 av_body.morphTargetInfluences[africanKey] = parseFloat(africanCtrl.value) / 100.0;
+            }
+        }
+
+        function thin2HeavyChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let faHeavyKey = av_body.morphTargetDictionary.fa_Heavy;
+                let fbHeavyKey = av_body.morphTargetDictionary.fb_Heavy;
+                let fwHeavyKey = av_body.morphTargetDictionary.fw_Heavy;
+                let faSkinnyKey = av_body.morphTargetDictionary.fa_Skinny;
+                let fbSkinnyKey = av_body.morphTargetDictionary.fb_Skinny;
+                let fwSkinnyKey = av_body.morphTargetDictionary.fw_Skinny;
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(document.getElementById("sldr_thin2Heavy").value) / 50.0;
+                // check if we're making em fat:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want to be fat
+                    // that percentage is realized within their ethnicity:
+                    av_body.morphTargetInfluences[faHeavyKey] = wt * gNewAvatarSceneInfo.race.asian;
+                    av_body.morphTargetInfluences[fbHeavyKey] = wt * gNewAvatarSceneInfo.race.african;
+                    av_body.morphTargetInfluences[fwHeavyKey] = wt * gNewAvatarSceneInfo.race.caucasian;
+                    
+                    av_body.morphTargetInfluences[faSkinnyKey] = 0.0;
+                    av_body.morphTargetInfluences[fbSkinnyKey] = 0.0;
+                    av_body.morphTargetInfluences[fwSkinnyKey] = 0.0;
+                }
+                else { // nope, we're making em skinny:
+                    wt = 1.0 - wt; // percentage they want to be thin
+                    // that percentage is realized within their ethnicity:
+                    av_body.morphTargetInfluences[faHeavyKey] = 0.0;
+                    av_body.morphTargetInfluences[fbHeavyKey] = 0.0;
+                    av_body.morphTargetInfluences[fwHeavyKey] = 0.0;
+                    
+                    av_body.morphTargetInfluences[faSkinnyKey] = wt * gNewAvatarSceneInfo.race.asian;
+                    av_body.morphTargetInfluences[fbSkinnyKey] = wt * gNewAvatarSceneInfo.race.african;
+                    av_body.morphTargetInfluences[fwSkinnyKey] = wt * gNewAvatarSceneInfo.race.caucasian;
+                }
+            }
+        }
+
+        function muscularityChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let faMuscularKey = av_body.morphTargetDictionary.fa_Muscular;
+                let fbMuscularKey = av_body.morphTargetDictionary.fb_Muscular;
+                let fwMuscularKey = av_body.morphTargetDictionary.fw_Muscular;
+                let maMuscularKey = av_body.morphTargetDictionary.ma_Muscular;
+                let mbMuscularKey = av_body.morphTargetDictionary.mb_Muscular;
+                let mwMuscularKey = av_body.morphTargetDictionary.mw_Muscular;
+
+                // forcing wt to be within 0.0 to 3.0:
+                let wt = parseFloat(document.getElementById("sldr_muscularity").value) / 100.0;
+                
+                av_body.morphTargetInfluences[faMuscularKey] = wt * 0.3333;
+                av_body.morphTargetInfluences[fbMuscularKey] = wt * 0.3333;
+                av_body.morphTargetInfluences[fwMuscularKey] = wt * 0.3333;
+
+                av_body.morphTargetInfluences[maMuscularKey] = wt * 0.16665;
+                av_body.morphTargetInfluences[mbMuscularKey] = wt * 0.16665;
+                av_body.morphTargetInfluences[mwMuscularKey] = wt * 0.16665;
             }
         }
 
@@ -511,6 +587,8 @@
 			
 						gScene.add(gParentObj);
                         removeObject3D(gProgressCube)
+
+                        gNewAvatarSceneInfo.inited = true;
 					},
 					// called while loading is progressing
 					function ( xhr ) {
