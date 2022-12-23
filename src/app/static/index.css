@@ -263,6 +263,10 @@ footer {
   grid-column: 1 / 4;
 }
 
+#contactButton {
+  margin-top: 30px;
+}
+
 #blakeImg {
   float: left;
   margin-left: 124px;

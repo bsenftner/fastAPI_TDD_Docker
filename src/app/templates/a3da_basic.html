@@ -337,7 +337,7 @@
 
 
 		function page_init() {
-            let initialized = false;
+
 			const access_token = localStorage.getItem('token');
 			if (typeof access_token !== 'undefined') {
 				const options = { headers: { "Authorization": "Bearer " + access_token } }
@@ -347,9 +347,8 @@
 
 					if (response.hasOwnProperty('roles')) {
 
-						// user is logged in:
-						document.getElementsByTagName("nav")[0].innerHTML += 
-							'<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
+						// user is logged in, change contact link:
+						document.getElementById("contactButton").innerHTML = '<a href="#" class="button" onclick="UserContact()">Contact</a>';
 
 						if (response.roles.includes("admin")) {
 
@@ -359,18 +358,8 @@
 								<a href="#" class="button" onclick="Logout()">Logout</a>
 								`;
 						}
-
-						initialized = true;
 					}
 				});
-			}
-			
-            if (!initialized) {
-				// user is not logged in:
-				document.getElementsByTagName("nav")[0].innerHTML += 
-				'<br/><br/><a href="#" class="button" onclick="Contact()">Contact</a>';
-
-                initialized = true;
 			}
 		}
 

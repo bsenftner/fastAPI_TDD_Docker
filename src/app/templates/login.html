@@ -63,7 +63,7 @@
 			page_init();
 		  });
 		function page_init() {
-            let initialized = false;
+
 			// look for an existing access_token indicating the user is logged in:
 			const access_token = localStorage.getItem('token');
 			if (typeof access_token !== 'undefined') {
@@ -73,11 +73,10 @@
 				.then(response => response.json())
 				.then( response =>  {
 
-					if (response.hasOwnProperty('username')) {
+					if (response.hasOwnProperty('roles')) {
 
-						// user is logged in:
-						document.getElementsByTagName("nav")[0].innerHTML += 
-							'<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
+						// user is logged in, change contact link:
+						document.getElementById("contactButton").innerHTML = '<a href="#" class="button" onclick="UserContact()">Contact</a>';
 							
 						document.getElementById("mainContent").innerHTML = 
 								"<h4>Welcome back, " + response.username + "</h4>";
@@ -88,17 +87,8 @@
 							let newHtml = '<h4>Please verify your email:</h4><label for="vcode">Verification code:</label><input type="text" id="vcode" name="label" value=""><br/><br/><div id="userVerifyMsg"></div><div id="divLoginButtons"><a href="#" class="button" onclick="Cancel()">Cancel</a><a href="#" class="button" onclick="VerifyEmail()">Verify Email</a></div>';
 							document.getElementById("mainContent").innerHTML += newHtml
 						}
-
-						initialized = true;
 					}
 				});
-			}
-			
-			if (initialized === false) {
-				// user is not logged in:
-				document.getElementsByTagName("nav")[0].innerHTML += '<br/><br/><a href="#" class="button" onclick="Contact()">Contact</a>';
-
-                initialized = true;
 			}
 		}
 

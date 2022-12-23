@@ -155,21 +155,18 @@
 		  });
 		function page_init() {
 
-			// this may change:
-			var contactHtml = '<br/><br/><a href="#" class="button" onclick="Contact()">Contact</a>';
-
             // everyone is allowed:
 			const access_token = 1 // = localStorage.getItem('token');
 			//
-			if (access_token) {
+			if (typeof access_token !== 'undefined') {
 				fetch("/users/me", { headers: { "Authorization": "Bearer " + access_token } })
 				.then(response => response.json())
 				.then( response => 
 					{
-						console.log(response)
-						if (response.hasOwnProperty('username')) {
+						if (response.hasOwnProperty('roles')) {
 
-							contactHtml = '<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
+							// user is logged in, change contact link:
+							document.getElementById("contactButton").innerHTML = '<a href="#" class="button" onclick="UserContact()">Contact</a>';
 
 							document.getElementById("aside").innerHTML = 
 							`<a href="#" class="button" onclick="UserSettings()">Settings</a>
@@ -177,8 +174,6 @@
 							<a href="#" class="button" onclick="Logout()">Logout</a>
 							`;
 						}
-
-						document.getElementsByTagName("nav")[0].innerHTML += contactHtml;
 				  })
 			}
 		}

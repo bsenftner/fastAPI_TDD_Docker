@@ -153,8 +153,8 @@
 		//
 		function page_init_work() {
 
-			document.getElementsByTagName("nav")[0].innerHTML += 
-							'<br/><br/><a href="#" class="button" onclick="UserContact()">Contact</a>';
+			// user is logged in, change contact link:
+			document.getElementById("contactButton").innerHTML = '<a href="#" class="button" onclick="UserContact()">Contact</a>';
 							
 			document.getElementById("aside").innerHTML = 
 							`<a href="#" class="button" onclick="UserSettings()">Settings</a>
