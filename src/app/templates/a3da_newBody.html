@@ -19,7 +19,7 @@
 	  position: relative;
 	}
 
-    #ctrlPanel {
+    .ctrlRow {
         width: 100%;
         display: flex;
         flex-direction: row;
@@ -27,17 +27,28 @@
         align-items: center;
     }
 
-    #ethnicity_ctrls {
+    .ctrlRowLeft {
         width: 50%;
         margin-right: 10px;
     }
 
-    #bodyShapCtrls {
+    .ctrlRowLeft .slidercaption {
+        width: 130px;
+    }
+
+    .ctrlRowRight {
         width: 50%;
     }
 
-    #bodyShapCtrls .slidercaption {
-        width: 110px;
+    .ctrlRowRight .slidercaption {
+        width: 130px;
+    }
+
+    .ctrlRowRight .button {
+        justify-content: center;
+        display: flex;
+        width: 70%;
+        margin-left: 15%;
     }
 
     #view_ctrls {
@@ -102,6 +113,7 @@
     #view_ctrls .slidercaption {
         min-width: 110px;
     }
+
   </style>
 
   <!-- Remove this when import maps will be widely supported -->
@@ -136,8 +148,8 @@
                     <input type="range" min="20" max="120" value="45" class="slider" id="cam_fov" oninput="camFOVChanged()">
                 </div>
             </div>
-            <div id="ctrlPanel">
-                <div id="ethnicity_ctrls">
+            <div class="ctrlRow">
+                <div class="ctrlRowLeft">
                     <h4>Ethnicity:</h4>
                     <div class="slidercontainer">
                         <div class="slidercaption">Asian:</div>
@@ -154,7 +166,7 @@
                         <input type="range" min="0" max="100" value="100" class="slider" id="sldr_caucasian" oninput="ethnicityChangedCaucasian()">
                     </div>
                 </div>
-                <div id="bodyShapCtrls">
+                <div class="ctrlRowRight">
                     <h4>Body Shape:</h4>
                     <div class="slidercontainer">
                         <div class="slidercaption">Thin 2 Heavy:</div>
@@ -167,6 +179,97 @@
                     </div>
                 </div>
             </div>
+
+            <div class="ctrlRow">
+                <div class="ctrlRowLeft">
+                    <h4>Face Shape:</h4>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Jaw In/Out:</div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="sldr_jawInOut" oninput="jawInOutChanged()">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Square Jaw:</div>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_squareJaw" oninput="squareJawChanged()">
+                    </div>
+                        
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Chin Cleft:</div>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_chinCleft" oninput="chinCleftChanged()">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Chin In/Out:</div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="sldr_chinInOut" oninput="chinInOutChanged()">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Mouth In/Out:</div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="sldr_mouthInOut" oninput="mouthInOutChanged()">
+                    </div>
+                        
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Mouth Width:</div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="sldr_mouthWidth" oninput="mouthWidthChanged()">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Gaunt:</div>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_gaunt" oninput="gauntChanged()">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Double Chin:</div>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_doubleChin" oninput="doubleChinChanged()">
+                    </div>
+
+                </div>
+                <div class="ctrlRowRight">
+                    <h4>&nbsp;</h4>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Cheek Bones:</div>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_cheekBones" oninput="cheekBonesChanged()">
+                    </div>
+                        
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Nose Size:</div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="sldr_noseSize" oninput="noseSizeChanged()">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Nose Top In/Out:</div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="sldr_noseTopInOut" oninput="noseTopInOutChanged()">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Nose Mid In/Out:</div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="sldr_noseMidInOut" oninput="noseMidInOutChanged()">
+                    </div>
+                        
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Nose Tip:</div>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="sldr_noseTip" oninput="noseTipChanged()">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Brow In/Out:</div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="sldr_browInOut" oninput="browInOutChanged()">
+                    </div>
+
+                    <div class="slidercontainer">
+                        <div class="slidercaption">Forehead Top:</div>
+                        <input type="range" min="0" max="100" value="50" class="slider" id="sldr_foreheadTop" oninput="foreheadTopChanged()">
+                    </div>
+
+                    <div>
+                        <a href="#" class="button" onclick="resetFaceShape()">Reset Face Shape To Neutral</a>
+                    </div>
+                </div>
+                </div>
+            </div>
+
 		</main>
 
 		{# the right sidebar #}
@@ -275,7 +378,7 @@
             let otherSldr1 = document.getElementById("sldr_african");
             let otherSldr2 = document.getElementById("sldr_caucasian");
             ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
-            setBodyShape( mainSldr, otherSldr1 );
+            setEthnicityShape( mainSldr, otherSldr1 );
         }
         //
         function ethnicityChangedAfrican() {
@@ -283,7 +386,7 @@
             let mainSldr = document.getElementById("sldr_african");
             let otherSldr2 = document.getElementById("sldr_caucasian");
             ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
-            setBodyShape( otherSldr1, mainSldr );
+            setEthnicityShape( otherSldr1, mainSldr );
         }  
         //
         function ethnicityChangedCaucasian() {
@@ -291,7 +394,7 @@
             let otherSldr2 = document.getElementById("sldr_african");
             let mainSldr = document.getElementById("sldr_caucasian");
             ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
-            setBodyShape( otherSldr1, otherSldr2 );
+            setEthnicityShape( otherSldr1, otherSldr2 );
         }
         //
         // common logic for the normalization & updating of the ethnicity controls
@@ -328,7 +431,7 @@
         // this sets the avatar face's ethnicity characteristics / shape:
         // (Note the default ethnicity is Caucasian, so the other ethnicities are expressed
         // as the percentage-wise morphs to Asian and African, morphs away from Caucasian.)
-        function setBodyShape( asianCtrl, africanCtrl ) {
+        function setEthnicityShape( asianCtrl, africanCtrl ) {
             if (gNewAvatarSceneInfo.inited) {
                 let av_body = gScene.getObjectByName('av_FemaleAvatar');
                 let asianKey = av_body.morphTargetDictionary.FemaleAsian;
@@ -396,6 +499,595 @@
                 av_body.morphTargetInfluences[maMuscularKey] = wt * 0.16665;
                 av_body.morphTargetInfluences[mbMuscularKey] = wt * 0.16665;
                 av_body.morphTargetInfluences[mwMuscularKey] = wt * 0.16665;
+            }
+        }
+
+        function jawInOutChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_lowerTeeth = gScene.getObjectByName('LowerTeeth_Mesh');
+                let av_lowerGums = gScene.getObjectByName('LowerTeeth_Mesh_1');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let jawOutKey = [ 
+                    av_body.morphTargetDictionary.fa_JawOut,
+                    av_body.morphTargetDictionary.fb_JawOut,
+                    av_body.morphTargetDictionary.fw_JawOut 
+                ];
+
+                let jawInKey = [ 
+                    av_body.morphTargetDictionary.fa_JawIn,
+                    av_body.morphTargetDictionary.fb_JawIn,
+                    av_body.morphTargetDictionary.fw_JawIn 
+                ];
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(document.getElementById("sldr_jawInOut").value) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[jawOutKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[jawInKey[i]] = 0.0;
+                    }
+
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawOut_LowerTeeth ] = wt;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawOut_LowerTeeth ] = wt;
+
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawIn_LowerTeeth ] = 0.0;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawIn_LowerTeeth ] = 0.0;
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[jawInKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[jawOutKey[i]] = 0.0;
+                    }
+
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawIn_LowerTeeth ] = wt;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawIn_LowerTeeth ] = wt;
+
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawOut_LowerTeeth ] = 0.0;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawOut_LowerTeeth ] = 0.0;
+                }
+            }
+        }
+
+        function squareJawChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let squareJawKey = [ 
+                    av_body.morphTargetDictionary.fa_SquareJaw,
+                    av_body.morphTargetDictionary.fb_SquareJaw,
+                    av_body.morphTargetDictionary.fw_SquareJaw 
+                ];
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(document.getElementById("sldr_squareJaw").value) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[squareJawKey[i]] = wt * raceWt[i];
+                }
+            }
+        }
+
+        function chinCleftChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let chinCleftKey = [ 
+                    av_body.morphTargetDictionary.fa_ChinCleft,
+                    av_body.morphTargetDictionary.fb_ChinCleft,
+                    av_body.morphTargetDictionary.fw_ChinCleft 
+                ];
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(document.getElementById("sldr_chinCleft").value) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[chinCleftKey[i]] = wt * raceWt[i];
+                }
+            }
+        }
+ 
+        function chinInOutChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let chinOutKey = [ 
+                    av_body.morphTargetDictionary.fa_ChinOut,
+                    av_body.morphTargetDictionary.fb_ChinOut,
+                    av_body.morphTargetDictionary.fw_ChinOut 
+                ];
+
+                let chinInKey = [ 
+                    av_body.morphTargetDictionary.fa_ChinIn,
+                    av_body.morphTargetDictionary.fb_ChinIn,
+                    av_body.morphTargetDictionary.fw_ChinIn 
+                ];
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(document.getElementById("sldr_chinInOut").value) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[chinOutKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[chinInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[chinInKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[chinOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function mouthInOutChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let mouthOutKey = [ 
+                    av_body.morphTargetDictionary.fa_MouthOut,
+                    av_body.morphTargetDictionary.fb_MouthOut,
+                    av_body.morphTargetDictionary.fw_MouthOut 
+                ];
+
+                let mouthInKey = [ 
+                    av_body.morphTargetDictionary.fa_MouthIn,
+                    av_body.morphTargetDictionary.fb_MouthIn,
+                    av_body.morphTargetDictionary.fw_MouthIn 
+                ];
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(document.getElementById("sldr_mouthInOut").value) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[mouthOutKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[mouthInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[mouthInKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[mouthOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function mouthWidthChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian, gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african, gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian, gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let outKey = [ 
+                    av_body.morphTargetDictionary.fa_WidePurseOutLeft, av_body.morphTargetDictionary.fa_WidePurseOutRight,
+                    av_body.morphTargetDictionary.fb_WidePurseOutLeft, av_body.morphTargetDictionary.fb_WidePurseOutRight,
+                    av_body.morphTargetDictionary.fw_WidePurseOutLeft, av_body.morphTargetDictionary.fw_WidePurseOutRight,
+                ];
+
+                let inKey = [ 
+                    av_body.morphTargetDictionary.fa_WidePurseInLeft, av_body.morphTargetDictionary.fa_WidePurseInRight,
+                    av_body.morphTargetDictionary.fb_WidePurseInLeft, av_body.morphTargetDictionary.fb_WidePurseInRight,
+                    av_body.morphTargetDictionary.fw_WidePurseInLeft, av_body.morphTargetDictionary.fw_WidePurseInRight,
+                ];
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(document.getElementById("sldr_mouthWidth").value) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 6; i++) {
+                        av_body.morphTargetInfluences[outKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[inKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 6; i++) {
+                        av_body.morphTargetInfluences[inKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[outKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function gauntChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let gauntKey = [ 
+                    av_body.morphTargetDictionary.fa_Gaunt,
+                    av_body.morphTargetDictionary.fb_Gaunt,
+                    av_body.morphTargetDictionary.fw_Gaunt 
+                ];
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(document.getElementById("sldr_gaunt").value) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[gauntKey[i]] = wt * raceWt[i];
+                }
+            }
+        }
+
+        function doubleChinChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let doubleChinKey = [ 
+                    av_body.morphTargetDictionary.fa_DoubleChin,
+                    av_body.morphTargetDictionary.fb_DoubleChin,
+                    av_body.morphTargetDictionary.fw_DoubleChin 
+                ];
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(document.getElementById("sldr_doubleChin").value) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[doubleChinKey[i]] = wt * raceWt[i];
+                }
+            }
+        }
+
+        function cheekBonesChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let cheekBoneKey = [ 
+                    av_body.morphTargetDictionary.fa_HighCheekBones,
+                    av_body.morphTargetDictionary.fb_HighCheekBones,
+                    av_body.morphTargetDictionary.fw_HighCheekBones 
+                ];
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(document.getElementById("sldr_cheekBones").value) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[cheekBoneKey[i]] = wt * raceWt[i];
+                }
+            }
+        }
+
+        function noseSizeChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let noseBigKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseLarge,
+                    av_body.morphTargetDictionary.fb_NoseLarge,
+                    av_body.morphTargetDictionary.fw_NoseLarge 
+                ];
+
+                let noseSmallKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseSmall,
+                    av_body.morphTargetDictionary.fb_NoseSmall,
+                    av_body.morphTargetDictionary.fw_NoseSmall
+                ];
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(document.getElementById("sldr_noseSize").value) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseBigKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[noseSmallKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseSmallKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[noseBigKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function noseTopInOutChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let noseHighOutKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseHighOut,
+                    av_body.morphTargetDictionary.fb_NoseHighOut,
+                    av_body.morphTargetDictionary.fw_NoseHighOut 
+                ];
+
+                let noseHighInKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseHighIn,
+                    av_body.morphTargetDictionary.fb_NoseHighIn,
+                    av_body.morphTargetDictionary.fw_NoseHighIn
+                ];
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(document.getElementById("sldr_noseTopInOut").value) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseHighOutKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[noseHighInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseHighInKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[noseHighOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function noseMidInOutChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let noseMidOutKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseMidOut,
+                    av_body.morphTargetDictionary.fb_NoseMidOut,
+                    av_body.morphTargetDictionary.fw_NoseMidOut 
+                ];
+
+                let noseMidInKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseMidIn,
+                    av_body.morphTargetDictionary.fb_NoseMidIn,
+                    av_body.morphTargetDictionary.fw_NoseMidIn
+                ];
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(document.getElementById("sldr_noseMidInOut").value) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseMidOutKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[noseMidInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseMidInKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[noseMidOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function noseTipChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let noseTipKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseTipOut,
+                    av_body.morphTargetDictionary.fb_NoseTipOut,
+                    av_body.morphTargetDictionary.fw_NoseTipOut 
+                ];
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(document.getElementById("sldr_noseTip").value) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[noseTipKey[i]] = wt * raceWt[i];
+                }
+            }
+        }
+
+        function browInOutChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let browOutKey = [ 
+                    av_body.morphTargetDictionary.fa_BrowOut,
+                    av_body.morphTargetDictionary.fb_BrowOut,
+                    av_body.morphTargetDictionary.fw_BrowOut 
+                ];
+
+                let browInKey = [ 
+                    av_body.morphTargetDictionary.fa_BrowFaceIn,
+                    av_body.morphTargetDictionary.fb_BrowFaceIn,
+                    av_body.morphTargetDictionary.fw_BrowFaceIn
+                ];
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(document.getElementById("sldr_browInOut").value) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[browOutKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[browInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[browInKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[browOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function foreheadTopChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+
+                let raceWt = [
+                    gNewAvatarSceneInfo.race.asian,
+                    gNewAvatarSceneInfo.race.african,
+                    gNewAvatarSceneInfo.race.caucasian
+                ];
+
+                let foreheadTopOutKey = [ 
+                    av_body.morphTargetDictionary.fa_ForeHeadTopOut,
+                    av_body.morphTargetDictionary.fb_ForeHeadTopOut,
+                    av_body.morphTargetDictionary.fw_ForeHeadTopOut 
+                ];
+
+                let foreheadTopInKey = [ 
+                    av_body.morphTargetDictionary.fa_ForeHeadTopIn,
+                    av_body.morphTargetDictionary.fb_ForeHeadTopIn,
+                    av_body.morphTargetDictionary.fw_ForeHeadTopIn
+                ];
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(document.getElementById("sldr_foreheadTop").value) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[foreheadTopOutKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[foreheadTopInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[foreheadTopInKey[i]] = wt * raceWt[i];
+                        av_body.morphTargetInfluences[foreheadTopOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function resetFaceShape() {
+            if (gNewAvatarSceneInfo.inited) {
+                document.getElementById("sldr_jawInOut").value = "50";
+                document.getElementById("sldr_squareJaw").value = "0";
+                document.getElementById("sldr_chinCleft").value = "0";
+                document.getElementById("sldr_chinInOut").value = "50";
+                document.getElementById("sldr_mouthInOut").value = "50";
+                document.getElementById("sldr_mouthWidth").value = "50";
+                document.getElementById("sldr_gaunt").value = "0";
+                document.getElementById("sldr_doubleChin").value = "0";
+                document.getElementById("sldr_cheekBones").value = "0";
+                document.getElementById("sldr_noseSize").value = "50";
+                document.getElementById("sldr_noseTopInOut").value = "50";
+                document.getElementById("sldr_noseMidInOut").value = "50";
+                document.getElementById("sldr_noseTip").value = "0";
+                document.getElementById("sldr_browInOut").value = "50";
+                document.getElementById("sldr_foreheadTop").value = "50";
+                jawInOutChanged();
+                squareJawChanged();
+                chinCleftChanged();
+                chinInOutChanged();
+                mouthInOutChanged();
+                mouthWidthChanged();
+                gauntChanged();
+                doubleChinChanged();
+                cheekBonesChanged();
+                noseSizeChanged();
+                noseTopInOutChanged();
+                noseMidInOutChanged();
+                noseTipChanged();
+                browInOutChanged();
+                foreheadTopChanged();
             }
         }
 
