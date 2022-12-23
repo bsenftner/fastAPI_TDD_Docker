@@ -91,7 +91,7 @@
 		  });
 		function page_init() {
 			const access_token = localStorage.getItem('token');
-			if (access_token) {
+			if (typeof access_token !== 'undefined') {
 				const options = { headers: { "Authorization": "Bearer " + access_token } }
 				fetch("/users/me", options)
 				.then(response => response.json())
