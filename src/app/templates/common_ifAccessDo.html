@@ -2,7 +2,7 @@
 
     function ifAccessDo(callback) {
         const access_token = localStorage.getItem('token');
-        if (typeof access_token !== 'undefined') { 
+        if (typeof access_token === 'undefined') { 
             window.location.href = "/"; 
         }
         else {
