@@ -36,12 +36,21 @@
         width: 130px;
     }
 
+    .ctrlRowLeft .slidervalue {
+        width: 70px;
+    }
+
     .ctrlRowRight {
         width: 50%;
     }
 
     .ctrlRowRight .slidercaption {
         width: 130px;
+    }
+
+    
+    .ctrlRowRight .slidervalue {
+        width: 70px;
     }
 
     .ctrlRowRight .button {
@@ -153,16 +162,19 @@
                     <h4>Ethnicity:</h4>
                     <div class="slidercontainer">
                         <div class="slidercaption">Asian:</div>
+                        <div class="slidervalue" id="sldr_asian_value">100%</div>
                         <input type="range" min="0" max="100" value="0" class="slider" id="sldr_asian" oninput="ethnicityChangedAsian()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">African:</div>
+                        <div class="slidervalue" id="sldr_african_value">100%</div>
                         <input type="range" min="0" max="100" value="0" class="slider" id="sldr_african" oninput="ethnicityChangedAfrican()">
                     </div>
                         
                     <div class="slidercontainer">
                         <div class="slidercaption">Caucasian:</div>
+                        <div class="slidervalue" id="sldr_caucasian_value">100%</div>
                         <input type="range" min="0" max="100" value="100" class="slider" id="sldr_caucasian" oninput="ethnicityChangedCaucasian()">
                     </div>
                 </div>
@@ -170,11 +182,13 @@
                     <h4>Body Shape:</h4>
                     <div class="slidercontainer">
                         <div class="slidercaption">Thin 2 Heavy:</div>
+                        <div class="slidervalue" id="sldr_thin2Heavy_value">100%</div>
                         <input type="range" min="0" max="200" value="0" class="slider" id="sldr_thin2Heavy" oninput="thin2HeavyChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Muscularity:</div>
+                        <div class="slidervalue" id="sldr_muscularity_value">100%</div>
                         <input type="range" min="0" max="300" value="0" class="slider" id="sldr_muscularity" oninput="muscularityChanged()">
                     </div>
                 </div>
@@ -186,41 +200,49 @@
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Jaw In/Out:</div>
+                        <div class="slidervalue" id="sldr_jawInOut_value">100%</div>
                         <input type="range" min="0" max="100" value="50" class="slider" id="sldr_jawInOut" oninput="jawInOutChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Square Jaw:</div>
+                        <div class="slidervalue" id="sldr_squareJaw_value">100%</div>
                         <input type="range" min="0" max="100" value="0" class="slider" id="sldr_squareJaw" oninput="squareJawChanged()">
                     </div>
                         
                     <div class="slidercontainer">
                         <div class="slidercaption">Chin Cleft:</div>
+                        <div class="slidervalue" id="sldr_chinCleft_value">100%</div>
                         <input type="range" min="0" max="100" value="0" class="slider" id="sldr_chinCleft" oninput="chinCleftChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Chin In/Out:</div>
+                        <div class="slidervalue" id="sldr_chinInOut_value">100%</div>
                         <input type="range" min="0" max="100" value="50" class="slider" id="sldr_chinInOut" oninput="chinInOutChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Mouth In/Out:</div>
+                        <div class="slidervalue" id="sldr_mouthInOut_value">100%</div>
                         <input type="range" min="0" max="100" value="50" class="slider" id="sldr_mouthInOut" oninput="mouthInOutChanged()">
                     </div>
                         
                     <div class="slidercontainer">
                         <div class="slidercaption">Mouth Width:</div>
+                        <div class="slidervalue" id="sldr_mouthWidth_value">100%</div>
                         <input type="range" min="0" max="100" value="50" class="slider" id="sldr_mouthWidth" oninput="mouthWidthChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Gaunt:</div>
+                        <div class="slidervalue" id="sldr_gaunt_value">100%</div>
                         <input type="range" min="0" max="100" value="0" class="slider" id="sldr_gaunt" oninput="gauntChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Double Chin:</div>
+                        <div class="slidervalue" id="sldr_doubleChin_value">100%</div>
                         <input type="range" min="0" max="100" value="0" class="slider" id="sldr_doubleChin" oninput="doubleChinChanged()">
                     </div>
 
@@ -230,36 +252,43 @@
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Cheek Bones:</div>
+                        <div class="slidervalue" id="sldr_cheekBones_value">100%</div>
                         <input type="range" min="0" max="100" value="0" class="slider" id="sldr_cheekBones" oninput="cheekBonesChanged()">
                     </div>
                         
                     <div class="slidercontainer">
                         <div class="slidercaption">Nose Size:</div>
+                        <div class="slidervalue" id="sldr_noseSize_value">100%</div>
                         <input type="range" min="0" max="100" value="50" class="slider" id="sldr_noseSize" oninput="noseSizeChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Nose Top In/Out:</div>
+                        <div class="slidervalue" id="sldr_noseTopInOut_value">100%</div>
                         <input type="range" min="0" max="100" value="50" class="slider" id="sldr_noseTopInOut" oninput="noseTopInOutChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Nose Mid In/Out:</div>
+                        <div class="slidervalue" id="sldr_noseMidInOut_value">100%</div>
                         <input type="range" min="0" max="100" value="50" class="slider" id="sldr_noseMidInOut" oninput="noseMidInOutChanged()">
                     </div>
                         
                     <div class="slidercontainer">
                         <div class="slidercaption">Nose Tip:</div>
+                        <div class="slidervalue" id="sldr_noseTip_value">100%</div>
                         <input type="range" min="0" max="100" value="0" class="slider" id="sldr_noseTip" oninput="noseTipChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Brow In/Out:</div>
+                        <div class="slidervalue" id="sldr_browInOut_value">100%</div>
                         <input type="range" min="0" max="100" value="50" class="slider" id="sldr_browInOut" oninput="browInOutChanged()">
                     </div>
 
                     <div class="slidercontainer">
                         <div class="slidercaption">Forehead Top:</div>
+                        <div class="slidervalue" id="sldr_foreheadTop_value">100%</div>
                         <input type="range" min="0" max="100" value="50" class="slider" id="sldr_foreheadTop" oninput="foreheadTopChanged()">
                     </div>
 
@@ -422,9 +451,17 @@
             otherSldr1.value = other1Value;
             otherSldr2.value = other2Value;
 
-		    gNewAvatarSceneInfo.race.asian = parseFloat(document.getElementById("sldr_asian").value) / 100.0;
-		    gNewAvatarSceneInfo.race.african = parseFloat(document.getElementById("sldr_african").value) / 100.0;
-		    gNewAvatarSceneInfo.race.caucasian = parseFloat(document.getElementById("sldr_caucasian").value) / 100.0;
+            let sav = document.getElementById("sldr_asian").value;
+            let sbv = document.getElementById("sldr_african").value;
+            let scv = document.getElementById("sldr_caucasian").value;
+
+            document.getElementById("sldr_asian_value").innerHTML = sav + "%";
+            document.getElementById("sldr_african_value").innerHTML = sbv + "%";
+            document.getElementById("sldr_caucasian_value").innerHTML = scv + "%";
+
+		    gNewAvatarSceneInfo.race.asian = parseFloat(sav) / 100.0;
+		    gNewAvatarSceneInfo.race.african = parseFloat(sbv) / 100.0;
+		    gNewAvatarSceneInfo.race.caucasian = parseFloat(scv) / 100.0;
         }
         //
         // last routine related to Ethnicity Modifications;
@@ -451,8 +488,17 @@
                 let fbSkinnyKey = av_body.morphTargetDictionary.fb_Skinny;
                 let fwSkinnyKey = av_body.morphTargetDictionary.fw_Skinny;
 
-                // forcing wt to be within 0.0 to 2.0:
-                let wt = parseFloat(document.getElementById("sldr_thin2Heavy").value) / 50.0;
+                let st2hv = document.getElementById("sldr_thin2Heavy").value;
+
+                let st2hvf = parseFloat(st2hv);
+
+                // forcing feedback to be -100% to 100%:
+                let feedback = st2hvf - 100.0;
+                document.getElementById("sldr_thin2Heavy_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 4.0:
+                let wt = st2hvf / 50.0;
+
                 // check if we're making em fat:
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want to be fat
@@ -489,8 +535,12 @@
                 let mbMuscularKey = av_body.morphTargetDictionary.mb_Muscular;
                 let mwMuscularKey = av_body.morphTargetDictionary.mw_Muscular;
 
+                let smv = document.getElementById("sldr_muscularity").value;
+
+                document.getElementById("sldr_muscularity_value").innerHTML = smv + "%";
+
                 // forcing wt to be within 0.0 to 3.0:
-                let wt = parseFloat(document.getElementById("sldr_muscularity").value) / 100.0;
+                let wt = parseFloat(smv) / 100.0;
                 
                 av_body.morphTargetInfluences[faMuscularKey] = wt * 0.3333;
                 av_body.morphTargetInfluences[fbMuscularKey] = wt * 0.3333;
@@ -526,8 +576,13 @@
                     av_body.morphTargetDictionary.fw_JawIn 
                 ];
 
+                let sjv = document.getElementById("sldr_jawInOut").value;
+
+                let feedback = sjv * 2 - 100;
+                document.getElementById("sldr_jawInOut_value").innerHTML = feedback + "%";
+
                 // forcing wt to be within 0.0 to 2.0:
-                let wt = parseFloat(document.getElementById("sldr_jawInOut").value) / 50.0;
+                let wt = parseFloat(sjv) / 50.0;
                 // check for direction:
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want 
@@ -576,8 +631,12 @@
                     av_body.morphTargetDictionary.fw_SquareJaw 
                 ];
 
+                let sjv = document.getElementById("sldr_squareJaw").value;
+
+                document.getElementById("sldr_squareJaw_value").innerHTML = sjv + "%";
+
                 // forcing wt to be within 0.0 to 1.0:
-                let wt = parseFloat(document.getElementById("sldr_squareJaw").value) / 100.0;
+                let wt = parseFloat(sjv) / 100.0;
                 for (let i = 0; i < 3; i++) {
                     av_body.morphTargetInfluences[squareJawKey[i]] = wt * raceWt[i];
                 }
@@ -600,8 +659,12 @@
                     av_body.morphTargetDictionary.fw_ChinCleft 
                 ];
 
+                let scv = document.getElementById("sldr_chinCleft").value;
+
+                document.getElementById("sldr_chinCleft_value").innerHTML = scv + "%";
+
                 // forcing wt to be within 0.0 to 1.0:
-                let wt = parseFloat(document.getElementById("sldr_chinCleft").value) / 100.0;
+                let wt = parseFloat(scv) / 100.0;
                 for (let i = 0; i < 3; i++) {
                     av_body.morphTargetInfluences[chinCleftKey[i]] = wt * raceWt[i];
                 }
@@ -630,8 +693,13 @@
                     av_body.morphTargetDictionary.fw_ChinIn 
                 ];
 
+                let scv = document.getElementById("sldr_chinInOut").value;
+
+                let feedback = scv * 2 - 100;
+                document.getElementById("sldr_chinInOut_value").innerHTML = feedback + "%";
+
                 // forcing wt to be within 0.0 to 2.0:
-                let wt = parseFloat(document.getElementById("sldr_chinInOut").value) / 50.0;
+                let wt = parseFloat(scv) / 50.0;
                 // check for direction:
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want 
@@ -674,8 +742,13 @@
                     av_body.morphTargetDictionary.fw_MouthIn 
                 ];
 
+                let smv = document.getElementById("sldr_mouthInOut").value;
+
+                let feedback = smv * 2 - 100;
+                document.getElementById("sldr_mouthInOut_value").innerHTML = feedback + "%";
+
                 // forcing wt to be within 0.0 to 2.0:
-                let wt = parseFloat(document.getElementById("sldr_mouthInOut").value) / 50.0;
+                let wt = parseFloat(smv) / 50.0;
                 // check for direction:
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want 
@@ -718,8 +791,13 @@
                     av_body.morphTargetDictionary.fw_WidePurseInLeft, av_body.morphTargetDictionary.fw_WidePurseInRight,
                 ];
 
+                let smv = document.getElementById("sldr_mouthWidth").value;
+
+                let feedback = smv * 2 - 100;
+                document.getElementById("sldr_mouthWidth_value").innerHTML = feedback + "%";
+
                 // forcing wt to be within 0.0 to 2.0:
-                let wt = parseFloat(document.getElementById("sldr_mouthWidth").value) / 50.0;
+                let wt = parseFloat(smv) / 50.0;
                 // check for direction:
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want 
@@ -756,8 +834,12 @@
                     av_body.morphTargetDictionary.fw_Gaunt 
                 ];
 
+                let sgv = document.getElementById("sldr_gaunt").value;
+
+                document.getElementById("sldr_gaunt_value").innerHTML = sgv + "%";
+
                 // forcing wt to be within 0.0 to 1.0:
-                let wt = parseFloat(document.getElementById("sldr_gaunt").value) / 100.0;
+                let wt = parseFloat(sgv) / 100.0;
                 for (let i = 0; i < 3; i++) {
                     av_body.morphTargetInfluences[gauntKey[i]] = wt * raceWt[i];
                 }
@@ -780,8 +862,12 @@
                     av_body.morphTargetDictionary.fw_DoubleChin 
                 ];
 
+                let sdv = document.getElementById("sldr_doubleChin").value;
+
+                document.getElementById("sldr_doubleChin_value").innerHTML = sdv + "%";
+
                 // forcing wt to be within 0.0 to 1.0:
-                let wt = parseFloat(document.getElementById("sldr_doubleChin").value) / 100.0;
+                let wt = parseFloat(sdv) / 100.0;
                 for (let i = 0; i < 3; i++) {
                     av_body.morphTargetInfluences[doubleChinKey[i]] = wt * raceWt[i];
                 }
@@ -804,8 +890,12 @@
                     av_body.morphTargetDictionary.fw_HighCheekBones 
                 ];
 
+                let scv = document.getElementById("sldr_cheekBones").value;
+
+                document.getElementById("sldr_cheekBones_value").innerHTML = scv + "%";
+
                 // forcing wt to be within 0.0 to 1.0:
-                let wt = parseFloat(document.getElementById("sldr_cheekBones").value) / 100.0;
+                let wt = parseFloat(scv) / 100.0;
                 for (let i = 0; i < 3; i++) {
                     av_body.morphTargetInfluences[cheekBoneKey[i]] = wt * raceWt[i];
                 }
@@ -834,8 +924,13 @@
                     av_body.morphTargetDictionary.fw_NoseSmall
                 ];
 
+                let ssv = document.getElementById("sldr_noseSize").value;
+
+                let feedback = ssv * 2 - 100;
+                document.getElementById("sldr_noseSize_value").innerHTML = feedback + "%";
+
                 // forcing wt to be within 0.0 to 2.0:
-                let wt = parseFloat(document.getElementById("sldr_noseSize").value) / 50.0;
+                let wt = parseFloat(ssv) / 50.0;
                 // check for direction:
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want 
@@ -878,8 +973,13 @@
                     av_body.morphTargetDictionary.fw_NoseHighIn
                 ];
 
+                let snv = document.getElementById("sldr_noseTopInOut").value;
+
+                let feedback = snv * 2 - 100;
+                document.getElementById("sldr_noseTopInOut_value").innerHTML = feedback + "%";
+
                 // forcing wt to be within 0.0 to 2.0:
-                let wt = parseFloat(document.getElementById("sldr_noseTopInOut").value) / 50.0;
+                let wt = parseFloat(snv) / 50.0;
                 // check for direction:
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want 
@@ -922,8 +1022,13 @@
                     av_body.morphTargetDictionary.fw_NoseMidIn
                 ];
 
+                let snv = document.getElementById("sldr_noseMidInOut").value;
+
+                let feedback = snv * 2 - 100;
+                document.getElementById("sldr_noseMidInOut_value").innerHTML = feedback + "%";
+
                 // forcing wt to be within 0.0 to 2.0:
-                let wt = parseFloat(document.getElementById("sldr_noseMidInOut").value) / 50.0;
+                let wt = parseFloat(snv) / 50.0;
                 // check for direction:
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want 
@@ -960,8 +1065,12 @@
                     av_body.morphTargetDictionary.fw_NoseTipOut 
                 ];
 
+                let stv = document.getElementById("sldr_noseTip").value;
+
+                document.getElementById("sldr_noseTip_value").innerHTML = stv + "%";
+
                 // forcing wt to be within 0.0 to 1.0:
-                let wt = parseFloat(document.getElementById("sldr_noseTip").value) / 100.0;
+                let wt = parseFloat(stv) / 100.0;
                 for (let i = 0; i < 3; i++) {
                     av_body.morphTargetInfluences[noseTipKey[i]] = wt * raceWt[i];
                 }
@@ -990,8 +1099,13 @@
                     av_body.morphTargetDictionary.fw_BrowFaceIn
                 ];
 
+                let sbv = document.getElementById("sldr_browInOut").value;
+
+                let feedback = sbv * 2 - 100;
+                document.getElementById("sldr_browInOut_value").innerHTML = feedback + "%";
+
                 // forcing wt to be within 0.0 to 2.0:
-                let wt = parseFloat(document.getElementById("sldr_browInOut").value) / 50.0;
+                let wt = parseFloat(sbv) / 50.0;
                 // check for direction:
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want 
@@ -1034,8 +1148,13 @@
                     av_body.morphTargetDictionary.fw_ForeHeadTopIn
                 ];
 
+                let sfv = document.getElementById("sldr_foreheadTop").value;
+
+                let feedback = sfv * 2 - 100;
+                document.getElementById("sldr_foreheadTop_value").innerHTML = feedback + "%";
+
                 // forcing wt to be within 0.0 to 2.0:
-                let wt = parseFloat(document.getElementById("sldr_foreheadTop").value) / 50.0;
+                let wt = parseFloat(sfv) / 50.0;
                 // check for direction:
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want 

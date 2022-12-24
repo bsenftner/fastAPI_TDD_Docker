@@ -4,7 +4,6 @@
         fetch("/refresh")
         .then(response => response.text())
         .then( data =>  {
-            console.log(data);
             const jsonData = JSON.parse(data);
 			if (jsonData.access_token) {
 				localStorage.setItem('token', jsonData.access_token);
