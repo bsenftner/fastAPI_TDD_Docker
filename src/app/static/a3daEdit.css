@@ -1,0 +1,155 @@
+/*
+ avatar editing css
+*/
+
+.tab {
+    overflow: hidden;
+    border: 1px solid rgb(235, 234, 234);
+    background-color: #f1f1f1;
+}
+  
+  /* Style the buttons inside the tab  */
+.tab button {
+    display:inline-block;
+    padding:0.5em 3em;
+    margin:0.4em 0.4em 0 0;
+    border-radius: 4em 4em 0 0;
+    box-sizing: border-box;
+    border-bottom: none;
+    text-decoration:none;
+    font-family:'Roboto',sans-serif;
+    font-weight:300;
+    color:#FFFFFF;
+    background-color:#4a4a4a;
+    text-align:center;
+    transition: all 0.2s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #4095c6;
+}
+  
+  /* Create an active/current tablink class */
+.tab button.active {
+    background-color: #1876ad;
+}
+  
+  /* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid rgb(235, 234, 234);
+    background-color: #f1f1f1;
+    border-top: none;
+    animation: fadeEffect 1s; /* Fading effect takes 1 second */
+}
+
+.tabcontent h4, .tabcontent h3 {
+    margin-top: 5px;
+}
+
+/* Go from zero to full opacity */
+@keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+
+.ctrlRow {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    padding: 0;
+}
+
+.ctrlRowLeft {
+    width: 50%;
+    margin-right: 10px;
+}
+
+.ctrlRowRight {
+    width: 50%;
+}
+
+.ctrlRowLeft .slidercaption, .ctrlRowRight .slidercaption {
+    width: 160px;
+}
+
+.ctrlRowLeft .slidervalue, .ctrlRowRight .slidervalue {
+    width: 70px;
+}
+
+.ctrlRowLeft .button, .ctrlRowRight .button {
+    justify-content: center;
+    display: flex;
+    width: 50%;
+    margin: 10px auto;
+    font-size: small;
+}
+
+#view_ctrls {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+}
+
+.slidercontainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: left;
+}
+
+.slidercaption {
+    display: inline;
+    font-weight: bold;
+    width: 100px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.slider {
+    -webkit-appearance: none;
+    flex-grow: 4;
+    height: 25px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+  
+.slider:hover {
+    opacity: 1;
+}
+  
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #04AA6D;
+    cursor: pointer;
+}
+  
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #04AA6D;
+    cursor: pointer;
+}
+
+/*
+#view_ctrls .button {
+    min-width: 170px;
+} */
+
+#view_ctrls .slidercaption {
+    min-width: 110px;
+}
