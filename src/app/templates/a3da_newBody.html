@@ -61,6 +61,7 @@
                 <button class="tablinks" onclick="openTab(event, 'bodyTab')">Ethnicity & Body</button>
                 <button class="tablinks" onclick="openTab(event, 'faceTab')">Face Shape</button>
                 <button class="tablinks" onclick="openTab(event, 'expressionTab')">Face Expression</button>
+                <button class="tablinks" onclick="openTab(event, 'lipsyncTab')">Lip Sync & Tongue</button>
             </div>
 
             <div id="aboutTab" class="tabcontent">
@@ -81,6 +82,7 @@
                 <p>Rolling the mouse wheel inside the 3D View moves the camera forward and backward into and out of the 3D scene.
                 </p>
             </div>
+
             <div id="bodyTab" class="tabcontent">
                 <div class="ctrlRow">
                     <div class="ctrlRowLeft">
@@ -113,6 +115,17 @@
                             </div>
                             <input type="range" min="0" max="100" value="100" class="slider" id="sldr_caucasian" oninput="ethnicityChangedCaucasian()">
                         </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Skin Tone:
+                            </div>
+                            <div class="slidervalue" id="colorInput_skinTone_value">
+                                #0d0d0d
+                            </div>
+                            <input type="color" class="colorInput" id="colorInput_skin" name="colorInput_skin" value="#0d0d0d" oninput="skinToneChanged()" />
+                        </div>
+
                     </div>
 
                     <div class="ctrlRowRight">
@@ -137,6 +150,7 @@
                             </div>
                             <input type="range" min="0" max="300" value="0" class="slider" id="sldr_muscularity" oninput="muscularityChanged()">
                         </div>
+
 
                     </div>
                 </div>
@@ -275,7 +289,6 @@
                 </div>
             </div>
 
-
             <div id="expressionTab" class="tabcontent">
                 <div class="ctrlRow">
                     <div class="ctrlRowLeft">
@@ -339,26 +352,6 @@
 
                     </div>
                     <div class="ctrlRowRight">
-
-                        <div class="slidercontainer">
-                            <div class="slidercaption">
-                                Jaw Open/Close:
-                            </div>
-                            <div class="slidervalue" id="sldr_jawOpenClose_value">
-                                50%
-                            </div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_jawOpenClose" oninput="jawOpenCloseChanged()">
-                        </div>
-                            
-                        <div class="slidercontainer">
-                            <div class="slidercaption">
-                                Jaw Left/Right:
-                            </div>
-                            <div class="slidervalue" id="sldr_jawLR_value">
-                                50%
-                            </div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_jawLR" oninput="jawLRChanged()">
-                        </div>
 
                         <div class="slidercontainer">
                             <div class="slidercaption">
@@ -437,6 +430,125 @@
                 </div>
             </div>
 
+
+            <div id="lipsyncTab" class="tabcontent">
+                <div class="ctrlRow">
+                    <div class="ctrlRowLeft">
+                        <h4>Lip Sync Phonemes:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">TH:</div>
+                            <div class="slidervalue" id="sldr_THphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_THphom" oninput="THphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">FV:</div>
+                            <div class="slidervalue" id="sldr_FVphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_FVphom" oninput="FVphomChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">BM:</div>
+                            <div class="slidervalue" id="sldr_BMphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_BMphom" oninput="BMphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">U:</div>
+                            <div class="slidervalue" id="sldr_Uphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Uphom" oninput="UphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">O:</div>
+                            <div class="slidervalue" id="sldr_Ophom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Ophom" oninput="OphomChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">I:</div>
+                            <div class="slidervalue" id="sldr_Iphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Iphom" oninput="IphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">E:</div>
+                            <div class="slidervalue" id="sldr_Ephom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Ephom" oninput="EphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">A:</div>
+                            <div class="slidervalue" id="sldr_Aphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Aphom" oninput="AphomChanged()">
+                        </div>
+
+                        <div id="resetLipSyncDiv">
+                            <a href="#" class="button" onclick="resetLipSync()">Reset Lip Sync Phonemes</a>
+                        </div>
+
+                    </div>
+                    <div class="ctrlRowRight">
+                        <h4>Mouth:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Jaw Open/Close:
+                            </div>
+                            <div class="slidervalue" id="sldr_jawOpenClose_value">
+                                50%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_jawOpenClose" oninput="jawOpenCloseChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Jaw Left/Right:
+                            </div>
+                            <div class="slidervalue" id="sldr_jawLR_value">
+                                50%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_jawLR" oninput="jawLRChanged()">
+                        </div>
+
+                        <div id="resetMouthDiv">
+                            <a href="#" class="button" onclick="resetMouth()">Reset Mouth</a>
+                        </div>
+
+                        <h4>Tongue:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Tongue Up:</div>
+                            <div class="slidervalue" id="sldr_tongueUp_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_tongueUp" oninput="tongueUpChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Tongue Out:</div>
+                            <div class="slidervalue" id="sldr_tongueOut_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_tongueOut" oninput="tongueOutChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Tongue Swell:</div>
+                            <div class="slidervalue" id="sldr_tongueSwell_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_tongueSwell" oninput="tongueSwellChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Tongue Left Right:</div>
+                            <div class="slidervalue" id="sldr_tongueLR_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_tongueLR" oninput="tongueLRChanged()">
+                        </div>
+
+                        <div id="resetTongueDiv">
+                            <a href="#" class="button" onclick="resetTongue()">Reset Tongue</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 		</main>
 
 		{# the right sidebar #}
@@ -468,7 +580,6 @@
     <script>
         
 		let gCamera, gScene, gParentObj, gCamCtrls, gProgressCube;
-        let gMeshObjs = [];
 
 		const gNewAvatarSceneInfo = { 
             'inited': false,
@@ -483,7 +594,15 @@
 			},
             // race array order is [ asian, african, caucasian ]
             'race': [ 0.0, 0.0, 1.0 ],
+            // will hold array of mesh objects:
+            'meshObjs': [],
+            'bodyMesh': undefined,
+            'eyeRMesh': undefined,
+            'eyeLMesh': undefined,
+            'tongue': undefined,
+            'lookAtTarget': undefined,
 		};
+
 
 
         function openTab(evt, tabName) {
@@ -503,6 +622,37 @@
             let element = document.getElementById("defaultOpenTab");
             if (typeof element !== 'undefined') {
                 element.click();
+            }
+        }
+
+
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16)
+            } : null;  
+        }
+        //
+        function skinToneInit() {
+            let ci = document.querySelector("#colorInput_skin");
+            ci.value = "#fcc5c1";
+        }
+        //
+        function skinToneChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let ci = document.querySelector("#colorInput_skin");
+                let hexColor = ci.value;
+                let rgbColor = hexToRgb(hexColor);
+
+                let cl = document.querySelector("#colorInput_skinTone_value");
+                cl.innerHTML = hexColor;
+
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                av_body.material.color.r = rgbColor.r / 255.0
+                av_body.material.color.g = rgbColor.g / 255.0
+                av_body.material.color.b = rgbColor.b / 255.0
             }
         }
 
@@ -626,7 +776,7 @@
         // as the percentage-wise morphs to Asian and African, morphs away from Caucasian.)
         function setEthnicityShape( asianCtrl, africanCtrl ) {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let asianKey = av_body.morphTargetDictionary.FemaleAsian;
                 let africanKey = av_body.morphTargetDictionary.FemaleBlack;
                 av_body.morphTargetInfluences[asianKey] = parseFloat(asianCtrl.value) / 100.0;
@@ -636,7 +786,7 @@
 
         function thin2HeavyChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let faHeavyKey = av_body.morphTargetDictionary.fa_Heavy;
                 let fbHeavyKey = av_body.morphTargetDictionary.fb_Heavy;
                 let fwHeavyKey = av_body.morphTargetDictionary.fw_Heavy;
@@ -683,7 +833,7 @@
 
         function muscularityChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let faMuscularKey = av_body.morphTargetDictionary.fa_Muscular;
                 let fbMuscularKey = av_body.morphTargetDictionary.fb_Muscular;
                 let fwMuscularKey = av_body.morphTargetDictionary.fw_Muscular;
@@ -710,7 +860,7 @@
 
         function jawInOutChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let av_lowerTeeth = gScene.getObjectByName('LowerTeeth_Mesh');
                 let av_lowerGums = gScene.getObjectByName('LowerTeeth_Mesh_1');
 
@@ -767,7 +917,7 @@
 
         function squareJawChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let squareJawKey = [ 
                     av_body.morphTargetDictionary.fa_SquareJaw,
@@ -789,7 +939,7 @@
 
         function chinCleftChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let chinCleftKey = [ 
                     av_body.morphTargetDictionary.fa_ChinCleft,
@@ -811,7 +961,7 @@
  
         function chinInOutChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let chinOutKey = [ 
                     av_body.morphTargetDictionary.fa_ChinOut,
@@ -854,7 +1004,7 @@
 
         function mouthInOutChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let mouthOutKey = [ 
                     av_body.morphTargetDictionary.fa_MouthOut,
@@ -897,7 +1047,7 @@
 
         function mouthWidthChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let outKey = [ 
                     av_body.morphTargetDictionary.fa_WidePurseOutLeft, av_body.morphTargetDictionary.fa_WidePurseOutRight,
@@ -940,7 +1090,7 @@
 
         function gauntChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let gauntKey = [ 
                     av_body.morphTargetDictionary.fa_Gaunt,
@@ -962,7 +1112,7 @@
 
         function doubleChinChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let doubleChinKey = [ 
                     av_body.morphTargetDictionary.fa_DoubleChin,
@@ -984,7 +1134,7 @@
 
         function cheekBonesChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let cheekBoneKey = [ 
                     av_body.morphTargetDictionary.fa_HighCheekBones,
@@ -1006,7 +1156,7 @@
 
         function noseSizeChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let noseBigKey = [ 
                     av_body.morphTargetDictionary.fa_NoseLarge,
@@ -1049,7 +1199,7 @@
 
         function noseTopInOutChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let noseHighOutKey = [ 
                     av_body.morphTargetDictionary.fa_NoseHighOut,
@@ -1092,7 +1242,7 @@
 
         function noseMidInOutChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let noseMidOutKey = [ 
                     av_body.morphTargetDictionary.fa_NoseMidOut,
@@ -1135,7 +1285,7 @@
 
         function noseTipChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let noseTipKey = [ 
                     av_body.morphTargetDictionary.fa_NoseTipOut,
@@ -1157,7 +1307,7 @@
 
         function browInOutChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let browOutKey = [ 
                     av_body.morphTargetDictionary.fa_BrowOut,
@@ -1200,7 +1350,7 @@
 
         function foreheadTopChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let foreheadTopOutKey = [ 
                     av_body.morphTargetDictionary.fa_ForeHeadTopOut,
@@ -1278,7 +1428,7 @@
 
         function leftInsideBrowChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let leftInsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_InBrowL_Up,
@@ -1321,7 +1471,7 @@
 
         function leftOutsideBrowChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let leftOutsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_OutBrowL_Up,
@@ -1364,7 +1514,7 @@
 
         function rightInsideBrowChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let rightInsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_InBrowR_Up,
@@ -1407,7 +1557,7 @@
 
         function rightOutsideBrowChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let rightOutsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_OutBrowR_Up,
@@ -1461,10 +1611,9 @@
             }
         }
 
-        
         function leftTopLidChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let leftTopLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidUpperLeft_Up,
@@ -1507,7 +1656,7 @@
 
         function leftBottomLidChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let leftBottomLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidLowerLeft_Up,
@@ -1550,7 +1699,7 @@
 
         function rightTopLidChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let rightTopLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidUpperRight_Up,
@@ -1593,7 +1742,7 @@
 
         function rightBottomLidChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let rightBottomLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidLowerRight_Up,
@@ -1647,10 +1796,9 @@
             }
         }
 
-            
         function jawOpenCloseChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let av_lowerTeeth = gScene.getObjectByName('LowerTeeth_Mesh');
                 let av_lowerGums = gScene.getObjectByName('LowerTeeth_Mesh_1');
                 let av_tongue = gScene.getObjectByName('av_Tongue');
@@ -1714,7 +1862,7 @@
 
         function jawLRChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let av_lowerTeeth = gScene.getObjectByName('LowerTeeth_Mesh');
                 let av_lowerGums = gScene.getObjectByName('LowerTeeth_Mesh_1');
                 let av_tongue = gScene.getObjectByName('av_Tongue');
@@ -1778,7 +1926,7 @@
 
         function kissChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let kissKey = [ 
                     av_body.morphTargetDictionary.fa_Puker,
@@ -1800,7 +1948,7 @@
 
         function poutChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let poutKey = [ 
                     av_body.morphTargetDictionary.fa_Pout,
@@ -1822,7 +1970,7 @@
 
         function surpriseChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let surpriseLeftKey = [ 
                     av_body.morphTargetDictionary.fa_SurpriseLeft,
@@ -1851,7 +1999,7 @@
 
         function joyChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let joyLeftKey = [ 
                     av_body.morphTargetDictionary.fa_JoyLeft,
@@ -1880,7 +2028,7 @@
 
         function angerChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let angerLeftKey = [ 
                     av_body.morphTargetDictionary.fa_AngryLeft,
@@ -1909,7 +2057,7 @@
 
         function fearChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let fearLeftKey = [ 
                     av_body.morphTargetDictionary.fa_FearLeft,
@@ -1938,7 +2086,7 @@
 
         function disgustChanged() {
             if (gNewAvatarSceneInfo.inited) {
-                let av_body = gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let disgustLeftKey = [ 
                     av_body.morphTargetDictionary.fa_DisgustLeft,
@@ -1964,12 +2112,9 @@
                 }
             }
         }
-
-               
+       
         function resetMouthExpression() {
             if (gNewAvatarSceneInfo.inited) {
-                document.getElementById("sldr_jawOpenClose").value = "50";
-                document.getElementById("sldr_jawLR").value = "50";
                 document.getElementById("sldr_kiss").value = "0";
                 document.getElementById("sldr_pout").value = "0";
                 document.getElementById("sldr_surprise").value = "0";
@@ -1977,8 +2122,6 @@
                 document.getElementById("sldr_anger").value = "0";
                 document.getElementById("sldr_fear").value = "0";
                 document.getElementById("sldr_disgust").value = "0";
-                jawOpenCloseChanged();
-                jawLRChanged();
                 kissChanged();
                 poutChanged();
                 surpriseChanged();
@@ -1986,6 +2129,328 @@
                 angerChanged();
                 fearChanged();
                 disgustChanged();
+            }
+        }
+
+        function THphomChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_TH,
+                    av_body.morphTargetDictionary.fb_TH,
+                    av_body.morphTargetDictionary.fw_TH 
+                ];
+
+                let sv = document.getElementById("sldr_THphom").value;
+
+                document.getElementById("sldr_THphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                }
+            }
+        }
+
+        function FVphomChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_FV,
+                    av_body.morphTargetDictionary.fb_FV,
+                    av_body.morphTargetDictionary.fw_FV 
+                ];
+
+                let sv = document.getElementById("sldr_FVphom").value;
+
+                document.getElementById("sldr_FVphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                }
+            }
+        }
+
+        function BMphomChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_BM,
+                    av_body.morphTargetDictionary.fb_BM,
+                    av_body.morphTargetDictionary.fw_BM 
+                ];
+
+                let sv = document.getElementById("sldr_BMphom").value;
+
+                document.getElementById("sldr_BMphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                }
+            }
+        }
+
+        function UphomChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_U,
+                    av_body.morphTargetDictionary.fb_U,
+                    av_body.morphTargetDictionary.fw_U 
+                ];
+
+                let sv = document.getElementById("sldr_Uphom").value;
+
+                document.getElementById("sldr_Uphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                }
+            }
+        }
+
+        function OphomChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_O,
+                    av_body.morphTargetDictionary.fb_O,
+                    av_body.morphTargetDictionary.fw_O 
+                ];
+
+                let sv = document.getElementById("sldr_Ophom").value;
+
+                document.getElementById("sldr_Ophom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                }
+            }
+        }
+
+        function IphomChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_I,
+                    av_body.morphTargetDictionary.fb_I,
+                    av_body.morphTargetDictionary.fw_I 
+                ];
+
+                let sv = document.getElementById("sldr_Iphom").value;
+
+                document.getElementById("sldr_Iphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                }
+            }
+        }
+
+        function EphomChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_E,
+                    av_body.morphTargetDictionary.fb_E,
+                    av_body.morphTargetDictionary.fw_E 
+                ];
+
+                let sv = document.getElementById("sldr_Ephom").value;
+
+                document.getElementById("sldr_Ephom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                }
+            }
+        }
+
+        function AphomChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_A,
+                    av_body.morphTargetDictionary.fb_A,
+                    av_body.morphTargetDictionary.fw_A 
+                ];
+
+                let sv = document.getElementById("sldr_Aphom").value;
+
+                document.getElementById("sldr_Aphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                }
+            }
+        }
+      
+        function resetLipSync() {
+            if (gNewAvatarSceneInfo.inited) {
+                document.getElementById("sldr_THphom").value = "0";
+                document.getElementById("sldr_FVphom").value = "0";
+                document.getElementById("sldr_BMphom").value = "0";
+                document.getElementById("sldr_Uphom").value = "0";
+                document.getElementById("sldr_Ophom").value = "0";
+                document.getElementById("sldr_Iphom").value = "0";
+                document.getElementById("sldr_Ephom").value = "0";
+                document.getElementById("sldr_Aphom").value = "0";
+                THphomChanged();
+                FVphomChanged();
+                BMphomChanged();
+                UphomChanged();
+                OphomChanged();
+                IphomChanged();
+                EphomChanged();
+                AphomChanged();
+            }
+        }
+
+        function resetMouth() {
+            if (gNewAvatarSceneInfo.inited) {
+                document.getElementById("sldr_jawOpenClose").value = "50";
+                document.getElementById("sldr_jawLR").value = "50";
+                jawOpenCloseChanged();
+                jawLRChanged();
+            }
+        }
+
+        function tongueUpChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_tongue = gNewAvatarSceneInfo.tongue; 
+
+                let sv = document.getElementById("sldr_tongueUp").value;
+
+                document.getElementById("sldr_tongueUp_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                
+                av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.Up_Tongue] = wt;
+            }
+        }
+
+        function tongueOutChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_tongue = gNewAvatarSceneInfo.tongue; 
+
+                let sv = document.getElementById("sldr_tongueOut").value;
+
+                document.getElementById("sldr_tongueOut_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 4.0:
+                let wt = parseFloat(sv) / 25.0;
+                if (wt >= 3.0) {
+                    wt -= 3.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutC_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutB_Tongue] = 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutA_Tongue] = 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.Out_Tongue] = 1.0;
+                }
+                else if (wt >= 2.0) {
+                    wt -= 2.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutC_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutB_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutA_Tongue] = 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.Out_Tongue] = 1.0;
+                }
+                else if (wt >= 1.0) {
+                    wt -= 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutC_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutB_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutA_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.Out_Tongue] = 1.0;
+                }
+                else {
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutC_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutB_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutA_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.Out_Tongue] = wt;
+                }
+            }
+        }
+
+        function tongueSwellChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_tongue = gNewAvatarSceneInfo.tongue; 
+
+                let sv = document.getElementById("sldr_tongueSwell").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_tongueSwell_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                if (wt >= 1.0) {
+                    wt -= 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SwellOut_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SwellIn_Tongue] = 0.0;
+                }
+                else {
+                    wt = 1.0 - wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SwellIn_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SwellOut_Tongue] = 0.0;
+                }
+            }
+        }
+
+        function tongueLRChanged() {
+            if (gNewAvatarSceneInfo.inited) {
+                let av_tongue = gNewAvatarSceneInfo.tongue; 
+
+                let sv = document.getElementById("sldr_tongueLR").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_tongueLR_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                if (wt >= 1.0) {
+                    wt -= 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SideRight_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SideLeft_Tongue] = 0.0;
+                }
+                else {
+                    wt = 1.0 - wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SideLeft_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SideRight_Tongue] = 0.0;
+                }
+            }
+        }
+     
+        function resetTongue() {
+            if (gNewAvatarSceneInfo.inited) {
+                document.getElementById("sldr_tongueUp").value = "0";
+                document.getElementById("sldr_tongueOut").value = "0";
+                document.getElementById("sldr_tongueSwell").value = "50";
+                document.getElementById("sldr_tongueLR").value = "50";
+                tongueUpChanged();
+                tongueOutChanged();
+                tongueSwellChanged();
+                tongueLRChanged();
             }
         }
 
@@ -2010,7 +2475,7 @@
 			MeshStandardMaterial, MeshPhongMaterial, MeshBasicMaterial,
 			Mesh, AnimationMixer, GridHelper, Object3D,
 			WebGLRenderer,
-			Clock, MathUtils
+			Clock, MathUtils, Vector3
 		} from 'three';
 
 		import { OrbitControls } from '/static/three/examples/jsm/controls/OrbitControls.js';
@@ -2162,18 +2627,56 @@
 
 						console.log(dumpObject(gParentObj).join('\n'));
 
-						getMeshObjects(gParentObj, gMeshObjs);
-						let count = gMeshObjs.length;
+						getMeshObjects(gParentObj, gNewAvatarSceneInfo.meshObjs);
+						let count = gNewAvatarSceneInfo.meshObjs.length;
 						for (let i = 0; i < count; i++) {
-							console.log("gMeshObjs[" + i + "] has name " + gMeshObjs[i].name);
-							gMeshObjs[i].castShadow = true;
-							gMeshObjs[i].receiveShadow  = false;
+                            
+                            let name = gNewAvatarSceneInfo.meshObjs[i].name;
+
+							console.log("gNewAvatarSceneInfo.meshObjs[" + i + "] has name " + name);
+
+							gNewAvatarSceneInfo.meshObjs[i].receiveShadow  = false;
+
+                            if (name != 'av_LookAtParent') {
+                                gNewAvatarSceneInfo.meshObjs[i].castShadow = true;
+                            }
+                            else { // is the eyes look at target:
+
+                                gNewAvatarSceneInfo.meshObjs[i].material.opacity = 0.25;
+                                gNewAvatarSceneInfo.meshObjs[i].material.transparent = true;
+
+                                gNewAvatarSceneInfo.lookAtTarget = gNewAvatarSceneInfo.meshObjs[i];
+                            }
+
+                            if (name == 'av_FemaleAvatar') {
+                                gNewAvatarSceneInfo.bodyMesh = gNewAvatarSceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'av_EyeRight') {
+                                gNewAvatarSceneInfo.eyeRMesh = gNewAvatarSceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'av_EyeLeft') {
+                                gNewAvatarSceneInfo.eyeLMesh = gNewAvatarSceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'av_Tongue') {
+                                gNewAvatarSceneInfo.tongue = gNewAvatarSceneInfo.meshObjs[i];
+                            }
 						}
 			
 						gScene.add(gParentObj);
                         removeObject3D(gProgressCube)
 
                         gNewAvatarSceneInfo.inited = true;
+
+                        // these require gNewAvatarSceneInfo.inited == true
+                        skinToneInit();
+                        skinToneChanged();
+                        resetFaceShape();
+                        resetEyeBrows();
+                        resetEyeLids();
+                        resetMouthExpression();
+                        resetLipSync();
+                        resetMouth();
+                        resetTongue();
 					},
 					// called while loading is progressing
 					function ( xhr ) {
@@ -2240,6 +2743,20 @@
 				requestAnimationFrame( animate );
 				
 				const delta = clock.getDelta();
+
+                if (typeof gNewAvatarSceneInfo.lookAtTarget !== 'undefined') {
+
+                    const targetPos = new Vector3(0, 0, 0);
+                    gNewAvatarSceneInfo.lookAtTarget.getWorldPosition(targetPos);
+
+                    if (typeof gNewAvatarSceneInfo.eyeRMesh !== 'undefined') {
+                        gNewAvatarSceneInfo.eyeRMesh.lookAt(targetPos);
+                    }
+
+                    if (typeof gNewAvatarSceneInfo.eyeLMesh !== 'undefined') {
+                        gNewAvatarSceneInfo.eyeLMesh.lookAt(targetPos);
+                    }
+                }
 	
 				renderer.render( gScene, gCamera );
 	

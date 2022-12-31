@@ -98,6 +98,10 @@
     align-items: center;
 }
 
+#view_ctrls .button {
+    width: 300px;
+}
+
 .slidercontainer {
     width: 100%;
     display: flex;
@@ -112,6 +116,16 @@
     width: 100px;
     margin-left: 10px;
     margin-right: 10px;
+}
+
+
+.colorInput {
+    -webkit-appearance: none;
+    flex-grow: 4;
+    height: 25px;
+    background: #d3d3d3;
+    outline: none;
+    margin-top: 5px;
 }
 
 .slider {
