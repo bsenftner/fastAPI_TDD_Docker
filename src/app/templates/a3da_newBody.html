@@ -672,8 +672,8 @@
                     gASI.raycaster.setFromCamera(gASI.rayMouse, gCamera);
                     let ret = gASI.raycaster.ray.intersectPlane(gASI.rayPlane, gASI.rayIntersects);
                     if (typeof ret !== 'undefined') {
-                        gASI.msg += '<br/>';
-                        gASI.msg += 'gASI.rayIntersects.x,y,z: ' + gASI.rayIntersects.x.toFixed(2) + ', ' + gASI.rayIntersects.y.toFixed(2) + ', ' + gASI.rayIntersects.z.toFixed(2);
+                        // gASI.msg += '<br/>';
+                        // gASI.msg += 'gASI.rayIntersects.x,y,z: ' + gASI.rayIntersects.x.toFixed(2) + ', ' + gASI.rayIntersects.y.toFixed(2) + ', ' + gASI.rayIntersects.z.toFixed(2);
                         //
                         gASI.msg += '<br/>';
                         gASI.msg += 'gASI.lookAtTarget.x,y,z: ' + gASI.lookAtTarget.position.x.toFixed(2) + ', ' + gASI.lookAtTarget.position.y.toFixed(2) + ', ' + gASI.lookAtTarget.position.z.toFixed(2);
