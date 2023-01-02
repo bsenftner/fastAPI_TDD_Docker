@@ -4,7 +4,8 @@
 
 A "data note" is arbitary JSON with a title and description. It's used for tracking site data, and providing data for visualizations.
 
-Note Dec 18, 22: I just added several hundred megs worth of Three.js lib and utils. So far, only `/a3da_basic` endpoint to show. Just loads a gltf of Obama. More soon.
+Note Dec 18, 22: I just added several hundred megs worth of Three.js lib and utils. A `/a3da_basic` endpoint is a basic three.js scene. Just loads a gltf of Obama. 
+Note Jan 2, 23: First pass at some face controls for a custom 3D avatar, visible at `/a3da_newBody` endpoint. This is an experiment playground.
 
 1. You'll need Docker to use this repo; this was developed using WSL2-Ubuntu on Win10 with Docker Desktop 4.12.0 (85629)
    - If you intend to place this public & online, then you will also need:
