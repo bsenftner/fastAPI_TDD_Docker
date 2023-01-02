@@ -90,12 +90,29 @@
     font-size: small;
 }
 
+
+#mainOverlay {
+    position: relative;
+	top: 10px;
+	width: 100%;
+	text-align: left;
+    font-family:'Roboto',sans-serif;
+    font-size: xx-large;
+    font-weight: 750;
+    color:#000000;
+	z-index: 100;
+	display:block;
+    margin-left: 20px;
+    margin-top: -50%;
+}
+
 #view_ctrls {
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: left;
     align-items: center;
+    margin-top: 50%;
 }
 
 #view_ctrls .button {

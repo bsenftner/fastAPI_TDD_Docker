@@ -45,6 +45,8 @@
 			<div id="mainContent">
             </div>
             
+            <div id="mainOverlay">this is the main overlay</div>
+
             <div id="view_ctrls">
                 <a href="#" class="button" onclick="viewAtLoad()">Load View</a>
                 <a href="#" class="button" onclick="viewFace()">Face View</a>
@@ -60,14 +62,16 @@
                 <button class="tablinks" onclick="openTab(event, 'aboutTab')" id="defaultOpenTab">About</button>
                 <button class="tablinks" onclick="openTab(event, 'bodyTab')">Ethnicity & Body</button>
                 <button class="tablinks" onclick="openTab(event, 'faceTab')">Face Shape</button>
-                <button class="tablinks" onclick="openTab(event, 'expressionTab')">Face Expression</button>
-                <button class="tablinks" onclick="openTab(event, 'lipsyncTab')">Lip Sync & Tongue</button>
+                <button class="tablinks" onclick="openTab(event, 'upperFaceTab')">Upper Face Expression</button>
+                <button class="tablinks" onclick="openTab(event, 'lowerFaceTab')">Lower Face Expression</button>
             </div>
 
             <div id="aboutTab" class="tabcontent">
                 <h3>About this page</h3>
                 <p>This is a web view of the <b>Blender Custom 3D Avatar AddOn</b> I wrote as a learning exercise for <b>Blender programming</b>.
-                   <a href="/blog/2">Here is a page where I describe that work.</a>
+                   <a href="/blog/2">Here is a page where I describe that work.</a> This is a three-way controllable ethnicity character. 
+                   Whatever you configure your <em>ethnicity settings</em>, all other controls blend in those ethnic percentages for all other 
+                   morph targets.
                 </p>
                 <p>Additional avatar customization controls are available by clicking the tabs labeled <b>"Ethnicity & Body"</b>,
                     <b>"Face"</b>, and so on. Each tab is a set of controls for modifying that aspects of the avatar's appearance.
@@ -289,7 +293,7 @@
                 </div>
             </div>
 
-            <div id="expressionTab" class="tabcontent">
+            <div id="upperFaceTab" class="tabcontent">
                 <div class="ctrlRow">
                     <div class="ctrlRowLeft">
                         <h4>Face Expression:</h4>
@@ -348,6 +352,118 @@
 
                         <div id="resetEyeLidsDiv">
                             <a href="#" class="button" onclick="resetEyeLids()">Reset Eye Lids To Neutral</a>
+                        </div>
+
+                    </div>
+                    <div class="ctrlRowRight">
+                        <h4>Look At Target:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Look Left/Right:</div>
+                            <div class="slidervalue" id="sldr_lookLeftRight_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_lookLeftRight" oninput="lookLeftRightChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Look Up/Down:</div>
+                            <div class="slidervalue" id="sldr_lookUpDown_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_lookUpDown" oninput="lookUpDownChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Look Near/Far:</div>
+                            <div class="slidervalue" id="sldr_lookNearFar_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_lookNearFar" oninput="lookNearFarChanged()">
+                        </div>
+
+                        <div id="lookResetDiv">
+                            <a href="#" class="button" onclick="resetLookAt()">Reset Look At Target</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="lowerFaceTab" class="tabcontent">
+                <div class="ctrlRow">
+                    <div class="ctrlRowLeft">
+                        <h4>Lip Sync Phonemes:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">TH:</div>
+                            <div class="slidervalue" id="sldr_THphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_THphom" oninput="THphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">FV:</div>
+                            <div class="slidervalue" id="sldr_FVphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_FVphom" oninput="FVphomChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">BM:</div>
+                            <div class="slidervalue" id="sldr_BMphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_BMphom" oninput="BMphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">U:</div>
+                            <div class="slidervalue" id="sldr_Uphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Uphom" oninput="UphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">O:</div>
+                            <div class="slidervalue" id="sldr_Ophom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Ophom" oninput="OphomChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">I:</div>
+                            <div class="slidervalue" id="sldr_Iphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Iphom" oninput="IphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">E:</div>
+                            <div class="slidervalue" id="sldr_Ephom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Ephom" oninput="EphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">A:</div>
+                            <div class="slidervalue" id="sldr_Aphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Aphom" oninput="AphomChanged()">
+                        </div>
+
+                        <div id="resetLipSyncDiv">
+                            <a href="#" class="button" onclick="resetLipSync()">Reset Lip Sync Phonemes</a>
+                        </div>
+                        <h4>Jaw:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Jaw Open/Close:
+                            </div>
+                            <div class="slidervalue" id="sldr_jawOpenClose_value">
+                                50%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_jawOpenClose" oninput="jawOpenCloseChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Jaw Left/Right:
+                            </div>
+                            <div class="slidervalue" id="sldr_jawLR_value">
+                                50%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_jawLR" oninput="jawLRChanged()">
+                        </div>
+
+                        <div id="resetMouthDiv">
+                            <a href="#" class="button" onclick="resetJaw()">Reset Mouth</a>
                         </div>
 
                     </div>
@@ -426,95 +542,6 @@
                         <div id="resetMouthExpressionDiv">
                             <a href="#" class="button" onclick="resetMouthExpression()">Reset Mouth Expression To Neutral</a>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div id="lipsyncTab" class="tabcontent">
-                <div class="ctrlRow">
-                    <div class="ctrlRowLeft">
-                        <h4>Lip Sync Phonemes:</h4>
-
-                        <div class="slidercontainer">
-                            <div class="slidercaption">TH:</div>
-                            <div class="slidervalue" id="sldr_THphom_value">0%</div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_THphom" oninput="THphomChanged()">
-                        </div>
-
-                        <div class="slidercontainer">
-                            <div class="slidercaption">FV:</div>
-                            <div class="slidervalue" id="sldr_FVphom_value">0%</div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_FVphom" oninput="FVphomChanged()">
-                        </div>
-                            
-                        <div class="slidercontainer">
-                            <div class="slidercaption">BM:</div>
-                            <div class="slidervalue" id="sldr_BMphom_value">0%</div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_BMphom" oninput="BMphomChanged()">
-                        </div>
-
-                        <div class="slidercontainer">
-                            <div class="slidercaption">U:</div>
-                            <div class="slidervalue" id="sldr_Uphom_value">0%</div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Uphom" oninput="UphomChanged()">
-                        </div>
-
-                        <div class="slidercontainer">
-                            <div class="slidercaption">O:</div>
-                            <div class="slidervalue" id="sldr_Ophom_value">0%</div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Ophom" oninput="OphomChanged()">
-                        </div>
-                            
-                        <div class="slidercontainer">
-                            <div class="slidercaption">I:</div>
-                            <div class="slidervalue" id="sldr_Iphom_value">0%</div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Iphom" oninput="IphomChanged()">
-                        </div>
-
-                        <div class="slidercontainer">
-                            <div class="slidercaption">E:</div>
-                            <div class="slidervalue" id="sldr_Ephom_value">0%</div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Ephom" oninput="EphomChanged()">
-                        </div>
-
-                        <div class="slidercontainer">
-                            <div class="slidercaption">A:</div>
-                            <div class="slidervalue" id="sldr_Aphom_value">0%</div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Aphom" oninput="AphomChanged()">
-                        </div>
-
-                        <div id="resetLipSyncDiv">
-                            <a href="#" class="button" onclick="resetLipSync()">Reset Lip Sync Phonemes</a>
-                        </div>
-
-                    </div>
-                    <div class="ctrlRowRight">
-                        <h4>Mouth:</h4>
-
-                        <div class="slidercontainer">
-                            <div class="slidercaption">
-                                Jaw Open/Close:
-                            </div>
-                            <div class="slidervalue" id="sldr_jawOpenClose_value">
-                                50%
-                            </div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_jawOpenClose" oninput="jawOpenCloseChanged()">
-                        </div>
-                            
-                        <div class="slidercontainer">
-                            <div class="slidercaption">
-                                Jaw Left/Right:
-                            </div>
-                            <div class="slidervalue" id="sldr_jawLR_value">
-                                50%
-                            </div>
-                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_jawLR" oninput="jawLRChanged()">
-                        </div>
-
-                        <div id="resetMouthDiv">
-                            <a href="#" class="button" onclick="resetMouth()">Reset Mouth</a>
-                        </div>
 
                         <h4>Tongue:</h4>
 
@@ -577,12 +604,17 @@
 		function UserSettings() { window.location.href = "/Settings"; }
 	</script>
 	
+    <!-- pull in an html template holding javascript for tabs -->
+    {% include 'common_tabs.html' %}
+
     <script>
         
 		let gCamera, gScene, gParentObj, gCamCtrls, gProgressCube;
 
-		const gNewAvatarSceneInfo = { 
+        // 'avatar scene info'
+		const gASI = { 
             'inited': false,
+            'canvas': undefined,
 			'cam': {
 				'pos': { 'x': 0, 'y': 40, 'z': 50 },
 				'target': { 'x': 0, 'y': 20, 'z': 0 },
@@ -601,29 +633,78 @@
             'eyeLMesh': undefined,
             'tongue': undefined,
             'lookAtTarget': undefined,
+            'msg': 'x = 0, y = 0',
+            'normDevCoord': { x: 0, y: 0 },
+            'raycaster': undefined,
+            'rayMouse': undefined,
+            'rayIntersects': undefined,
+            'rayPlane': undefined,
 		};
 
 
 
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-              tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-              tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
+        function getCanvasRelativePosition(event, canvas) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                    x: (event.clientX - rect.left) * canvas.width  / rect.width,
+                    y: (event.clientY - rect.top ) * canvas.height / rect.height,
+            };
         }
-        function initTabs() {
-            let element = document.getElementById("defaultOpenTab");
-            if (typeof element !== 'undefined') {
-                element.click();
+
+        function setPickPosition(event) {
+            let canvas = gASI.canvas;
+            if (typeof canvas !== 'undefined') {
+                const pos = getCanvasRelativePosition(event, canvas);
+
+                gASI.msg = 'page.x,y: ' + event.clientX + ', ' + event.clientY + '; canvas.x,y: ' + pos.x + ', ' + pos.y;
+
+                gASI.normDevCoord.x = (pos.x / canvas.width ) *  2 - 1;
+                gASI.normDevCoord.y = (pos.y / canvas.height) * -2 + 1;  // note we flip Y
+
+                gASI.msg += '<br/>';
+                gASI.msg += 'normDevCoord.x,y: ' + gASI.normDevCoord.x.toFixed(2) + ', ' + gASI.normDevCoord.y.toFixed(2);
+
+                // the last ray intersection item to be allocated:
+                if (typeof gASI.rayIntersects !== 'undefined') {
+                    gASI.rayMouse.x = pos.x;
+                    gASI.rayMouse.y = pos.y;
+                    //
+                    gASI.raycaster.setFromCamera(gASI.rayMouse, gCamera);
+                    let ret = gASI.raycaster.ray.intersectPlane(gASI.rayPlane, gASI.rayIntersects);
+                    if (typeof ret !== 'undefined') {
+                        gASI.msg += '<br/>';
+                        gASI.msg += 'gASI.rayIntersects.x,y,z: ' + gASI.rayIntersects.x.toFixed(2) + ', ' + gASI.rayIntersects.y.toFixed(2) + ', ' + gASI.rayIntersects.z.toFixed(2);
+                        //
+                        gASI.msg += '<br/>';
+                        gASI.msg += 'gASI.lookAtTarget.x,y,z: ' + gASI.lookAtTarget.position.x.toFixed(2) + ', ' + gASI.lookAtTarget.position.y.toFixed(2) + ', ' + gASI.lookAtTarget.position.z.toFixed(2);
+                        //
+                        // gASI.lookAtTarget.position.set( gASI.rayIntersects.x, gASI.rayIntersects.y, gASI.rayIntersects.z );
+                    }
+                    else {
+                        gASI.msg += '<br/>No Intersection';
+                    }
+                }
+            }
+            else {
+                clearPickPosition();
             }
         }
+
+        function clearPickPosition() {
+            // unlike the mouse which always has a position
+            // if the user stops touching the screen we want
+            // to stop picking. For now we just pick a value
+            // unlikely to pick something
+            gASI.normDevCoord.x = -100000;
+            gASI.normDevCoord.y = -100000;
+        }
+
+        window.addEventListener('mousemove', setPickPosition);
+        window.addEventListener('mouseout', clearPickPosition);
+        window.addEventListener('mouseleave', clearPickPosition);
+
+        
+
 
 
         function hexToRgb(hex) {
@@ -641,7 +722,7 @@
         }
         //
         function skinToneChanged() {
-            if (gNewAvatarSceneInfo.inited) {
+            if (gASI.inited) {
                 let ci = document.querySelector("#colorInput_skin");
                 let hexColor = ci.value;
                 let rgbColor = hexToRgb(hexColor);
@@ -649,7 +730,7 @@
                 let cl = document.querySelector("#colorInput_skinTone_value");
                 cl.innerHTML = hexColor;
 
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 av_body.material.color.r = rgbColor.r / 255.0
                 av_body.material.color.g = rgbColor.g / 255.0
                 av_body.material.color.b = rgbColor.b / 255.0
@@ -669,7 +750,7 @@
         // position camera where the scene loads:
         function viewAtLoad() {
             if (typeof gCamCtrls !== 'undefined') {
-                let si = gNewAvatarSceneInfo;
+                let si = gASI;
                 gCamera.position.set( si.cam.pos.x, si.cam.pos.y, si.cam.pos.z );
                 //
                 document.getElementById("cam_fov").value = "45";
@@ -765,9 +846,9 @@
             document.getElementById("sldr_african_value").innerHTML = sbv + "%";
             document.getElementById("sldr_caucasian_value").innerHTML = scv + "%";
 
-		    gNewAvatarSceneInfo.race[0] = parseFloat(sav) / 100.0;
-		    gNewAvatarSceneInfo.race[1] = parseFloat(sbv) / 100.0;
-		    gNewAvatarSceneInfo.race[2] = parseFloat(scv) / 100.0;
+		    gASI.race[0] = parseFloat(sav) / 100.0;
+		    gASI.race[1] = parseFloat(sbv) / 100.0;
+		    gASI.race[2] = parseFloat(scv) / 100.0;
         }
         //
         // last routine related to Ethnicity Modifications;
@@ -775,8 +856,8 @@
         // (Note the default ethnicity is Caucasian, so the other ethnicities are expressed
         // as the percentage-wise morphs to Asian and African, morphs away from Caucasian.)
         function setEthnicityShape( asianCtrl, africanCtrl ) {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let asianKey = av_body.morphTargetDictionary.FemaleAsian;
                 let africanKey = av_body.morphTargetDictionary.FemaleBlack;
                 av_body.morphTargetInfluences[asianKey] = parseFloat(asianCtrl.value) / 100.0;
@@ -785,8 +866,8 @@
         }
 
         function thin2HeavyChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let faHeavyKey = av_body.morphTargetDictionary.fa_Heavy;
                 let fbHeavyKey = av_body.morphTargetDictionary.fb_Heavy;
                 let fwHeavyKey = av_body.morphTargetDictionary.fw_Heavy;
@@ -809,9 +890,9 @@
                 if (wt >= 1.0) {
                     wt -= 1.0;  // percentage they want to be fat
                     // that percentage is realized within their ethnicity:
-                    av_body.morphTargetInfluences[faHeavyKey] = wt * gNewAvatarSceneInfo.race[0];
-                    av_body.morphTargetInfluences[fbHeavyKey] = wt * gNewAvatarSceneInfo.race[1];
-                    av_body.morphTargetInfluences[fwHeavyKey] = wt * gNewAvatarSceneInfo.race[2];
+                    av_body.morphTargetInfluences[faHeavyKey] = wt * gASI.race[0];
+                    av_body.morphTargetInfluences[fbHeavyKey] = wt * gASI.race[1];
+                    av_body.morphTargetInfluences[fwHeavyKey] = wt * gASI.race[2];
                     
                     av_body.morphTargetInfluences[faSkinnyKey] = 0.0;
                     av_body.morphTargetInfluences[fbSkinnyKey] = 0.0;
@@ -824,16 +905,16 @@
                     av_body.morphTargetInfluences[fbHeavyKey] = 0.0;
                     av_body.morphTargetInfluences[fwHeavyKey] = 0.0;
                     
-                    av_body.morphTargetInfluences[faSkinnyKey] = wt * gNewAvatarSceneInfo.race[0];
-                    av_body.morphTargetInfluences[fbSkinnyKey] = wt * gNewAvatarSceneInfo.race[1];
-                    av_body.morphTargetInfluences[fwSkinnyKey] = wt * gNewAvatarSceneInfo.race[2];
+                    av_body.morphTargetInfluences[faSkinnyKey] = wt * gASI.race[0];
+                    av_body.morphTargetInfluences[fbSkinnyKey] = wt * gASI.race[1];
+                    av_body.morphTargetInfluences[fwSkinnyKey] = wt * gASI.race[2];
                 }
             }
         }
 
         function muscularityChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let faMuscularKey = av_body.morphTargetDictionary.fa_Muscular;
                 let fbMuscularKey = av_body.morphTargetDictionary.fb_Muscular;
                 let fwMuscularKey = av_body.morphTargetDictionary.fw_Muscular;
@@ -859,8 +940,8 @@
         }
 
         function jawInOutChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let av_lowerTeeth = gScene.getObjectByName('LowerTeeth_Mesh');
                 let av_lowerGums = gScene.getObjectByName('LowerTeeth_Mesh_1');
 
@@ -888,7 +969,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[jawOutKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[jawOutKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[jawInKey[i]] = 0.0;
                     }
 
@@ -902,7 +983,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[jawInKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[jawInKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[jawOutKey[i]] = 0.0;
                     }
 
@@ -916,8 +997,8 @@
         }
 
         function squareJawChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let squareJawKey = [ 
                     av_body.morphTargetDictionary.fa_SquareJaw,
@@ -932,14 +1013,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sjv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[squareJawKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[squareJawKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function chinCleftChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let chinCleftKey = [ 
                     av_body.morphTargetDictionary.fa_ChinCleft,
@@ -954,14 +1035,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(scv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[chinCleftKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[chinCleftKey[i]] = wt * gASI.race[i];
                 }
             }
         }
  
         function chinInOutChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let chinOutKey = [ 
                     av_body.morphTargetDictionary.fa_ChinOut,
@@ -987,7 +1068,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[chinOutKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[chinOutKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[chinInKey[i]] = 0.0;
                     }
                 }
@@ -995,7 +1076,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[chinInKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[chinInKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[chinOutKey[i]] = 0.0;
                     }
                 }
@@ -1003,8 +1084,8 @@
         }
 
         function mouthInOutChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let mouthOutKey = [ 
                     av_body.morphTargetDictionary.fa_MouthOut,
@@ -1030,7 +1111,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[mouthOutKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[mouthOutKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[mouthInKey[i]] = 0.0;
                     }
                 }
@@ -1038,7 +1119,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[mouthInKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[mouthInKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[mouthOutKey[i]] = 0.0;
                     }
                 }
@@ -1046,8 +1127,8 @@
         }
 
         function mouthWidthChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let outKey = [ 
                     av_body.morphTargetDictionary.fa_WidePurseOutLeft, av_body.morphTargetDictionary.fa_WidePurseOutRight,
@@ -1073,7 +1154,7 @@
                     wt -= 1.0;  // percentage user wants
 
                     for (let i = 0; i < 6; i++) {
-                        av_body.morphTargetInfluences[outKey[i]] = wt * gNewAvatarSceneInfo.race[i % 3];
+                        av_body.morphTargetInfluences[outKey[i]] = wt * gASI.race[i % 3];
                         av_body.morphTargetInfluences[inKey[i]] = 0.0;
                     }
                 }
@@ -1081,7 +1162,7 @@
                     wt = 1.0 - wt; // percentage user wants
 
                     for (let i = 0; i < 6; i++) {
-                        av_body.morphTargetInfluences[inKey[i]] = wt * gNewAvatarSceneInfo.race[i % 3];
+                        av_body.morphTargetInfluences[inKey[i]] = wt * gASI.race[i % 3];
                         av_body.morphTargetInfluences[outKey[i]] = 0.0;
                     }
                 }
@@ -1089,8 +1170,8 @@
         }
 
         function gauntChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let gauntKey = [ 
                     av_body.morphTargetDictionary.fa_Gaunt,
@@ -1105,14 +1186,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sgv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[gauntKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[gauntKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function doubleChinChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let doubleChinKey = [ 
                     av_body.morphTargetDictionary.fa_DoubleChin,
@@ -1127,14 +1208,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sdv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[doubleChinKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[doubleChinKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function cheekBonesChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let cheekBoneKey = [ 
                     av_body.morphTargetDictionary.fa_HighCheekBones,
@@ -1149,14 +1230,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(scv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[cheekBoneKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[cheekBoneKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function noseSizeChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let noseBigKey = [ 
                     av_body.morphTargetDictionary.fa_NoseLarge,
@@ -1182,7 +1263,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[noseBigKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[noseBigKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[noseSmallKey[i]] = 0.0;
                     }
                 }
@@ -1190,7 +1271,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[noseSmallKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[noseSmallKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[noseBigKey[i]] = 0.0;
                     }
                 }
@@ -1198,8 +1279,8 @@
         }
 
         function noseTopInOutChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let noseHighOutKey = [ 
                     av_body.morphTargetDictionary.fa_NoseHighOut,
@@ -1225,7 +1306,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[noseHighOutKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[noseHighOutKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[noseHighInKey[i]] = 0.0;
                     }
                 }
@@ -1233,7 +1314,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[noseHighInKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[noseHighInKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[noseHighOutKey[i]] = 0.0;
                     }
                 }
@@ -1241,8 +1322,8 @@
         }
 
         function noseMidInOutChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let noseMidOutKey = [ 
                     av_body.morphTargetDictionary.fa_NoseMidOut,
@@ -1268,7 +1349,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[noseMidOutKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[noseMidOutKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[noseMidInKey[i]] = 0.0;
                     }
                 }
@@ -1276,7 +1357,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[noseMidInKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[noseMidInKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[noseMidOutKey[i]] = 0.0;
                     }
                 }
@@ -1284,8 +1365,8 @@
         }
 
         function noseTipChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let noseTipKey = [ 
                     av_body.morphTargetDictionary.fa_NoseTipOut,
@@ -1300,14 +1381,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(stv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[noseTipKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[noseTipKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function browInOutChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let browOutKey = [ 
                     av_body.morphTargetDictionary.fa_BrowOut,
@@ -1333,7 +1414,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[browOutKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[browOutKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[browInKey[i]] = 0.0;
                     }
                 }
@@ -1341,7 +1422,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[browInKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[browInKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[browOutKey[i]] = 0.0;
                     }
                 }
@@ -1349,8 +1430,8 @@
         }
 
         function foreheadTopChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let foreheadTopOutKey = [ 
                     av_body.morphTargetDictionary.fa_ForeHeadTopOut,
@@ -1376,7 +1457,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[foreheadTopOutKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[foreheadTopOutKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[foreheadTopInKey[i]] = 0.0;
                     }
                 }
@@ -1384,7 +1465,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[foreheadTopInKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[foreheadTopInKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[foreheadTopOutKey[i]] = 0.0;
                     }
                 }
@@ -1392,7 +1473,7 @@
         }
 
         function resetFaceShape() {
-            if (gNewAvatarSceneInfo.inited) {
+            if (gASI.inited) {
                 document.getElementById("sldr_jawInOut").value = "50";
                 document.getElementById("sldr_squareJaw").value = "0";
                 document.getElementById("sldr_chinCleft").value = "0";
@@ -1427,8 +1508,8 @@
         }
 
         function leftInsideBrowChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let leftInsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_InBrowL_Up,
@@ -1454,7 +1535,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[leftInsideBrowUpKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[leftInsideBrowUpKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[leftInsideBrowDownKey[i]] = 0.0;
                     }
                 }
@@ -1462,7 +1543,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[leftInsideBrowDownKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[leftInsideBrowDownKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[leftInsideBrowUpKey[i]] = 0.0;
                     }
                 }
@@ -1470,8 +1551,8 @@
         }
 
         function leftOutsideBrowChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let leftOutsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_OutBrowL_Up,
@@ -1497,7 +1578,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[leftOutsideBrowUpKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[leftOutsideBrowUpKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[leftOutsideBrowDownKey[i]] = 0.0;
                     }
                 }
@@ -1505,7 +1586,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[leftOutsideBrowDownKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[leftOutsideBrowDownKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[leftOutsideBrowUpKey[i]] = 0.0;
                     }
                 }
@@ -1513,8 +1594,8 @@
         }
 
         function rightInsideBrowChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let rightInsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_InBrowR_Up,
@@ -1540,7 +1621,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[rightInsideBrowUpKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[rightInsideBrowUpKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[rightInsideBrowDownKey[i]] = 0.0;
                     }
                 }
@@ -1548,7 +1629,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[rightInsideBrowDownKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[rightInsideBrowDownKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[rightInsideBrowUpKey[i]] = 0.0;
                     }
                 }
@@ -1556,8 +1637,8 @@
         }
 
         function rightOutsideBrowChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let rightOutsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_OutBrowR_Up,
@@ -1583,7 +1664,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[rightOutsideBrowUpKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[rightOutsideBrowUpKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[rightOutsideBrowDownKey[i]] = 0.0;
                     }
                 }
@@ -1591,7 +1672,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[rightOutsideBrowDownKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[rightOutsideBrowDownKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[rightOutsideBrowUpKey[i]] = 0.0;
                     }
                 }
@@ -1599,7 +1680,7 @@
         }
 
         function resetEyeBrows() {
-            if (gNewAvatarSceneInfo.inited) {
+            if (gASI.inited) {
                 document.getElementById("sldr_leftInsideBrow").value = "50";
                 document.getElementById("sldr_leftOutsideBrow").value = "50";
                 document.getElementById("sldr_rightInsideBrow").value = "50";
@@ -1612,8 +1693,8 @@
         }
 
         function leftTopLidChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let leftTopLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidUpperLeft_Up,
@@ -1639,7 +1720,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[leftTopLidUpUpKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[leftTopLidUpUpKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[leftTopLidDownKey[i]] = 0.0;
                     }
                 }
@@ -1647,7 +1728,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[leftTopLidDownKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[leftTopLidDownKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[leftTopLidUpUpKey[i]] = 0.0;
                     }
                 }
@@ -1655,8 +1736,8 @@
         }
 
         function leftBottomLidChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let leftBottomLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidLowerLeft_Up,
@@ -1682,7 +1763,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[leftBottomLidDownKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[leftBottomLidDownKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[leftBottomLidUpUpKey[i]] = 0.0;
                     }
                 }
@@ -1690,7 +1771,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[leftBottomLidUpUpKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[leftBottomLidUpUpKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[leftBottomLidDownKey[i]] = 0.0;
                     }
                 }
@@ -1698,8 +1779,8 @@
         }
 
         function rightTopLidChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let rightTopLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidUpperRight_Up,
@@ -1725,7 +1806,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[rightTopLidUpUpKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[rightTopLidUpUpKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[rightTopLidDownKey[i]] = 0.0;
                     }
                 }
@@ -1733,7 +1814,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[rightTopLidDownKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[rightTopLidDownKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[rightTopLidUpUpKey[i]] = 0.0;
                     }
                 }
@@ -1741,8 +1822,8 @@
         }
 
         function rightBottomLidChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let rightBottomLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidLowerRight_Up,
@@ -1768,7 +1849,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[rightBottomLidDownKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[rightBottomLidDownKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[rightBottomLidUpUpKey[i]] = 0.0;
                     }
                 }
@@ -1776,7 +1857,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[rightBottomLidUpUpKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[rightBottomLidUpUpKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[rightBottomLidDownKey[i]] = 0.0;
                     }
                 }
@@ -1784,7 +1865,7 @@
         }
         
         function resetEyeLids() {
-            if (gNewAvatarSceneInfo.inited) {
+            if (gASI.inited) {
                 document.getElementById("sldr_leftTopLid").value = "50";
                 document.getElementById("sldr_leftBottomLid").value = "50";
                 document.getElementById("sldr_rightTopLid").value = "50";
@@ -1796,9 +1877,116 @@
             }
         }
 
+        function lookLeftRightChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let sv = document.getElementById("sldr_lookLeftRight").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_lookLeftRight_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 and 2.0:
+                let wt = parseFloat(sv) / 50.0;
+
+                let maxDist = 5.0;
+
+                // now wt is between -1 and 1:
+                wt -= 1.0;
+
+                gASI.lookAtTarget.position.x = maxDist * wt;
+
+                // check for direction:
+                if (wt >= 0) {
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidRight_LookRight ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidRight_LookLeft ] = wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidLeft_LookRight ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidLeft_LookLeft ] = wt;
+                }
+                else { 
+                    wt = -wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidRight_LookLeft ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidRight_LookRight ] = wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidLeft_LookLeft ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidLeft_LookRight ] = wt;
+                }
+            }
+        }
+
+        function lookUpDownChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let sv = document.getElementById("sldr_lookUpDown").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_lookUpDown_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 and 2.0:
+                let wt = parseFloat(sv) / 50.0;
+
+                let maxDist = 5.0;
+
+                // now wt is between -1 and 1:
+                wt -= 1.0;
+
+                gASI.lookAtTarget.position.y = 33.69 + maxDist * wt;
+
+                // check for direction:
+                if (wt >= 0) {
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookUp ] = wt;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookUp ] = wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookDown ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookDown ] = 0.0;
+                }
+                else { 
+                    wt = -wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookDown ] = wt;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookDown ] = wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookUp ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookUp ] = 0.0;
+                }
+            }
+        }
+
+        function lookNearFarChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+
+                let sv = document.getElementById("sldr_lookNearFar").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_lookNearFar_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 and 1.0:
+                let wt = parseFloat(sv) / 100.0;
+
+                let maxDist = 20.0;
+
+                gASI.lookAtTarget.position.z = 2.5 + maxDist * wt;
+            }
+        }
+
+        function resetLookAt() {
+            if (gASI.inited) {
+                document.getElementById("sldr_lookLeftRight").value = "50";
+                document.getElementById("sldr_lookUpDown").value = "50";
+                document.getElementById("sldr_lookNearFar").value = "5";
+                lookLeftRightChanged();
+                lookUpDownChanged();
+                lookNearFarChanged();
+            }
+        }
+
         function jawOpenCloseChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let av_lowerTeeth = gScene.getObjectByName('LowerTeeth_Mesh');
                 let av_lowerGums = gScene.getObjectByName('LowerTeeth_Mesh_1');
                 let av_tongue = gScene.getObjectByName('av_Tongue');
@@ -1827,7 +2015,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[jawDownKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[jawDownKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[jawUpKey[i]] = 0.0;
                     }
                     
@@ -1844,7 +2032,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[jawUpKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[jawUpKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[jawDownKey[i]] = 0.0;
                     }
                     
@@ -1861,8 +2049,8 @@
         }
 
         function jawLRChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
                 let av_lowerTeeth = gScene.getObjectByName('LowerTeeth_Mesh');
                 let av_lowerGums = gScene.getObjectByName('LowerTeeth_Mesh_1');
                 let av_tongue = gScene.getObjectByName('av_Tongue');
@@ -1891,7 +2079,7 @@
                     wt -= 1.0;  // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[jawLeftKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[jawLeftKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[jawRightKey[i]] = 0.0;
                     }
                     
@@ -1908,7 +2096,7 @@
                     wt = 1.0 - wt; // percentage they want 
 
                     for (let i = 0; i < 3; i++) {
-                        av_body.morphTargetInfluences[jawRightKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                        av_body.morphTargetInfluences[jawRightKey[i]] = wt * gASI.race[i];
                         av_body.morphTargetInfluences[jawLeftKey[i]] = 0.0;
                     }
                     
@@ -1925,8 +2113,8 @@
         }
 
         function kissChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let kissKey = [ 
                     av_body.morphTargetDictionary.fa_Puker,
@@ -1941,14 +2129,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(stv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[kissKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[kissKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function poutChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let poutKey = [ 
                     av_body.morphTargetDictionary.fa_Pout,
@@ -1963,14 +2151,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(stv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[poutKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[poutKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function surpriseChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let surpriseLeftKey = [ 
                     av_body.morphTargetDictionary.fa_SurpriseLeft,
@@ -1991,15 +2179,15 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(stv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[surpriseLeftKey[i]] = wt * gNewAvatarSceneInfo.race[i];
-                    av_body.morphTargetInfluences[surpriseRightKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[surpriseLeftKey[i]] = wt * gASI.race[i];
+                    av_body.morphTargetInfluences[surpriseRightKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function joyChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let joyLeftKey = [ 
                     av_body.morphTargetDictionary.fa_JoyLeft,
@@ -2020,15 +2208,15 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(stv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[joyLeftKey[i]] = wt * gNewAvatarSceneInfo.race[i];
-                    av_body.morphTargetInfluences[joyRightKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[joyLeftKey[i]] = wt * gASI.race[i];
+                    av_body.morphTargetInfluences[joyRightKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function angerChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let angerLeftKey = [ 
                     av_body.morphTargetDictionary.fa_AngryLeft,
@@ -2049,15 +2237,15 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(stv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[angerLeftKey[i]] = wt * gNewAvatarSceneInfo.race[i];
-                    av_body.morphTargetInfluences[angerRightKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[angerLeftKey[i]] = wt * gASI.race[i];
+                    av_body.morphTargetInfluences[angerRightKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function fearChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let fearLeftKey = [ 
                     av_body.morphTargetDictionary.fa_FearLeft,
@@ -2078,15 +2266,15 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(stv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[fearLeftKey[i]] = wt * gNewAvatarSceneInfo.race[i];
-                    av_body.morphTargetInfluences[fearRightKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[fearLeftKey[i]] = wt * gASI.race[i];
+                    av_body.morphTargetInfluences[fearRightKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function disgustChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let disgustLeftKey = [ 
                     av_body.morphTargetDictionary.fa_DisgustLeft,
@@ -2107,14 +2295,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(stv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[disgustLeftKey[i]] = wt * gNewAvatarSceneInfo.race[i];
-                    av_body.morphTargetInfluences[disgustRightKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[disgustLeftKey[i]] = wt * gASI.race[i];
+                    av_body.morphTargetInfluences[disgustRightKey[i]] = wt * gASI.race[i];
                 }
             }
         }
        
         function resetMouthExpression() {
-            if (gNewAvatarSceneInfo.inited) {
+            if (gASI.inited) {
                 document.getElementById("sldr_kiss").value = "0";
                 document.getElementById("sldr_pout").value = "0";
                 document.getElementById("sldr_surprise").value = "0";
@@ -2133,8 +2321,8 @@
         }
 
         function THphomChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_TH,
@@ -2149,14 +2337,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function FVphomChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_FV,
@@ -2171,14 +2359,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function BMphomChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_BM,
@@ -2193,14 +2381,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function UphomChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_U,
@@ -2215,14 +2403,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function OphomChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_O,
@@ -2237,14 +2425,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function IphomChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_I,
@@ -2259,14 +2447,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function EphomChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_E,
@@ -2281,14 +2469,14 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
                 }
             }
         }
 
         function AphomChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_body = gNewAvatarSceneInfo.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_A,
@@ -2303,13 +2491,13 @@
                 // forcing wt to be within 0.0 to 1.0:
                 let wt = parseFloat(sv) / 100.0;
                 for (let i = 0; i < 3; i++) {
-                    av_body.morphTargetInfluences[phomKey[i]] = wt * gNewAvatarSceneInfo.race[i];
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
                 }
             }
         }
       
         function resetLipSync() {
-            if (gNewAvatarSceneInfo.inited) {
+            if (gASI.inited) {
                 document.getElementById("sldr_THphom").value = "0";
                 document.getElementById("sldr_FVphom").value = "0";
                 document.getElementById("sldr_BMphom").value = "0";
@@ -2329,8 +2517,8 @@
             }
         }
 
-        function resetMouth() {
-            if (gNewAvatarSceneInfo.inited) {
+        function resetJaw() {
+            if (gASI.inited) {
                 document.getElementById("sldr_jawOpenClose").value = "50";
                 document.getElementById("sldr_jawLR").value = "50";
                 jawOpenCloseChanged();
@@ -2339,8 +2527,8 @@
         }
 
         function tongueUpChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_tongue = gNewAvatarSceneInfo.tongue; 
+            if (gASI.inited) {
+                let av_tongue = gASI.tongue; 
 
                 let sv = document.getElementById("sldr_tongueUp").value;
 
@@ -2354,8 +2542,8 @@
         }
 
         function tongueOutChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_tongue = gNewAvatarSceneInfo.tongue; 
+            if (gASI.inited) {
+                let av_tongue = gASI.tongue; 
 
                 let sv = document.getElementById("sldr_tongueOut").value;
 
@@ -2394,8 +2582,8 @@
         }
 
         function tongueSwellChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_tongue = gNewAvatarSceneInfo.tongue; 
+            if (gASI.inited) {
+                let av_tongue = gASI.tongue; 
 
                 let sv = document.getElementById("sldr_tongueSwell").value;
 
@@ -2418,8 +2606,8 @@
         }
 
         function tongueLRChanged() {
-            if (gNewAvatarSceneInfo.inited) {
-                let av_tongue = gNewAvatarSceneInfo.tongue; 
+            if (gASI.inited) {
+                let av_tongue = gASI.tongue; 
 
                 let sv = document.getElementById("sldr_tongueLR").value;
 
@@ -2442,7 +2630,7 @@
         }
      
         function resetTongue() {
-            if (gNewAvatarSceneInfo.inited) {
+            if (gASI.inited) {
                 document.getElementById("sldr_tongueUp").value = "0";
                 document.getElementById("sldr_tongueOut").value = "0";
                 document.getElementById("sldr_tongueSwell").value = "50";
@@ -2463,19 +2651,19 @@
 		document.addEventListener("DOMContentLoaded", function() {
 			page_init();
             initTabs();
-			DoThree( gNewAvatarSceneInfo );
+			DoThree( gASI );
 		  },{ once: true });
 
 
 		import {
 			PerspectiveCamera, CameraHelper,
 			Scene, Color, Fog, HemisphereLight, DirectionalLight,
-			BoxGeometry, PlaneGeometry,
+			BoxGeometry, PlaneGeometry, Plane, PlaneHelper,
 			MeshNormalMaterial,
 			MeshStandardMaterial, MeshPhongMaterial, MeshBasicMaterial,
 			Mesh, AnimationMixer, GridHelper, Object3D,
-			WebGLRenderer,
-			Clock, MathUtils, Vector3
+			WebGLRenderer, Raycaster,
+			Clock, MathUtils, Vector2, Vector3
 		} from 'three';
 
 		import { OrbitControls } from '/static/three/examples/jsm/controls/OrbitControls.js';
@@ -2627,47 +2815,68 @@
 
 						console.log(dumpObject(gParentObj).join('\n'));
 
-						getMeshObjects(gParentObj, gNewAvatarSceneInfo.meshObjs);
-						let count = gNewAvatarSceneInfo.meshObjs.length;
+						getMeshObjects(gParentObj, gASI.meshObjs);
+						let count = gASI.meshObjs.length;
 						for (let i = 0; i < count; i++) {
                             
-                            let name = gNewAvatarSceneInfo.meshObjs[i].name;
+                            let name = gASI.meshObjs[i].name;
 
-							console.log("gNewAvatarSceneInfo.meshObjs[" + i + "] has name " + name);
+							console.log("gASI.meshObjs[" + i + "] has name " + name);
 
-							gNewAvatarSceneInfo.meshObjs[i].receiveShadow  = false;
+							gASI.meshObjs[i].receiveShadow  = false;
 
                             if (name != 'av_LookAtParent') {
-                                gNewAvatarSceneInfo.meshObjs[i].castShadow = true;
+                                gASI.meshObjs[i].castShadow = true;
                             }
-                            else { // is the eyes look at target:
+                            else { // object is the eyes' look at target:
 
-                                gNewAvatarSceneInfo.meshObjs[i].material.opacity = 0.25;
-                                gNewAvatarSceneInfo.meshObjs[i].material.transparent = true;
+                                gASI.meshObjs[i].material.opacity = 0.25;
+                                gASI.meshObjs[i].material.transparent = true;
 
-                                gNewAvatarSceneInfo.lookAtTarget = gNewAvatarSceneInfo.meshObjs[i];
+                                gASI.lookAtTarget = gASI.meshObjs[i];
+
+                                // create invisible plane lookAtParent will be constrained position-wise:
+                                gASI.rayPlane = new Plane(new Vector3(0, 0, 1), -5);
+                                // optional reference view
+                                // gScene.add(new PlaneHelper( gASI.rayPlane, 100, 0xffff00 ));
+
+                                gASI.rayMouse = new Vector2();
+                                gASI.raycaster = new Raycaster();
+                                gASI.rayIntersects = new Vector3();
+
+                                
+
+                                // temp use of gASI.rayIntersects (a Vector3) to get world position:
+                                gASI.lookAtTarget.getWorldPosition(gASI.rayIntersects);
+                                gASI.lookAtTarget.removeFromParent();
+                                // position back in world space:
+                                gASI.lookAtTarget.position.set( gASI.rayIntersects.x, gASI.rayIntersects.y, gASI.rayIntersects.z );
+                                gASI.lookAtTarget.scale.set( 10, 10, 10 );
+                                // because we unparented it from it's loaded-scene-parent, it needs to be added to the scene:
+                                gScene.add( gASI.lookAtTarget );
+
                             }
 
                             if (name == 'av_FemaleAvatar') {
-                                gNewAvatarSceneInfo.bodyMesh = gNewAvatarSceneInfo.meshObjs[i];
+                                gASI.bodyMesh = gASI.meshObjs[i];
                             }
                             else if (name == 'av_EyeRight') {
-                                gNewAvatarSceneInfo.eyeRMesh = gNewAvatarSceneInfo.meshObjs[i];
+                                gASI.eyeRMesh = gASI.meshObjs[i];
                             }
                             else if (name == 'av_EyeLeft') {
-                                gNewAvatarSceneInfo.eyeLMesh = gNewAvatarSceneInfo.meshObjs[i];
+                                gASI.eyeLMesh = gASI.meshObjs[i];
                             }
                             else if (name == 'av_Tongue') {
-                                gNewAvatarSceneInfo.tongue = gNewAvatarSceneInfo.meshObjs[i];
+                                gASI.tongue = gASI.meshObjs[i];
                             }
 						}
 			
 						gScene.add(gParentObj);
                         removeObject3D(gProgressCube)
 
-                        gNewAvatarSceneInfo.inited = true;
+                        gASI.inited = true;
 
-                        // these require gNewAvatarSceneInfo.inited == true
+                        // these require gASI.inited == true
                         skinToneInit();
                         skinToneChanged();
                         resetFaceShape();
@@ -2675,7 +2884,7 @@
                         resetEyeLids();
                         resetMouthExpression();
                         resetLipSync();
-                        resetMouth();
+                        resetJaw();
                         resetTongue();
 					},
 					// called while loading is progressing
@@ -2711,14 +2920,13 @@
 
 				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
 
+                gASI.canvas = renderer.domElement;
+
 				container.appendChild( renderer.domElement );
 	
 				
 				gCamCtrls = new OrbitControls( gCamera, renderer.domElement );
-				// now set by viewAtLoad();
-				// gCamCtrls.target.set( sceneInfo.cam.target.x, sceneInfo.cam.target.y, sceneInfo.cam.target.z );
-				// gCamCtrls.update(); /**/
-                viewAtLoad();
+                viewAtLoad(); // positions camera and camera view 
 
 				window.addEventListener( 'resize', onWindowResize );
 	
@@ -2744,23 +2952,30 @@
 				
 				const delta = clock.getDelta();
 
-                if (typeof gNewAvatarSceneInfo.lookAtTarget !== 'undefined') {
+                const normDevCoord = gASI.normDevCoord;
+
+                // make sure eyes are looking at their target:
+                if (typeof gASI.lookAtTarget !== 'undefined') {
 
                     const targetPos = new Vector3(0, 0, 0);
-                    gNewAvatarSceneInfo.lookAtTarget.getWorldPosition(targetPos);
+                    gASI.lookAtTarget.getWorldPosition(targetPos);
 
-                    if (typeof gNewAvatarSceneInfo.eyeRMesh !== 'undefined') {
-                        gNewAvatarSceneInfo.eyeRMesh.lookAt(targetPos);
+                    if (typeof gASI.eyeRMesh !== 'undefined') {
+                        gASI.eyeRMesh.lookAt(targetPos);
                     }
 
-                    if (typeof gNewAvatarSceneInfo.eyeLMesh !== 'undefined') {
-                        gNewAvatarSceneInfo.eyeLMesh.lookAt(targetPos);
+                    if (typeof gASI.eyeLMesh !== 'undefined') {
+                        gASI.eyeLMesh.lookAt(targetPos);
                     }
                 }
 	
 				renderer.render( gScene, gCamera );
 	
 				stats.update();
+
+                let ci = document.querySelector("#mainOverlay");
+                // ci.innerHTML = 'x = ' + normDevCoord.x + ', y = ' + normDevCoord.y;
+                ci.innerHTML = gASI.msg;
 			}
 		}
 
