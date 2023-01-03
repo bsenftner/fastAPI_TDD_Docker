@@ -640,6 +640,7 @@
             'rayMouse': undefined,
             'rayIntersects': undefined,
             'rayPlane': undefined,
+            'spheres': [false,false,false,false,false,false], // an array of six
 		};
 
 
@@ -740,6 +741,13 @@
                 av_body.material.color.r = rgbColor.r / 255.0
                 av_body.material.color.g = rgbColor.g / 255.0
                 av_body.material.color.b = rgbColor.b / 255.0
+
+                let skinSphere = gASI.spheres[0]; 
+                if (skinSphere) {
+                    skinSphere.material.color.r = rgbColor.r / 255.0
+                    skinSphere.material.color.g = rgbColor.g / 255.0
+                    skinSphere.material.color.b = rgbColor.b / 255.0
+                }
             }
         }
         //
@@ -2913,6 +2921,24 @@
                             }
                             else if (name == 'av_Tongue') {
                                 sceneInfo.tongue = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere') {
+                                sceneInfo.spheres[0] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere001') {
+                                sceneInfo.spheres[1] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere002') {
+                                sceneInfo.spheres[2] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere003') {
+                                sceneInfo.spheres[3] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere004') {
+                                sceneInfo.spheres[4] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere005') {
+                                sceneInfo.spheres[5] = sceneInfo.meshObjs[i];
                             }
 						}
 			
