@@ -2689,6 +2689,8 @@
 		import { OrbitControls } from '/static/three/examples/jsm/controls/OrbitControls.js';
 		import { DRACOLoader } from '/static/three/examples/jsm/loaders/DRACOLoader.js';
 		import { GLTFLoader } from '/static/three/examples/jsm/loaders/GLTFLoader.js';
+		import { FontLoader } from '/static/three/examples/jsm/loaders/FontLoader.js';
+		import { TextGeometry } from '/static/three/examples/jsm/geometries/TextGeometry.js';
 
 
 		// dumps a gltf scene graph
@@ -2760,11 +2762,11 @@
 				sceneInfo.scene.background = new Color( 0xa0a0a0 );
 				sceneInfo.scene.fog = new Fog( 0xa0a0a0, 200, 1000 );
 	
+                // lights:
 				const hemiLight = new HemisphereLight( 0xffffff, 0x444444 );
 				hemiLight.position.set( 0, 200, 300 );
 				sceneInfo.scene.add( hemiLight );
-	
-
+                //
 				const dirLight = new DirectionalLight( 0xcccccc );
 				dirLight.position.set( 70, 50, 100 );
 				dirLight.castShadow = true;
@@ -2774,11 +2776,10 @@
 				dirLight.shadow.camera.right = 70;
                 dirLight.shadow.mapSize.set( 1024, 1024 );
 				sceneInfo.scene.add( dirLight );
-	
+                //
 				if (sceneInfo.cam.helper)
-                sceneInfo.scene.add( new CameraHelper( dirLight.shadow.camera ) ); /* */
-	
-                
+                    sceneInfo.scene.add( new CameraHelper( dirLight.shadow.camera ) ); /* */
+	            //
 				const dirLight2 = new DirectionalLight( 0xaaaaaa );
 				dirLight2.position.set( -70, 50, -100 );
 				dirLight2.castShadow = true;
@@ -2788,31 +2789,53 @@
 				dirLight2.shadow.camera.right = 50;
                 dirLight2.shadow.mapSize.set( 1024, 1024 );
 				sceneInfo.scene.add( dirLight2 );
-	
+                //
 				if (sceneInfo.cam.helper)
-                sceneInfo.scene.add( new CameraHelper( dirLight2.shadow.camera ) ); 
+                    sceneInfo.scene.add( new CameraHelper( dirLight2.shadow.camera ) ); 
 	
-
 				// ground
 				const mesh = new Mesh( new PlaneGeometry( 2000, 2000 ), new MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
 				mesh.rotation.x = - Math.PI / 2;
 				mesh.receiveShadow = true;
 				sceneInfo.scene.add( mesh );
-	
+                //
 				const grid = new GridHelper( 2000, 20, 0x000000, 0x000000 );
 				grid.material.opacity = 0.2;
 				grid.material.transparent = true;
 				sceneInfo.scene.add( grid );
 	
-
-                const geometry = new BoxGeometry( 50, 2, 2 ); // width, height, depth
+                // a progress cube that grows as the avatar geometry and scene loads:
+                const geometry = new BoxGeometry( 80, 2, 2 ); // width, height, depth
                 const material = new MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.5 } );
                 const progressCube = new Mesh( geometry, material );
                 progressCube.position.set( 0, 15, 0 );
                 sceneInfo.scene.add( progressCube );
 
-				// Instantiate a loader
-				const loader = new GLTFLoader();
+                const fontLoader = new FontLoader();
+                //
+                let loadingText = undefined;
+                //
+                fontLoader.load( '/static/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+                    const textGeom = new TextGeometry( 'Loading...', {
+                        font: font,
+                        size: 10,
+                        height: 1,
+                        curveSegments: 12,
+                        bevelEnabled: true,
+                        bevelThickness: 0.25,
+                        bevelSize: 0.1,
+                        bevelOffset: 0,
+                        bevelSegments: 5
+                    } );
+                    loadingText = new Mesh( textGeom, material );
+                    textGeom.computeBoundingBox();
+                    let x = (textGeom.boundingBox.max.x - textGeom.boundingBox.min.x) * -0.5;
+                    loadingText.position.set( x, 20, 0 );
+                    sceneInfo.scene.add( loadingText );
+                } );
+
+				// Instantiate a GLTF 3D file loader
+				const gltfLoader = new GLTFLoader();
 				//
 				let loadProgFract = 0;
 				let loadProgress = loadProgFract;
@@ -2821,10 +2844,10 @@
 				// Optional: Provide a DRACOLoader instance to decode compressed mesh data
 				const dracoLoader = new DRACOLoader();
 				dracoLoader.setDecoderPath( '/static/three/examples/js/libs/draco/' );
-				loader.setDRACOLoader( dracoLoader ); /**/
+				gltfLoader.setDRACOLoader( dracoLoader ); /**/
 
 				// Load a glTF resource
-				loader.load(
+				gltfLoader.load(
 					sceneInfo.obj.url,
 					// called when the resource is loaded
 					function ( gltf ) {
@@ -2894,10 +2917,12 @@
 						}
 			
 						sceneInfo.scene.add(parentObj);
-                        removeObject3D(progressCube)
+                        //
+                        removeObject3D(progressCube);
+                        removeObject3D(loadingText);
 
                         sceneInfo.inited = true;
-
+                        //
                         // these require sceneInfo.inited == true (which is really gASI)
                         skinToneInit();
                         skinToneChanged();
@@ -2936,13 +2961,11 @@
 				);
 	
 				renderer = new WebGLRenderer( { antialias: true } );
-
+                // 
 				renderer.shadowMap.enabled = true;
-
 				renderer.setPixelRatio( window.devicePixelRatio );
-
 				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
-
+                // remember:
                 sceneInfo.canvas = renderer.domElement;
 
 				container.appendChild( renderer.domElement );
@@ -2963,7 +2986,6 @@
 				let mainTag = document.getElementById("mainContent")
 				
 				gASI.cam.camera.aspect = mainTag.clientWidth / mainTag.clientHeight;
-
 				gASI.cam.camera.updateProjectionMatrix();
 	
 				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
