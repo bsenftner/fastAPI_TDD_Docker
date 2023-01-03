@@ -50,8 +50,8 @@
             <div id="view_ctrls">
                 <a href="#" class="button" onclick="viewAtLoad()">Load View</a>
                 <a href="#" class="button" onclick="viewFace()">Face View</a>
-                <a href="#" class="button" onclick="viewFull45()">Full Body 45</a>
                 <a href="#" class="button" onclick="viewMid45()">Mid Body View 45</a>
+                <a href="#" class="button" onclick="viewFull45()">Full Body View 45</a>
                 <div class="slidercontainer">
                     <div class="slidercaption">Camera Lens:</div>
                     <input type="range" min="20" max="120" value="45" class="slider" id="cam_fov" oninput="camFOVChanged()">
@@ -608,14 +608,15 @@
     {% include 'common_tabs.html' %}
 
     <script>
-        
-		let gCamera, gScene, gParentObj, gCamCtrls, gProgressCube;
 
         // 'avatar scene info'
 		const gASI = { 
             'inited': false,
-            'canvas': undefined,
+            'canvas': undefined,                        // will have DOM WebGL canvas 
+            'scene': undefined,                         // will have THREE Scene assigned
 			'cam': {
+                'camera': undefined,                    // will have THREE PerspectiveCamera assigned
+                'controls': undefined,                  // will have THREE OrbitControls assigned
 				'pos': { 'x': 0, 'y': 40, 'z': 50 },
 				'target': { 'x': 0, 'y': 20, 'z': 0 },
 				'helper': false,
@@ -642,7 +643,9 @@
 		};
 
 
-
+        //----------------------------------------------------------
+        // mouse picking via sending rays into scene
+        //
         function getCanvasRelativePosition(event, canvas) {
             const rect = canvas.getBoundingClientRect();
             return {
@@ -650,7 +653,7 @@
                     y: (event.clientY - rect.top ) * canvas.height / rect.height,
             };
         }
-
+        //
         function setPickPosition(event) {
             let canvas = gASI.canvas;
             if (typeof canvas !== 'undefined') {
@@ -669,7 +672,7 @@
                     gASI.rayMouse.x = pos.x;
                     gASI.rayMouse.y = pos.y;
                     //
-                    gASI.raycaster.setFromCamera(gASI.rayMouse, gCamera);
+                    gASI.raycaster.setFromCamera(gASI.rayMouse, gASI.cam.camera);
                     let ret = gASI.raycaster.ray.intersectPlane(gASI.rayPlane, gASI.rayIntersects);
                     if (typeof ret !== 'undefined') {
                         // gASI.msg += '<br/>';
@@ -689,7 +692,7 @@
                 clearPickPosition();
             }
         }
-
+        //
         function clearPickPosition() {
             // unlike the mouse which always has a position
             // if the user stops touching the screen we want
@@ -698,15 +701,18 @@
             gASI.normDevCoord.x = -100000;
             gASI.normDevCoord.y = -100000;
         }
-
+        //
         window.addEventListener('mousemove', setPickPosition);
         window.addEventListener('mouseout', clearPickPosition);
         window.addEventListener('mouseleave', clearPickPosition);
-
+        //
+        // --- end mouse picking logic ----------------------------
         
 
 
-
+        //----------------------------------------------------------
+        // skin tone picking via use of html color picker
+        //
         function hexToRgb(hex) {
             var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? {
@@ -730,65 +736,72 @@
                 let cl = document.querySelector("#colorInput_skinTone_value");
                 cl.innerHTML = hexColor;
 
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
                 av_body.material.color.r = rgbColor.r / 255.0
                 av_body.material.color.g = rgbColor.g / 255.0
                 av_body.material.color.b = rgbColor.b / 255.0
             }
         }
+        //
+        // -------- end skin tone picking -------------------------
 
 
+        // --------------- some routines that move the camera around --------
+        //
         function camFOVChanged() {
-            if (typeof gCamera !== 'undefined') {
+            if (typeof gASI.cam.camera !== 'undefined') {
                 let camFovSldr = document.getElementById("cam_fov");
-                gCamera.fov = parseFloat(camFovSldr.value);
-                gCamera.updateProjectionMatrix();
+                gASI.cam.camera.fov = parseFloat(camFovSldr.value);
+                gASI.cam.camera.updateProjectionMatrix();
                 console.log( "camera FOV is " + camFovSldr.value);
             }
         }
-
+        //
         // position camera where the scene loads:
         function viewAtLoad() {
-            if (typeof gCamCtrls !== 'undefined') {
-                let si = gASI;
-                gCamera.position.set( si.cam.pos.x, si.cam.pos.y, si.cam.pos.z );
+            if (typeof gASI.cam.controls !== 'undefined') {;
+                gASI.cam.camera.position.set( gASI.cam.pos.x, gASI.cam.pos.y, gASI.cam.pos.z );
                 //
                 document.getElementById("cam_fov").value = "45";
                 camFOVChanged();
                 //
-                gCamCtrls.target.set( si.cam.target.x, si.cam.target.y, si.cam.target.z );
-			    gCamCtrls.update();
+                gASI.cam.controls.target.set( gASI.cam.target.x, gASI.cam.target.y, gASI.cam.target.z );
+			    gASI.cam.controls.update();
             }
         }
-
+        //
         // position camera to view the face:
         function viewFace() {
-            if (typeof gCamCtrls !== 'undefined') {
-                gCamera.position.set( 0, 33, 8 );
-                gCamCtrls.target.set( 0, 33.34, -1.3478 );
-			    gCamCtrls.update();
+            if (typeof gASI.cam.controls !== 'undefined') {
+                gASI.cam.camera.position.set( 0, 33, 8 );
+                gASI.cam.controls.target.set( 0, 33.34, -1.3478 );
+			    gASI.cam.controls.update();
             }
         }
-
+        //
         // position camera:
         function viewFull45() {
-            if (typeof gCamCtrls !== 'undefined') {
-                gCamera.position.set( 32, 32.275, 41.568 );
-                gCamCtrls.target.set( 0.15, 18.554, 0.3714 );
-			    gCamCtrls.update();
+            if (typeof gASI.cam.controls !== 'undefined') {
+                gASI.cam.camera.position.set( 32, 32.275, 41.568 );
+                gASI.cam.controls.target.set( 0.15, 18.554, 0.3714 );
+			    gASI.cam.controls.update();
             }
         }
-
+        //
         // position camera:
         function viewMid45() {
-            if (typeof gCamCtrls !== 'undefined') {
-                gCamera.position.set( 19.4734, 32.3731, 20.0688 );
-                gCamCtrls.target.set( -0.45, 25.875, -2.2695 );
-			    gCamCtrls.update();
+            if (typeof gASI.cam.controls !== 'undefined') {
+                gASI.cam.camera.position.set( 19.4734, 32.3731, 20.0688 );
+                gASI.cam.controls.target.set( -0.45, 25.875, -2.2695 );
+			    gASI.cam.controls.update();
             }
         }
+        //
+        // ------ end camera placement routines -------------------------
+
 
         // the first in a series of functions related to Ethnicity Modification:
+        //
         function ethnicityChangedAsian() {
             let mainSldr = document.getElementById("sldr_asian");
             let otherSldr1 = document.getElementById("sldr_african");
@@ -857,7 +870,7 @@
         // as the percentage-wise morphs to Asian and African, morphs away from Caucasian.)
         function setEthnicityShape( asianCtrl, africanCtrl ) {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
                 let asianKey = av_body.morphTargetDictionary.FemaleAsian;
                 let africanKey = av_body.morphTargetDictionary.FemaleBlack;
                 av_body.morphTargetInfluences[asianKey] = parseFloat(asianCtrl.value) / 100.0;
@@ -865,9 +878,12 @@
             }
         }
 
+
+        // ----------- a rather large series of morph target applying routines -----------
+        //
         function thin2HeavyChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
                 let faHeavyKey = av_body.morphTargetDictionary.fa_Heavy;
                 let fbHeavyKey = av_body.morphTargetDictionary.fb_Heavy;
                 let fwHeavyKey = av_body.morphTargetDictionary.fw_Heavy;
@@ -914,7 +930,7 @@
 
         function muscularityChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
                 let faMuscularKey = av_body.morphTargetDictionary.fa_Muscular;
                 let fbMuscularKey = av_body.morphTargetDictionary.fb_Muscular;
                 let fwMuscularKey = av_body.morphTargetDictionary.fw_Muscular;
@@ -941,9 +957,9 @@
 
         function jawInOutChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
-                let av_lowerTeeth = gScene.getObjectByName('LowerTeeth_Mesh');
-                let av_lowerGums = gScene.getObjectByName('LowerTeeth_Mesh_1');
+                let av_body = gASI.bodyMesh; 
+                let av_lowerTeeth = gASI.scene.getObjectByName('LowerTeeth_Mesh');
+                let av_lowerGums = gASI.scene.getObjectByName('LowerTeeth_Mesh_1');
 
                 let jawOutKey = [ 
                     av_body.morphTargetDictionary.fa_JawOut,
@@ -998,7 +1014,7 @@
 
         function squareJawChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let squareJawKey = [ 
                     av_body.morphTargetDictionary.fa_SquareJaw,
@@ -1020,7 +1036,7 @@
 
         function chinCleftChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let chinCleftKey = [ 
                     av_body.morphTargetDictionary.fa_ChinCleft,
@@ -1042,7 +1058,7 @@
  
         function chinInOutChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let chinOutKey = [ 
                     av_body.morphTargetDictionary.fa_ChinOut,
@@ -1085,7 +1101,7 @@
 
         function mouthInOutChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let mouthOutKey = [ 
                     av_body.morphTargetDictionary.fa_MouthOut,
@@ -1128,7 +1144,7 @@
 
         function mouthWidthChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let outKey = [ 
                     av_body.morphTargetDictionary.fa_WidePurseOutLeft, av_body.morphTargetDictionary.fa_WidePurseOutRight,
@@ -1171,7 +1187,7 @@
 
         function gauntChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let gauntKey = [ 
                     av_body.morphTargetDictionary.fa_Gaunt,
@@ -1193,7 +1209,7 @@
 
         function doubleChinChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let doubleChinKey = [ 
                     av_body.morphTargetDictionary.fa_DoubleChin,
@@ -1215,7 +1231,7 @@
 
         function cheekBonesChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let cheekBoneKey = [ 
                     av_body.morphTargetDictionary.fa_HighCheekBones,
@@ -1237,7 +1253,7 @@
 
         function noseSizeChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let noseBigKey = [ 
                     av_body.morphTargetDictionary.fa_NoseLarge,
@@ -1280,7 +1296,7 @@
 
         function noseTopInOutChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let noseHighOutKey = [ 
                     av_body.morphTargetDictionary.fa_NoseHighOut,
@@ -1323,7 +1339,7 @@
 
         function noseMidInOutChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let noseMidOutKey = [ 
                     av_body.morphTargetDictionary.fa_NoseMidOut,
@@ -1366,7 +1382,7 @@
 
         function noseTipChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let noseTipKey = [ 
                     av_body.morphTargetDictionary.fa_NoseTipOut,
@@ -1388,7 +1404,7 @@
 
         function browInOutChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let browOutKey = [ 
                     av_body.morphTargetDictionary.fa_BrowOut,
@@ -1431,7 +1447,7 @@
 
         function foreheadTopChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let foreheadTopOutKey = [ 
                     av_body.morphTargetDictionary.fa_ForeHeadTopOut,
@@ -1509,7 +1525,7 @@
 
         function leftInsideBrowChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let leftInsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_InBrowL_Up,
@@ -1552,7 +1568,7 @@
 
         function leftOutsideBrowChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let leftOutsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_OutBrowL_Up,
@@ -1595,7 +1611,7 @@
 
         function rightInsideBrowChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let rightInsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_InBrowR_Up,
@@ -1638,7 +1654,7 @@
 
         function rightOutsideBrowChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let rightOutsideBrowUpKey = [ 
                     av_body.morphTargetDictionary.fa_OutBrowR_Up,
@@ -1694,7 +1710,7 @@
 
         function leftTopLidChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let leftTopLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidUpperLeft_Up,
@@ -1737,7 +1753,7 @@
 
         function leftBottomLidChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let leftBottomLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidLowerLeft_Up,
@@ -1780,7 +1796,7 @@
 
         function rightTopLidChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let rightTopLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidUpperRight_Up,
@@ -1823,7 +1839,7 @@
 
         function rightBottomLidChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let rightBottomLidUpUpKey = [ 
                     av_body.morphTargetDictionary.fa_LidLowerRight_Up,
@@ -1879,7 +1895,7 @@
 
         function lookLeftRightChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let sv = document.getElementById("sldr_lookLeftRight").value;
 
@@ -1920,7 +1936,7 @@
 
         function lookUpDownChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let sv = document.getElementById("sldr_lookUpDown").value;
 
@@ -1945,7 +1961,7 @@
                     av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookUp ] = wt;
 
                     av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookDown ] = 0.0;
-                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookDown ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookDown ] = 0.0;
                 }
                 else { 
                     wt = -wt;
@@ -1954,14 +1970,14 @@
                     av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookDown ] = wt;
 
                     av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookUp ] = 0.0;
-                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookUp ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookUp ] = 0.0;
                 }
             }
         }
 
         function lookNearFarChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let sv = document.getElementById("sldr_lookNearFar").value;
 
@@ -1990,10 +2006,10 @@
 
         function jawOpenCloseChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
-                let av_lowerTeeth = gScene.getObjectByName('LowerTeeth_Mesh');
-                let av_lowerGums = gScene.getObjectByName('LowerTeeth_Mesh_1');
-                let av_tongue = gScene.getObjectByName('av_Tongue');
+                let av_body = gASI.bodyMesh; 
+                let av_lowerTeeth = gASI.scene.getObjectByName('LowerTeeth_Mesh');
+                let av_lowerGums = gASI.scene.getObjectByName('LowerTeeth_Mesh_1');
+                let av_tongue = gASI.scene.getObjectByName('av_Tongue');
 
                 let jawDownKey = [ 
                     av_body.morphTargetDictionary.fa_JawDown,
@@ -2054,10 +2070,10 @@
 
         function jawLRChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
-                let av_lowerTeeth = gScene.getObjectByName('LowerTeeth_Mesh');
-                let av_lowerGums = gScene.getObjectByName('LowerTeeth_Mesh_1');
-                let av_tongue = gScene.getObjectByName('av_Tongue');
+                let av_body = gASI.bodyMesh; 
+                let av_lowerTeeth = gASI.scene.getObjectByName('LowerTeeth_Mesh');
+                let av_lowerGums = gASI.scene.getObjectByName('LowerTeeth_Mesh_1');
+                let av_tongue = gASI.scene.getObjectByName('av_Tongue');
 
                 let jawLeftKey = [ 
                     av_body.morphTargetDictionary.fa_JawLSide,
@@ -2118,7 +2134,7 @@
 
         function kissChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let kissKey = [ 
                     av_body.morphTargetDictionary.fa_Puker,
@@ -2140,7 +2156,7 @@
 
         function poutChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let poutKey = [ 
                     av_body.morphTargetDictionary.fa_Pout,
@@ -2162,7 +2178,7 @@
 
         function surpriseChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let surpriseLeftKey = [ 
                     av_body.morphTargetDictionary.fa_SurpriseLeft,
@@ -2191,7 +2207,7 @@
 
         function joyChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let joyLeftKey = [ 
                     av_body.morphTargetDictionary.fa_JoyLeft,
@@ -2220,7 +2236,7 @@
 
         function angerChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let angerLeftKey = [ 
                     av_body.morphTargetDictionary.fa_AngryLeft,
@@ -2249,7 +2265,7 @@
 
         function fearChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let fearLeftKey = [ 
                     av_body.morphTargetDictionary.fa_FearLeft,
@@ -2278,7 +2294,7 @@
 
         function disgustChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let disgustLeftKey = [ 
                     av_body.morphTargetDictionary.fa_DisgustLeft,
@@ -2326,7 +2342,7 @@
 
         function THphomChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_TH,
@@ -2348,7 +2364,7 @@
 
         function FVphomChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_FV,
@@ -2370,7 +2386,7 @@
 
         function BMphomChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_BM,
@@ -2392,7 +2408,7 @@
 
         function UphomChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_U,
@@ -2414,7 +2430,7 @@
 
         function OphomChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_O,
@@ -2436,7 +2452,7 @@
 
         function IphomChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_I,
@@ -2458,7 +2474,7 @@
 
         function EphomChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_E,
@@ -2480,7 +2496,7 @@
 
         function AphomChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; // gScene.getObjectByName('av_FemaleAvatar');
+                let av_body = gASI.bodyMesh; 
 
                 let phomKey = [ 
                     av_body.morphTargetDictionary.fa_A,
@@ -2737,62 +2753,63 @@
 				let mainTag = document.getElementById("mainContent")
 				mainTag.appendChild( container );
 	
-				gCamera = new PerspectiveCamera( 45, mainTag.offsetWidth / mainTag.offsetHeight, 1, 2000 );
-                // now set by viewAtLoad();
-				// gCamera.position.set( sceneInfo.cam.pos.x, sceneInfo.cam.pos.y, sceneInfo.cam.pos.z );
+                // put the scene camera into our sceneInfo global:
+				sceneInfo.cam.camera = new PerspectiveCamera( 45, mainTag.offsetWidth / mainTag.offsetHeight, 1, 2000 );
 
-				gScene = new Scene();
-				gScene.background = new Color( 0xa0a0a0 );
-				gScene.fog = new Fog( 0xa0a0a0, 200, 1000 );
+				sceneInfo.scene = new Scene();
+				sceneInfo.scene.background = new Color( 0xa0a0a0 );
+				sceneInfo.scene.fog = new Fog( 0xa0a0a0, 200, 1000 );
 	
 				const hemiLight = new HemisphereLight( 0xffffff, 0x444444 );
 				hemiLight.position.set( 0, 200, 300 );
-				gScene.add( hemiLight );
+				sceneInfo.scene.add( hemiLight );
 	
 
 				const dirLight = new DirectionalLight( 0xcccccc );
 				dirLight.position.set( 70, 50, 100 );
 				dirLight.castShadow = true;
-				dirLight.shadow.camera.top = 40;
-				dirLight.shadow.camera.bottom = - 20;
-				dirLight.shadow.camera.left = - 20;
-				dirLight.shadow.camera.right = 20;
-				gScene.add( dirLight );
+				dirLight.shadow.camera.top = 35;
+				dirLight.shadow.camera.bottom = -10;
+				dirLight.shadow.camera.left = -50;
+				dirLight.shadow.camera.right = 70;
+                dirLight.shadow.mapSize.set( 1024, 1024 );
+				sceneInfo.scene.add( dirLight );
 	
 				if (sceneInfo.cam.helper)
-					gScene.add( new CameraHelper( dirLight.shadow.camera ) );
+                sceneInfo.scene.add( new CameraHelper( dirLight.shadow.camera ) ); /* */
 	
-                    
+                
 				const dirLight2 = new DirectionalLight( 0xaaaaaa );
 				dirLight2.position.set( -70, 50, -100 );
 				dirLight2.castShadow = true;
-				dirLight2.shadow.camera.top = 40;
-				dirLight2.shadow.camera.bottom = - 20;
-				dirLight2.shadow.camera.left = - 20;
-				dirLight2.shadow.camera.right = 20;
-				gScene.add( dirLight2 );
+				dirLight2.shadow.camera.top = 35;
+				dirLight2.shadow.camera.bottom = -20;
+				dirLight2.shadow.camera.left = -70;
+				dirLight2.shadow.camera.right = 50;
+                dirLight2.shadow.mapSize.set( 1024, 1024 );
+				sceneInfo.scene.add( dirLight2 );
 	
 				if (sceneInfo.cam.helper)
-					gScene.add( new CameraHelper( dirLight2.shadow.camera ) );
+                sceneInfo.scene.add( new CameraHelper( dirLight2.shadow.camera ) ); 
 	
 
 				// ground
 				const mesh = new Mesh( new PlaneGeometry( 2000, 2000 ), new MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
 				mesh.rotation.x = - Math.PI / 2;
 				mesh.receiveShadow = true;
-				gScene.add( mesh );
+				sceneInfo.scene.add( mesh );
 	
 				const grid = new GridHelper( 2000, 20, 0x000000, 0x000000 );
 				grid.material.opacity = 0.2;
 				grid.material.transparent = true;
-				gScene.add( grid );
+				sceneInfo.scene.add( grid );
 	
 
                 const geometry = new BoxGeometry( 50, 2, 2 ); // width, height, depth
                 const material = new MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.5 } );
-                gProgressCube = new Mesh( geometry, material );
-                gProgressCube.position.set( 0, 15, 0 );
-                gScene.add( gProgressCube );
+                const progressCube = new Mesh( geometry, material );
+                progressCube.position.set( 0, 15, 0 );
+                sceneInfo.scene.add( progressCube );
 
 				// Instantiate a loader
 				const loader = new GLTFLoader();
@@ -2812,75 +2829,76 @@
 					// called when the resource is loaded
 					function ( gltf ) {
 
-                        gProgressCube.material.opacity = 0.5;
+                        progressCube.material.opacity = 0.5;
 
-						gParentObj = gltf.scene;
-						gParentObj.scale.set( sceneInfo.obj.scale, sceneInfo.obj.scale, sceneInfo.obj.scale );
+						let parentObj = gltf.scene;
+						parentObj.scale.set( sceneInfo.obj.scale, sceneInfo.obj.scale, sceneInfo.obj.scale );
 
-						console.log(dumpObject(gParentObj).join('\n'));
+						console.log(dumpObject(parentObj).join('\n'));
 
-						getMeshObjects(gParentObj, gASI.meshObjs);
-						let count = gASI.meshObjs.length;
+						getMeshObjects(parentObj, sceneInfo.meshObjs);
+
+						let count = sceneInfo.meshObjs.length;
 						for (let i = 0; i < count; i++) {
                             
-                            let name = gASI.meshObjs[i].name;
+                            let name = sceneInfo.meshObjs[i].name;
 
-							console.log("gASI.meshObjs[" + i + "] has name " + name);
+							console.log("sceneInfo.meshObjs[" + i + "] has name " + name);
 
-							gASI.meshObjs[i].receiveShadow  = false;
+							sceneInfo.meshObjs[i].receiveShadow  = false;
 
                             if (name != 'av_LookAtParent') {
-                                gASI.meshObjs[i].castShadow = true;
+                                sceneInfo.meshObjs[i].castShadow = true;
                             }
                             else { // object is the eyes' look at target:
 
-                                gASI.meshObjs[i].material.opacity = 0.25;
-                                gASI.meshObjs[i].material.transparent = true;
+                                sceneInfo.meshObjs[i].material.opacity = 0.25;
+                                sceneInfo.meshObjs[i].material.transparent = true;
 
-                                gASI.lookAtTarget = gASI.meshObjs[i];
+                                sceneInfo.lookAtTarget = sceneInfo.meshObjs[i];
 
                                 // create invisible plane lookAtParent will be constrained position-wise:
-                                gASI.rayPlane = new Plane(new Vector3(0, 0, 1), -5);
+                                sceneInfo.rayPlane = new Plane(new Vector3(0, 0, 1), -5);
                                 // optional reference view
-                                // gScene.add(new PlaneHelper( gASI.rayPlane, 100, 0xffff00 ));
+                                // sceneInfo.scene.add(new PlaneHelper( sceneInfo.rayPlane, 100, 0xffff00 ));
 
-                                gASI.rayMouse = new Vector2();
-                                gASI.raycaster = new Raycaster();
-                                gASI.rayIntersects = new Vector3();
+                                sceneInfo.rayMouse = new Vector2();
+                                sceneInfo.raycaster = new Raycaster();
+                                sceneInfo.rayIntersects = new Vector3();
 
                                 
 
-                                // temp use of gASI.rayIntersects (a Vector3) to get world position:
-                                gASI.lookAtTarget.getWorldPosition(gASI.rayIntersects);
-                                gASI.lookAtTarget.removeFromParent();
+                                // temp use of sceneInfo.rayIntersects (a Vector3) to get world position:
+                                sceneInfo.lookAtTarget.getWorldPosition(sceneInfo.rayIntersects);
+                                sceneInfo.lookAtTarget.removeFromParent();
                                 // position back in world space:
-                                gASI.lookAtTarget.position.set( gASI.rayIntersects.x, gASI.rayIntersects.y, gASI.rayIntersects.z );
-                                gASI.lookAtTarget.scale.set( 10, 10, 10 );
+                                sceneInfo.lookAtTarget.position.set( sceneInfo.rayIntersects.x, sceneInfo.rayIntersects.y, sceneInfo.rayIntersects.z );
+                                sceneInfo.lookAtTarget.scale.set( 10, 10, 10 );
                                 // because we unparented it from it's loaded-scene-parent, it needs to be added to the scene:
-                                gScene.add( gASI.lookAtTarget );
+                                sceneInfo.scene.add( sceneInfo.lookAtTarget );
 
                             }
 
                             if (name == 'av_FemaleAvatar') {
-                                gASI.bodyMesh = gASI.meshObjs[i];
+                                sceneInfo.bodyMesh = sceneInfo.meshObjs[i];
                             }
                             else if (name == 'av_EyeRight') {
-                                gASI.eyeRMesh = gASI.meshObjs[i];
+                                sceneInfo.eyeRMesh = sceneInfo.meshObjs[i];
                             }
                             else if (name == 'av_EyeLeft') {
-                                gASI.eyeLMesh = gASI.meshObjs[i];
+                                sceneInfo.eyeLMesh = sceneInfo.meshObjs[i];
                             }
                             else if (name == 'av_Tongue') {
-                                gASI.tongue = gASI.meshObjs[i];
+                                sceneInfo.tongue = sceneInfo.meshObjs[i];
                             }
 						}
 			
-						gScene.add(gParentObj);
-                        removeObject3D(gProgressCube)
+						sceneInfo.scene.add(parentObj);
+                        removeObject3D(progressCube)
 
-                        gASI.inited = true;
+                        sceneInfo.inited = true;
 
-                        // these require gASI.inited == true
+                        // these require sceneInfo.inited == true (which is really gASI)
                         skinToneInit();
                         skinToneChanged();
                         resetFaceShape();
@@ -2897,8 +2915,8 @@
 
                         loadProgFract = xhr.loaded / xhr.total;
 
-                        gProgressCube.scale.set( loadProgFract, 1, 1 );
-                        gProgressCube.material.opacity = loadProgFract;
+                        progressCube.scale.set( loadProgFract, 1, 1 );
+                        progressCube.material.opacity = loadProgFract;
                         
 						loadProgress = loadProgFract * 100;
 						if (loadProgress <= lastLoadProgress + 10)
@@ -2925,12 +2943,12 @@
 
 				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
 
-                gASI.canvas = renderer.domElement;
+                sceneInfo.canvas = renderer.domElement;
 
 				container.appendChild( renderer.domElement );
 	
 				
-				gCamCtrls = new OrbitControls( gCamera, renderer.domElement );
+				sceneInfo.cam.controls = new OrbitControls( sceneInfo.cam.camera, renderer.domElement );
                 viewAtLoad(); // positions camera and camera view 
 
 				window.addEventListener( 'resize', onWindowResize );
@@ -2944,9 +2962,9 @@
 	
 				let mainTag = document.getElementById("mainContent")
 				
-				gCamera.aspect = mainTag.clientWidth / mainTag.clientHeight;
+				gASI.cam.camera.aspect = mainTag.clientWidth / mainTag.clientHeight;
 
-				gCamera.updateProjectionMatrix();
+				gASI.cam.camera.updateProjectionMatrix();
 	
 				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
 			}
@@ -2974,7 +2992,7 @@
                     }
                 }
 	
-				renderer.render( gScene, gCamera );
+				renderer.render( gASI.scene, gASI.cam.camera );
 	
 				stats.update();
 
