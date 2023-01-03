@@ -1897,6 +1897,8 @@
                 gASI.lookAtTarget.position.x = maxDist * wt;
 
                 // check for direction:
+                //
+                // this is the wrong way to calculate these morph influences, should be based on eye angles
                 if (wt >= 0) {
                     av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidRight_LookRight ] = 0.0;
                     av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidRight_LookLeft ] = wt;
@@ -1936,6 +1938,8 @@
                 gASI.lookAtTarget.position.y = 33.69 + maxDist * wt;
 
                 // check for direction:
+                //
+                // this is the wrong way to calculate these morph influences, should be based on eye angles
                 if (wt >= 0) {
                     av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookUp ] = wt;
                     av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookUp ] = wt;
@@ -1977,7 +1981,7 @@
             if (gASI.inited) {
                 document.getElementById("sldr_lookLeftRight").value = "50";
                 document.getElementById("sldr_lookUpDown").value = "50";
-                document.getElementById("sldr_lookNearFar").value = "5";
+                document.getElementById("sldr_lookNearFar").value = "35";
                 lookLeftRightChanged();
                 lookUpDownChanged();
                 lookNearFarChanged();
@@ -2886,6 +2890,7 @@
                         resetLipSync();
                         resetJaw();
                         resetTongue();
+                        resetLookAt();
 					},
 					// called while loading is progressing
 					function ( xhr ) {
