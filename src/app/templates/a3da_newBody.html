@@ -143,6 +143,16 @@
 
                         <div class="slidercontainer">
                             <div class="slidercaption">
+                                Skin Roughness:
+                            </div>
+                            <div class="slidervalue" id="sldr_skinRoughness_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="100" class="slider" id="sldr_skinRoughness" oninput="skinRoughnessChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
                                 Skin 0 Tone:
                             </div>
                             <div class="slidervalue" id="colorInput_skinTone_value">
@@ -752,6 +762,7 @@
 
                 av_body.material = gASI.spheres[skinValue].material;
 
+
                 // this material has some mapRepeatValue in use, let's get it:
                 let mapRepeatValue = gASI.spheres[skinValue].material.map.repeat.x;
                 //
@@ -760,12 +771,21 @@
                 //
                 document.getElementById("sldr_skinRepeat").value = skinRepeatValue;
                 skinRepeatChanged();
+
+                
+                // this material has some skinRoughnessValue in use, let's get it:
+                let skinRoughnessValue = gASI.spheres[skinValue].material.roughness;
+                //
+                // convert to the value for the skin roughness slider:
+                skinRoughnessValue *= 100.0;
+                //
+                document.getElementById("sldr_skinRoughness").value = skinRoughnessValue;
+                skinRoughnessChanged();
             }
         }
         //
         function skinRepeatChanged() {
             if (gASI.inited) {
-                let av_body = gASI.bodyMesh; 
                 
                 // get which skin:
                 let skinValue = document.getElementById("sldr_skin").value;
@@ -781,6 +801,23 @@
                 gASI.spheres[skinValue].material.metalnessMap.repeat.set( mapRepeatValue, mapRepeatValue );
                 gASI.spheres[skinValue].material.normalMap.repeat.set( mapRepeatValue, mapRepeatValue );
                 gASI.spheres[skinValue].material.roughnessMap.repeat.set( mapRepeatValue, mapRepeatValue );
+            }
+        }
+        //
+        function skinRoughnessChanged() {
+            if (gASI.inited) {
+                
+                // get which skin:
+                let skinValue = document.getElementById("sldr_skin").value;
+
+                // get skinRoughness:
+                let skinRoughnessValue = document.getElementById("sldr_skinRoughness").value;
+                
+                document.getElementById("sldr_skinRoughness_value").innerHTML = skinRoughnessValue + '%';
+
+                let roughnessValue = skinRoughnessValue / 100.0;
+
+                gASI.spheres[skinValue].material.roughness = roughnessValue;
             }
         }
 
