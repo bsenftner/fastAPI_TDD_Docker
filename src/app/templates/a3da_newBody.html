@@ -120,9 +120,21 @@
                             <input type="range" min="0" max="100" value="100" class="slider" id="sldr_caucasian" oninput="ethnicityChangedCaucasian()">
                         </div>
 
+                        
                         <div class="slidercontainer">
                             <div class="slidercaption">
-                                Skin Tone:
+                                Skin:
+                            </div>
+                            <div class="slidervalue" id="sldr_skin_value">
+                                0
+                            </div>
+                            <input type="range" min="0" max="5" value="0" class="slider" id="sldr_skin" oninput="skinChanged()">
+                        </div>
+
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Skin 1 Tone:
                             </div>
                             <div class="slidervalue" id="colorInput_skinTone_value">
                                 #0d0d0d
@@ -612,6 +624,7 @@
         // 'avatar scene info'
 		const gASI = { 
             'inited': false,
+            'debug': false,
             'canvas': undefined,                        // will have DOM WebGL canvas 
             'scene': undefined,                         // will have THREE Scene assigned
 			'cam': {
@@ -710,6 +723,18 @@
         // --- end mouse picking logic ----------------------------
         
 
+        function skinChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+                
+                let skinValue = document.getElementById("sldr_skin").value;
+
+                // forcing feedback to be -100% to 100%:
+                document.getElementById("sldr_thin2Heavy_value").innerHTML = skinValue;
+
+                av_body.material = gASI.spheres[skinValue].material;
+            }
+        }
 
         //----------------------------------------------------------
         // skin tone picking via use of html color picker
@@ -2750,8 +2775,6 @@
 		function DoThree( sceneInfo  ) {
 
 			let renderer, stats;
-
-			const clock = new Clock();
 	
 			DoThreeInit( sceneInfo );
 			animate();
@@ -3020,8 +3043,6 @@
 			function animate() {
 	
 				requestAnimationFrame( animate );
-				
-				const delta = clock.getDelta();
 
                 const normDevCoord = gASI.normDevCoord;
 
@@ -3044,8 +3065,10 @@
 	
 				stats.update();
 
-                // let ci = document.querySelector("#mainOverlay");
-                // ci.innerHTML = gASI.msg;
+                if (sceneInfo.debug) {
+                    let ci = document.querySelector("#mainOverlay");
+                    ci.innerHTML = gASI.msg;
+                }
 			}
 		}
 
