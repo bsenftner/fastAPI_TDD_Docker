@@ -131,10 +131,19 @@
                             <input type="range" min="0" max="5" value="0" class="slider" id="sldr_skin" oninput="skinChanged()">
                         </div>
 
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Skin Repeat:
+                            </div>
+                            <div class="slidervalue" id="sldr_skinRepeat_value">
+                                0
+                            </div>
+                            <input type="range" min="0" max="12" value="0" class="slider" id="sldr_skinRepeat" oninput="skinRepeatChanged()">
+                        </div>
 
                         <div class="slidercontainer">
                             <div class="slidercaption">
-                                Skin 1 Tone:
+                                Skin 0 Tone:
                             </div>
                             <div class="slidervalue" id="colorInput_skinTone_value">
                                 #0d0d0d
@@ -723,16 +732,55 @@
         // --- end mouse picking logic ----------------------------
         
 
+        // expects positive value input:
+        function getSkinRepeatValue( mapRepeatValue ) {
+            let skinRepeatValue = 1;
+            while (Math.pow( 2, skinRepeatValue ) < mapRepeatValue) {
+                skinRepeatValue++;
+            };
+            return skinRepeatValue;
+        }
+        //
         function skinChanged() {
             if (gASI.inited) {
                 let av_body = gASI.bodyMesh; 
                 
+                // a small integer, index into a small material array
                 let skinValue = document.getElementById("sldr_skin").value;
 
-                // forcing feedback to be -100% to 100%:
-                document.getElementById("sldr_thin2Heavy_value").innerHTML = skinValue;
+                document.getElementById("sldr_skin_value").innerHTML = skinValue;
 
                 av_body.material = gASI.spheres[skinValue].material;
+
+                // this material has some mapRepeatValue in use, let's get it:
+                let mapRepeatValue = gASI.spheres[skinValue].material.map.repeat.x;
+                //
+                // convert to the value for the skin repeat slider:
+                let skinRepeatValue = getSkinRepeatValue( mapRepeatValue );
+                //
+                document.getElementById("sldr_skinRepeat").value = skinRepeatValue;
+                skinRepeatChanged();
+            }
+        }
+        //
+        function skinRepeatChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+                
+                // get which skin:
+                let skinValue = document.getElementById("sldr_skin").value;
+
+                // get skinRepeat:
+                let skinRepeatValue = document.getElementById("sldr_skinRepeat").value;
+
+                let mapRepeatValue = Math.pow( 2, skinRepeatValue );
+                
+                document.getElementById("sldr_skinRepeat_value").innerHTML = mapRepeatValue;
+
+                gASI.spheres[skinValue].material.map.repeat.set( mapRepeatValue, mapRepeatValue );
+                gASI.spheres[skinValue].material.metalnessMap.repeat.set( mapRepeatValue, mapRepeatValue );
+                gASI.spheres[skinValue].material.normalMap.repeat.set( mapRepeatValue, mapRepeatValue );
+                gASI.spheres[skinValue].material.roughnessMap.repeat.set( mapRepeatValue, mapRepeatValue );
             }
         }
 
@@ -2975,6 +3023,7 @@
                         // these require sceneInfo.inited == true (which is really gASI)
                         skinToneInit();
                         skinToneChanged();
+                        skinChanged();
                         resetFaceShape();
                         resetEyeBrows();
                         resetEyeLids();
