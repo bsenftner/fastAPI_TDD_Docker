@@ -2,8 +2,7 @@
 
 ## HTML w/ minimal JavaScript GUI on top of FastAPI CRUD APIs for "blog posts" and "data notes" with tests & CI/CD via Docker
 
-### Note: this is a Python project, a website, that has a few Three.js pages. Three.js is hosted, and the number of Three.js source files makes Github statistics
- treat the project as JavaScript in the repo's metadata when it is really Python. 
+### Note: this is a Python project, a website, that has a few Three.js pages. Three.js is hosted, and the number of Three.js source files makes Github statistics treat the project as JavaScript in the repo's metadata when it is really Python. 
 
 A "data note" is arbitary JSON with a title and description. It's used for tracking site data, and providing data for visualizations.
 
