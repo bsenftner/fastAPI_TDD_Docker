@@ -2883,26 +2883,26 @@
 				hemiLight.position.set( 0, 200, 300 );
 				sceneInfo.scene.add( hemiLight );
                 //
-				const dirLight = new DirectionalLight( 0xcccccc );
+				const dirLight = new DirectionalLight( 0x888888 );
 				dirLight.position.set( 70, 50, 100 );
 				dirLight.castShadow = true;
 				dirLight.shadow.camera.top = 35;
-				dirLight.shadow.camera.bottom = -10;
-				dirLight.shadow.camera.left = -50;
-				dirLight.shadow.camera.right = 70;
+				dirLight.shadow.camera.bottom = -15;
+				dirLight.shadow.camera.left = -60;
+				dirLight.shadow.camera.right = 85;
                 dirLight.shadow.mapSize.set( 1024, 1024 );
 				sceneInfo.scene.add( dirLight );
                 //
 				if (sceneInfo.cam.helper)
                     sceneInfo.scene.add( new CameraHelper( dirLight.shadow.camera ) ); /* */
 	            //
-				const dirLight2 = new DirectionalLight( 0xaaaaaa );
+				const dirLight2 = new DirectionalLight( 0x777777 );
 				dirLight2.position.set( -70, 50, -100 );
 				dirLight2.castShadow = true;
 				dirLight2.shadow.camera.top = 35;
-				dirLight2.shadow.camera.bottom = -20;
-				dirLight2.shadow.camera.left = -70;
-				dirLight2.shadow.camera.right = 50;
+				dirLight2.shadow.camera.bottom = -25;
+				dirLight2.shadow.camera.left = -85;
+				dirLight2.shadow.camera.right = 60;
                 dirLight2.shadow.mapSize.set( 1024, 1024 );
 				sceneInfo.scene.add( dirLight2 );
                 //
