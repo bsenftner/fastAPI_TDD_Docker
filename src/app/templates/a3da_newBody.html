@@ -128,7 +128,7 @@
                             <div class="slidervalue" id="sldr_skin_value">
                                 0
                             </div>
-                            <input type="range" min="0" max="5" value="0" class="slider" id="sldr_skin" oninput="skinChanged()">
+                            <input type="range" min="0" max="7" value="0" class="slider" id="sldr_skin" oninput="skinChanged()">
                         </div>
 
                         <div class="slidercontainer">
@@ -672,7 +672,7 @@
             'rayMouse': undefined,
             'rayIntersects': undefined,
             'rayPlane': undefined,
-            'spheres': [false,false,false,false,false,false], // an array of six
+            'spheres': [false,false,false,false,false,false,false,false], // an array of 8
 		};
 
 
@@ -3047,6 +3047,12 @@
                             }
                             else if (name == 'Sphere005') {
                                 sceneInfo.spheres[5] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere006') {
+                                sceneInfo.spheres[6] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere007') {
+                                sceneInfo.spheres[7] = sceneInfo.meshObjs[i];
                             }
 						}
 			
