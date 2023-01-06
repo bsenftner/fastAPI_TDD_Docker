@@ -78,8 +78,13 @@
     width: 160px;
 }
 
-.ctrlRowLeft .slidervalue, .ctrlRowRight .slidervalue {
+.ctrlRowLeft .slidervalue, .ctrlRowRight .slidervalue,  #view_ctrls .slidervalue {
     width: 70px;
+}
+
+#camLens {
+    width: 300px;
+    margin-right: 5px;
 }
 
 .ctrlRowLeft .button, .ctrlRowRight .button {
@@ -125,6 +130,10 @@
     flex-direction: row;
     justify-content: left;
     align-items: left;
+}
+
+#view_ctrls .slidercontainer {
+    margin-top: 10px;
 }
 
 .slidercaption {

@@ -54,9 +54,11 @@
                 <a href="#" class="button" onclick="viewFull45()">Full Body View 45</a>
                 <div class="slidercontainer">
                     <div class="slidercaption">Camera Lens:</div>
-                    <input type="range" min="20" max="120" value="45" class="slider" id="cam_fov" oninput="camFOVChanged()">
-                    <a href="#" class="button" onclick="setCamLens(32)">32mm</a>
-                    <a href="#" class="button" onclick="setCamLens(70)">70mm</a>
+                    <div class="slidervalue" id="sldr_camLens_value">45</div>
+                    <input type="range" min="20" max="120" value="45" class="slider" id="camLens" oninput="camFOVChanged()">
+                    <a href="#" class="button" onclick="setCamLens(35)">35</a>
+                    <a href="#" class="button" onclick="setCamLens(70)">70</a>
+                    <a href="#" class="button" onclick="setCamLens(110)">110</a>
                 </div>
             </div>
 
@@ -838,7 +840,7 @@
         //
         function skinToneInit() {
             let ci = document.querySelector("#colorInput_skin");
-            ci.value = "#fcc5c1";
+            ci.value = "#94576c";
         }
         //
         function skinToneChanged() {
@@ -871,7 +873,8 @@
         //
         function camFOVChanged() {
             if (typeof gASI.cam.camera !== 'undefined') {
-                let camFovSldr = document.getElementById("cam_fov");
+                let camFovSldr = document.getElementById("camLens");
+                document.getElementById("sldr_camLens_value").innerHTML = camFovSldr.value;
                 gASI.cam.camera.fov = parseFloat(camFovSldr.value);
                 gASI.cam.camera.updateProjectionMatrix();
                 console.log( "camera FOV is " + camFovSldr.value);
@@ -880,7 +883,7 @@
         //
         function setCamLens( mm ) {
             if (typeof gASI.cam.camera !== 'undefined') {
-                document.getElementById("cam_fov").value = mm;
+                document.getElementById("camLens").value = mm;
                 camFOVChanged();
             }
         }
@@ -891,7 +894,7 @@
             if (typeof gASI.cam.controls !== 'undefined') {;
                 gASI.cam.camera.position.set( gASI.cam.pos.x, gASI.cam.pos.y, gASI.cam.pos.z );
                 //
-                document.getElementById("cam_fov").value = "45";
+                document.getElementById("camLens").value = "45";
                 camFOVChanged();
                 //
                 gASI.cam.controls.target.set( gASI.cam.target.x, gASI.cam.target.y, gASI.cam.target.z );
