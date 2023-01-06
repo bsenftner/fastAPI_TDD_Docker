@@ -94,7 +94,7 @@
 #mainOverlay {
     position: relative;
 	top: 10px;
-	width: 100%;
+	max-width: 100%;
 	text-align: left;
     font-family:'Roboto',sans-serif;
     font-size: xx-large;
@@ -107,7 +107,7 @@
 }
 
 #view_ctrls {
-    width: 100%;
+    max-width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: left;
@@ -116,11 +116,11 @@
 }
 
 #view_ctrls .button {
-    width: 300px;
+    max-width: 300px;
 }
 
 .slidercontainer {
-    width: 100%;
+    max-width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: left;
@@ -130,7 +130,7 @@
 .slidercaption {
     display: inline;
     font-weight: bold;
-    width: 100px;
+    max-width: 100px;
     margin-left: 10px;
     margin-right: 10px;
 }

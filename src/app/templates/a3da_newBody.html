@@ -55,6 +55,8 @@
                 <div class="slidercontainer">
                     <div class="slidercaption">Camera Lens:</div>
                     <input type="range" min="20" max="120" value="45" class="slider" id="cam_fov" oninput="camFOVChanged()">
+                    <a href="#" class="button" onclick="setCamLens(32)">32mm</a>
+                    <a href="#" class="button" onclick="setCamLens(70)">70mm</a>
                 </div>
             </div>
 
@@ -68,10 +70,10 @@
 
             <div id="aboutTab" class="tabcontent">
                 <h3>About this page</h3>
-                <p>This is a web view of the <b>Blender Custom 3D Avatar AddOn</b> I wrote as a learning exercise for <b>Blender programming</b>.
-                   <a href="/blog/2">Here is a page where I describe that work.</a> This is a three-way controllable ethnicity character. 
-                   Whatever you configure your <em>ethnicity settings</em>, all other controls blend in those ethnic percentages for all other 
-                   morph targets.
+                <p>This is a web view of a <b>Blender Custom 3D Avatar AddOn</b> I wrote as a learning exercise for <b>Blender programming</b>.
+                   <a href="/blog/2">Here is a page where I describe that work.</a> This is a morphable ethnicity character with percentage-wise 
+                   blending between Asian, African and Caucasian. How ever you configure the <em>ethnicity settings</em>, all other facial controls 
+                   blend in those ethnic percentages in other morph targets.
                 </p>
                 <p>Additional avatar customization controls are available by clicking the tabs labeled <b>"Ethnicity & Body"</b>,
                     <b>"Face"</b>, and so on. Each tab is a set of controls for modifying that aspects of the avatar's appearance.
@@ -128,7 +130,7 @@
                             <div class="slidervalue" id="sldr_skin_value">
                                 0
                             </div>
-                            <input type="range" min="0" max="7" value="0" class="slider" id="sldr_skin" oninput="skinChanged()">
+                            <input type="range" min="0" max="9" value="0" class="slider" id="sldr_skin" oninput="skinChanged()">
                         </div>
 
                         <div class="slidercontainer">
@@ -645,6 +647,7 @@
             'inited': false,
             'debug': false,
             'canvas': undefined,                        // will have DOM WebGL canvas 
+            'renderer': undefined,                      // will have WebGLRenderer assigned
             'scene': undefined,                         // will have THREE Scene assigned
 			'cam': {
                 'camera': undefined,                    // will have THREE PerspectiveCamera assigned
@@ -672,7 +675,7 @@
             'rayMouse': undefined,
             'rayIntersects': undefined,
             'rayPlane': undefined,
-            'spheres': [false,false,false,false,false,false,false,false], // an array of 8
+            'spheres': [false,false,false,false,false,false,false,false,false,false], // an array of 10
 		};
 
 
@@ -864,7 +867,7 @@
         // -------- end skin tone picking -------------------------
 
 
-        // --------------- some routines that move the camera around --------
+        // --------------- some routines camera lens routines --------
         //
         function camFOVChanged() {
             if (typeof gASI.cam.camera !== 'undefined') {
@@ -874,6 +877,14 @@
                 console.log( "camera FOV is " + camFovSldr.value);
             }
         }
+        //
+        function setCamLens( mm ) {
+            if (typeof gASI.cam.camera !== 'undefined') {
+                document.getElementById("cam_fov").value = mm;
+                camFOVChanged();
+            }
+        }
+        // --------------- some routines that move the camera around --------
         //
         // position camera where the scene loads:
         function viewAtLoad() {
@@ -2800,7 +2811,7 @@
 			MeshNormalMaterial,
 			MeshStandardMaterial, MeshPhongMaterial, MeshBasicMaterial,
 			Mesh, AnimationMixer, GridHelper, Object3D,
-			WebGLRenderer, Raycaster,
+			WebGLRenderer, Raycaster, ACESFilmicToneMapping, sRGBEncoding,
 			Clock, MathUtils, Vector2, Vector3
 		} from 'three';
 
@@ -2859,7 +2870,7 @@
 
 		function DoThree( sceneInfo  ) {
 
-			let renderer, stats;
+			let stats;
 	
 			DoThreeInit( sceneInfo );
 			animate();
@@ -2886,10 +2897,10 @@
 				const dirLight = new DirectionalLight( 0x888888 );
 				dirLight.position.set( 70, 50, 100 );
 				dirLight.castShadow = true;
-				dirLight.shadow.camera.top = 35;
+				dirLight.shadow.camera.top = 40;
 				dirLight.shadow.camera.bottom = -15;
-				dirLight.shadow.camera.left = -60;
-				dirLight.shadow.camera.right = 85;
+				dirLight.shadow.camera.left = -40;
+				dirLight.shadow.camera.right = 70;
                 dirLight.shadow.mapSize.set( 1024, 1024 );
 				sceneInfo.scene.add( dirLight );
                 //
@@ -2899,15 +2910,15 @@
 				const dirLight2 = new DirectionalLight( 0x777777 );
 				dirLight2.position.set( -70, 50, -100 );
 				dirLight2.castShadow = true;
-				dirLight2.shadow.camera.top = 35;
+				dirLight2.shadow.camera.top = 40;
 				dirLight2.shadow.camera.bottom = -25;
-				dirLight2.shadow.camera.left = -85;
-				dirLight2.shadow.camera.right = 60;
+				dirLight2.shadow.camera.left = -70;
+				dirLight2.shadow.camera.right = 40;
                 dirLight2.shadow.mapSize.set( 1024, 1024 );
 				sceneInfo.scene.add( dirLight2 );
                 //
 				if (sceneInfo.cam.helper)
-                    sceneInfo.scene.add( new CameraHelper( dirLight2.shadow.camera ) ); 
+                    sceneInfo.scene.add( new CameraHelper( dirLight2.shadow.camera ) ); /* */
 	
 				// ground
 				const mesh = new Mesh( new PlaneGeometry( 2000, 2000 ), new MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
@@ -3054,6 +3065,12 @@
                             else if (name == 'Sphere007') {
                                 sceneInfo.spheres[7] = sceneInfo.meshObjs[i];
                             }
+                            else if (name == 'Sphere008') {
+                                sceneInfo.spheres[8] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere009') {
+                                sceneInfo.spheres[9] = sceneInfo.meshObjs[i];
+                            }
 						}
 			
 						sceneInfo.scene.add(parentObj);
@@ -3101,18 +3118,22 @@
 					}
 				);
 	
-				renderer = new WebGLRenderer( { antialias: true } );
-                // 
-				renderer.shadowMap.enabled = true;
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
+				sceneInfo.renderer = new WebGLRenderer( { antialias: true } );
+				sceneInfo.renderer.setPixelRatio( window.devicePixelRatio );
+				sceneInfo.renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
                 // remember:
-                sceneInfo.canvas = renderer.domElement;
-
-				container.appendChild( renderer.domElement );
+                sceneInfo.canvas = sceneInfo.renderer.domElement;
+                // 
+                sceneInfo.renderer.toneMapping = ACESFilmicToneMapping;
+				sceneInfo.renderer.toneMappingExposure = 1.0;
+				sceneInfo.renderer.outputEncoding = sRGBEncoding;
+                //
+				sceneInfo.renderer.shadowMap.enabled = true;
+                //
+				container.appendChild( sceneInfo.renderer.domElement );
 	
 				
-				sceneInfo.cam.controls = new OrbitControls( sceneInfo.cam.camera, renderer.domElement );
+				sceneInfo.cam.controls = new OrbitControls( sceneInfo.cam.camera, sceneInfo.renderer.domElement );
                 viewAtLoad(); // positions camera and camera view 
 
 				window.addEventListener( 'resize', onWindowResize );
@@ -3129,7 +3150,7 @@
 				gASI.cam.camera.aspect = mainTag.clientWidth / mainTag.clientHeight;
 				gASI.cam.camera.updateProjectionMatrix();
 	
-				renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
+				gASI.renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
 			}
 	
 			function animate() {
@@ -3153,7 +3174,7 @@
                     }
                 }
 	
-				renderer.render( gASI.scene, gASI.cam.camera );
+				gASI.renderer.render( gASI.scene, gASI.cam.camera );
 	
 				stats.update();
 
