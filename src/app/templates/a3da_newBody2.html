@@ -1,0 +1,3228 @@
+<!DOCTYPE html>
+{# 
+	This is a Jinja2 template for an html page
+	These lines are comments and are removed when the template is rendered. 
+#}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Blog of Blake Senftner</title>
+  <link rel="stylesheet" href="/static/index.css">
+  <link rel="stylesheet" href="/static/a3daEdit.css">
+
+  <style>
+    div#mainContent {
+	  box-sizing: border-box;
+	  font-family: Helvetica, Arial, sans-serif;
+	  font-size: 16px;
+	  height: 50%;
+	  margin: 0px;
+	  position: relative;
+	}
+  </style>
+
+  <!-- Remove this when import maps will be widely supported -->
+<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "/static/three/build/three.module.js"
+    }
+  }
+</script>
+
+</head>
+<body>
+	<div class="grid">
+		{% include 'common_header.html' %}
+
+		{# the left sidebar #}
+		{% include 'common_lsidebar.html' %}
+
+		{# the main content area #}
+		<main>
+			<div id="mainContent">
+            </div>
+            
+            <div id="mainOverlay"></div>
+
+            <div id="view_ctrls">
+                <a href="#" class="button" onclick="viewAtLoad()">Load View</a>
+                <a href="#" class="button" onclick="viewFace()">Face View</a>
+                <a href="#" class="button" onclick="viewMid45()">Mid Body View 45</a>
+                <a href="#" class="button" onclick="viewFull45()">Full Body View 45</a>
+                <div class="slidercontainer">
+                    <div class="slidercaption">Camera Lens:</div>
+                    <div class="slidervalue" id="sldr_camLens_value">45</div>
+                    <input type="range" min="20" max="120" value="45" class="slider" id="camLens" oninput="camFOVChanged()">
+                    <a href="#" class="button" onclick="setCamLens(35)">35</a>
+                    <a href="#" class="button" onclick="setCamLens(70)">70</a>
+                    <a href="#" class="button" onclick="setCamLens(110)">110</a>
+                </div>
+            </div>
+
+            <div class="tab">
+                <button class="tablinks" onclick="openTab(event, 'aboutTab')" id="defaultOpenTab">About</button>
+                <button class="tablinks" onclick="openTab(event, 'bodyTab')">Ethnicity & Body</button>
+                <button class="tablinks" onclick="openTab(event, 'faceTab')">Face Shape</button>
+                <button class="tablinks" onclick="openTab(event, 'upperFaceTab')">Upper Face Expression</button>
+                <button class="tablinks" onclick="openTab(event, 'lowerFaceTab')">Lower Face Expression</button>
+            </div>
+
+            <div id="aboutTab" class="tabcontent">
+                <h3>About this page</h3>
+                <p>This is a web view of a <b>Blender Custom 3D Avatar AddOn</b> I wrote as a learning exercise for <b>Blender programming</b>.
+                   <a href="/blog/2">Here is a page where I describe that work.</a> This is a morphable ethnicity character with percentage-wise 
+                   blending between Asian, African and Caucasian. How ever you configure the <em>ethnicity settings</em>, all other facial controls 
+                   blend in those ethnic percentages in other morph targets.
+                </p>
+                <p>Additional avatar customization controls are available by clicking the tabs labeled <b>"Ethnicity & Body"</b>,
+                    <b>"Face"</b>, and so on. Each tab is a set of controls for modifying that aspects of the avatar's appearance.
+                </p>
+                <p>Above the tabs and beneath the 3D View are controls for the camera placement and  camera lens. When the camera 
+                   len slider is on the left the camera generates a telephoto image, and pushing the slider to the right generates a wide angle view. 
+                </p>
+                <p>Left mouse button click-drags inside the 3D View rotate the camera around the camera's view target.
+                </p>
+                <p>Right mouse button click-drags inside the 3D View moves the camera and the camera view target.
+                </p>
+                <p>Rolling the mouse wheel inside the 3D View moves the camera forward and backward into and out of the 3D scene.
+                </p>
+            </div>
+
+            <div id="bodyTab" class="tabcontent">
+                <div class="ctrlRow">
+                    <div class="ctrlRowLeft">
+                        <h4>Ethnicity:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Asian:
+                            </div>
+                            <div class="slidervalue" id="sldr_asian_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_asian" oninput="ethnicityChangedAsian()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">African:</div>
+                            <div class="slidervalue" id="sldr_african_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_african" oninput="ethnicityChangedAfrican()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Caucasian:
+                            </div>
+                            <div class="slidervalue" id="sldr_caucasian_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="100" class="slider" id="sldr_caucasian" oninput="ethnicityChangedCaucasian()">
+                        </div>
+
+                        
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Skin:
+                            </div>
+                            <div class="slidervalue" id="sldr_skin_value">
+                                0
+                            </div>
+                            <input type="range" min="0" max="9" value="0" class="slider" id="sldr_skin" oninput="skinChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Skin Repeat:
+                            </div>
+                            <div class="slidervalue" id="sldr_skinRepeat_value">
+                                0
+                            </div>
+                            <input type="range" min="0" max="12" value="0" class="slider" id="sldr_skinRepeat" oninput="skinRepeatChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Skin Roughness:
+                            </div>
+                            <div class="slidervalue" id="sldr_skinRoughness_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="100" class="slider" id="sldr_skinRoughness" oninput="skinRoughnessChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Skin 0 Tone:
+                            </div>
+                            <div class="slidervalue" id="colorInput_skinTone_value">
+                                #0d0d0d
+                            </div>
+                            <input type="color" class="colorInput" id="colorInput_skin" name="colorInput_skin" value="#0d0d0d" oninput="skinToneChanged()" />
+                        </div>
+
+                    </div>
+
+                    <div class="ctrlRowRight">
+                        <h4>Body Shape:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Thin 2 Heavy:
+                            </div>
+                            <div class="slidervalue" id="sldr_thin2Heavy_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="200" value="0" class="slider" id="sldr_thin2Heavy" oninput="thin2HeavyChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Muscularity:
+                            </div>
+                            <div class="slidervalue" id="sldr_muscularity_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="300" value="0" class="slider" id="sldr_muscularity" oninput="muscularityChanged()">
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="faceTab" class="tabcontent">
+                <div class="ctrlRow">
+                    <div class="ctrlRowLeft">
+                        <h4>Face Shape:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Jaw In/Out:</div>
+                            <div class="slidervalue" id="sldr_jawInOut_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_jawInOut" oninput="jawInOutChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Square Jaw:</div>
+                            <div class="slidervalue" id="sldr_squareJaw_value">100%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_squareJaw" oninput="squareJawChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Chin Cleft:</div>
+                            <div class="slidervalue" id="sldr_chinCleft_value">100%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_chinCleft" oninput="chinCleftChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Chin In/Out:</div>
+                            <div class="slidervalue" id="sldr_chinInOut_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_chinInOut" oninput="chinInOutChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Mouth In/Out:</div>
+                            <div class="slidervalue" id="sldr_mouthInOut_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_mouthInOut" oninput="mouthInOutChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Mouth Width:</div>
+                            <div class="slidervalue" id="sldr_mouthWidth_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_mouthWidth" oninput="mouthWidthChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Gaunt:</div>
+                            <div class="slidervalue" id="sldr_gaunt_value">100%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_gaunt" oninput="gauntChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Double Chin:</div>
+                            <div class="slidervalue" id="sldr_doubleChin_value">100%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_doubleChin" oninput="doubleChinChanged()">
+                        </div>
+
+                    </div>
+                    <div class="ctrlRowRight">
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Cheek Bones:
+                            </div>
+                            <div class="slidervalue" id="sldr_cheekBones_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_cheekBones" oninput="cheekBonesChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Nose Size:
+                            </div>
+                            <div class="slidervalue" id="sldr_noseSize_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_noseSize" oninput="noseSizeChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Nose Top In/Out:
+                            </div>
+                            <div class="slidervalue" id="sldr_noseTopInOut_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_noseTopInOut" oninput="noseTopInOutChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Nose Mid In/Out:
+                            </div>
+                            <div class="slidervalue" id="sldr_noseMidInOut_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_noseMidInOut" oninput="noseMidInOutChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Nose Tip:
+                            </div>
+                            <div class="slidervalue" id="sldr_noseTip_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_noseTip" oninput="noseTipChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Brow In/Out:
+                            </div>
+                            <div class="slidervalue" id="sldr_browInOut_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_browInOut" oninput="browInOutChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Forehead Top:
+                            </div>
+                            <div class="slidervalue" id="sldr_foreheadTop_value">
+                                100%
+                            </div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_foreheadTop" oninput="foreheadTopChanged()">
+                        </div>
+
+                        <div id="resetFaceShapeDiv">
+                            <a href="#" class="button" onclick="resetFaceShape()">Reset Face Shape To Neutral</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="upperFaceTab" class="tabcontent">
+                <div class="ctrlRow">
+                    <div class="ctrlRowLeft">
+                        <h4>Face Expression:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Left Inside Brow:</div>
+                            <div class="slidervalue" id="sldr_leftInsideBrow_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_leftInsideBrow" oninput="leftInsideBrowChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Left Outside Brow:</div>
+                            <div class="slidervalue" id="sldr_leftOutsideBrow_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_leftOutsideBrow" oninput="leftOutsideBrowChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Right Inside Brow:</div>
+                            <div class="slidervalue" id="sldr_rightInsideBrow_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_rightInsideBrow" oninput="rightInsideBrowChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Right Outside Brow:</div>
+                            <div class="slidervalue" id="sldr_rightOutsideBrow_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_rightOutsideBrow" oninput="rightOutsideBrowChanged()">
+                        </div>
+
+                        <div id="resetBrowsDiv">
+                            <a href="#" class="button" onclick="resetEyeBrows()">Reset Eye Brows To Neutral</a>
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Left Top Lid:</div>
+                            <div class="slidervalue" id="sldr_leftTopLid_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_leftTopLid" oninput="leftTopLidChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Left Bottom Lid:</div>
+                            <div class="slidervalue" id="sldr_leftBottomLid_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_leftBottomLid" oninput="leftBottomLidChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Right Top Lid:</div>
+                            <div class="slidervalue" id="sldr_rightTopLid_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_rightTopLid" oninput="rightTopLidChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Right Bottom Lid:</div>
+                            <div class="slidervalue" id="sldr_rightBottomLid_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_rightBottomLid" oninput="rightBottomLidChanged()">
+                        </div>
+
+                        <div id="resetEyeLidsDiv">
+                            <a href="#" class="button" onclick="resetEyeLids()">Reset Eye Lids To Neutral</a>
+                        </div>
+
+                    </div>
+                    <div class="ctrlRowRight">
+                        <h4>Look At Target:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Look Left/Right:</div>
+                            <div class="slidervalue" id="sldr_lookLeftRight_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_lookLeftRight" oninput="lookLeftRightChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Look Up/Down:</div>
+                            <div class="slidervalue" id="sldr_lookUpDown_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_lookUpDown" oninput="lookUpDownChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Look Near/Far:</div>
+                            <div class="slidervalue" id="sldr_lookNearFar_value">100%</div>
+                            <input type="range" min="0" max="100" value="50" class="slider" id="sldr_lookNearFar" oninput="lookNearFarChanged()">
+                        </div>
+
+                        <div id="lookResetDiv">
+                            <a href="#" class="button" onclick="resetLookAt()">Reset Look At Target</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="lowerFaceTab" class="tabcontent">
+                <div class="ctrlRow">
+                    <div class="ctrlRowLeft">
+                        <h4>Lip Sync Phonemes:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">TH:</div>
+                            <div class="slidervalue" id="sldr_THphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_THphom" oninput="THphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">FV:</div>
+                            <div class="slidervalue" id="sldr_FVphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_FVphom" oninput="FVphomChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">BM:</div>
+                            <div class="slidervalue" id="sldr_BMphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_BMphom" oninput="BMphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">U:</div>
+                            <div class="slidervalue" id="sldr_Uphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Uphom" oninput="UphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">O:</div>
+                            <div class="slidervalue" id="sldr_Ophom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Ophom" oninput="OphomChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">I:</div>
+                            <div class="slidervalue" id="sldr_Iphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Iphom" oninput="IphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">E:</div>
+                            <div class="slidervalue" id="sldr_Ephom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Ephom" oninput="EphomChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">A:</div>
+                            <div class="slidervalue" id="sldr_Aphom_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_Aphom" oninput="AphomChanged()">
+                        </div>
+
+                        <div id="resetLipSyncDiv">
+                            <a href="#" class="button" onclick="resetLipSync()">Reset Lip Sync Phonemes</a>
+                        </div>
+                        <h4>Jaw:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Jaw Open/Close:
+                            </div>
+                            <div class="slidervalue" id="sldr_jawOpenClose_value">
+                                50%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_jawOpenClose" oninput="jawOpenCloseChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Jaw Left/Right:
+                            </div>
+                            <div class="slidervalue" id="sldr_jawLR_value">
+                                50%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_jawLR" oninput="jawLRChanged()">
+                        </div>
+
+                        <div id="resetMouthDiv">
+                            <a href="#" class="button" onclick="resetJaw()">Reset Mouth</a>
+                        </div>
+
+                    </div>
+                    <div class="ctrlRowRight">
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Kiss:
+                            </div>
+                            <div class="slidervalue" id="sldr_kiss_value">
+                                0%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_kiss" oninput="kissChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Pout:
+                            </div>
+                            <div class="slidervalue" id="sldr_pout_value">
+                                0%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_pout" oninput="poutChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Surprise:
+                            </div>
+                            <div class="slidervalue" id="sldr_surprise_value">
+                                0%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_surprise" oninput="surpriseChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Joy:
+                            </div>
+                            <div class="slidervalue" id="sldr_joy_value">
+                                0%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_joy" oninput="joyChanged()">
+                        </div>
+                            
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Anger:
+                            </div>
+                            <div class="slidervalue" id="sldr_anger_value">
+                                0%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_anger" oninput="angerChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Fear:
+                            </div>
+                            <div class="slidervalue" id="sldr_fear_value">
+                                0%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_fear" oninput="fearChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">
+                                Disgust:
+                            </div>
+                            <div class="slidervalue" id="sldr_disgust_value">
+                                0%
+                            </div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_disgust" oninput="disgustChanged()">
+                        </div>
+
+                        <div id="resetMouthExpressionDiv">
+                            <a href="#" class="button" onclick="resetMouthExpression()">Reset Mouth Expression To Neutral</a>
+                        </div>
+
+                        <h4>Tongue:</h4>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Tongue Up:</div>
+                            <div class="slidervalue" id="sldr_tongueUp_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_tongueUp" oninput="tongueUpChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Tongue Out:</div>
+                            <div class="slidervalue" id="sldr_tongueOut_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_tongueOut" oninput="tongueOutChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Tongue Swell:</div>
+                            <div class="slidervalue" id="sldr_tongueSwell_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_tongueSwell" oninput="tongueSwellChanged()">
+                        </div>
+
+                        <div class="slidercontainer">
+                            <div class="slidercaption">Tongue Left Right:</div>
+                            <div class="slidervalue" id="sldr_tongueLR_value">0%</div>
+                            <input type="range" min="0" max="100" value="0" class="slider" id="sldr_tongueLR" oninput="tongueLRChanged()">
+                        </div>
+
+                        <div id="resetTongueDiv">
+                            <a href="#" class="button" onclick="resetTongue()">Reset Tongue</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+		</main>
+
+		{# the right sidebar #}
+		<aside>
+			<div id="aside">
+				<a href="#" class="button" onclick="Login()">Login</a>
+				<br/>
+				<a href="#" class="button" onclick="Register()">Register</a>
+			</div>
+		</aside>
+  
+	<footer>
+		{{ frags[0].footer | safe }} 
+	</footer>
+	</div>
+
+    <script>
+		function UserContact() { window.location.href = "/Contact"; }
+
+		function Contact() { window.location.href = "/precontact"; }
+
+		function Login() { window.location.href = "/login"; }
+
+		function Register() { window.location.href = "/register"; }
+
+		function UserSettings() { window.location.href = "/Settings"; }
+	</script>
+	
+    <!-- pull in an html template holding javascript for tabs -->
+    {% include 'common_tabs.html' %}
+
+    <script>
+
+        // 'avatar scene info'
+		const gASI = { 
+            'inited': false,
+            'debug': false,
+            'canvas': undefined,                        // will have DOM WebGL canvas 
+            'renderer': undefined,                      // will have WebGLRenderer assigned
+            'scene': undefined,                         // will have THREE Scene assigned
+			'cam': {
+                'camera': undefined,                    // will have THREE PerspectiveCamera assigned
+                'controls': undefined,                  // will have THREE OrbitControls assigned
+				'pos': { 'x': 0, 'y': 40, 'z': 50 },
+				'target': { 'x': 0, 'y': 20, 'z': 0 },
+				'helper': false,
+			},
+			'obj': {
+				'url': 'static/a3da/avatar2023.glb',
+				'scale': 20,
+			},
+            // race array order is [ asian, african, caucasian ]
+            'race': [ 0.0, 0.0, 1.0 ],
+            // will hold array of mesh objects:
+            'meshObjs': [],
+            'bodyMesh': undefined,
+            'eyeRMesh': undefined,
+            'eyeLMesh': undefined,
+            'tongue': undefined,
+            'lookAtTarget': undefined,
+            'msg': 'x = 0, y = 0',
+            'normDevCoord': { x: 0, y: 0 },
+            'raycaster': undefined,
+            'rayMouse': undefined,
+            'rayIntersects': undefined,
+            'rayPlane': undefined,
+            'spheres': [false,false,false,false,false,false,false,false,false,false], // an array of 10
+		};
+
+
+        //----------------------------------------------------------
+        // mouse picking via sending rays into scene
+        //
+        function getCanvasRelativePosition(event, canvas) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                    x: (event.clientX - rect.left) * canvas.width  / rect.width,
+                    y: (event.clientY - rect.top ) * canvas.height / rect.height,
+            };
+        }
+        //
+        function setPickPosition(event) {
+            let canvas = gASI.canvas;
+            if (typeof canvas !== 'undefined') {
+                const pos = getCanvasRelativePosition(event, canvas);
+
+                gASI.msg = 'page.x,y: ' + event.clientX + ', ' + event.clientY + '; canvas.x,y: ' + pos.x + ', ' + pos.y;
+
+                gASI.normDevCoord.x = (pos.x / canvas.width ) *  2 - 1;
+                gASI.normDevCoord.y = (pos.y / canvas.height) * -2 + 1;  // note we flip Y
+
+                gASI.msg += '<br/>';
+                gASI.msg += 'normDevCoord.x,y: ' + gASI.normDevCoord.x.toFixed(2) + ', ' + gASI.normDevCoord.y.toFixed(2);
+
+                // the last ray intersection item to be allocated:
+                if (typeof gASI.rayIntersects !== 'undefined') {
+                    gASI.rayMouse.x = pos.x;
+                    gASI.rayMouse.y = pos.y;
+                    //
+                    gASI.raycaster.setFromCamera(gASI.rayMouse, gASI.cam.camera);
+                    let ret = gASI.raycaster.ray.intersectPlane(gASI.rayPlane, gASI.rayIntersects);
+                    if (typeof ret !== 'undefined') {
+                        // gASI.msg += '<br/>';
+                        // gASI.msg += 'gASI.rayIntersects.x,y,z: ' + gASI.rayIntersects.x.toFixed(2) + ', ' + gASI.rayIntersects.y.toFixed(2) + ', ' + gASI.rayIntersects.z.toFixed(2);
+                        //
+                        gASI.msg += '<br/>';
+                        gASI.msg += 'gASI.lookAtTarget.x,y,z: ' + gASI.lookAtTarget.position.x.toFixed(2) + ', ' + gASI.lookAtTarget.position.y.toFixed(2) + ', ' + gASI.lookAtTarget.position.z.toFixed(2);
+                        //
+                        // gASI.lookAtTarget.position.set( gASI.rayIntersects.x, gASI.rayIntersects.y, gASI.rayIntersects.z );
+                    }
+                    else {
+                        gASI.msg += '<br/>No Intersection';
+                    }
+                }
+            }
+            else {
+                clearPickPosition();
+            }
+        }
+        //
+        function clearPickPosition() {
+            // unlike the mouse which always has a position
+            // if the user stops touching the screen we want
+            // to stop picking. For now we just pick a value
+            // unlikely to pick something
+            gASI.normDevCoord.x = -100000;
+            gASI.normDevCoord.y = -100000;
+        }
+        //
+        window.addEventListener('mousemove', setPickPosition);
+        window.addEventListener('mouseout', clearPickPosition);
+        window.addEventListener('mouseleave', clearPickPosition);
+        //
+        // --- end mouse picking logic ----------------------------
+        
+
+        // expects positive value input:
+        function getSkinRepeatValue( mapRepeatValue ) {
+            let skinRepeatValue = 1;
+            while (Math.pow( 2, skinRepeatValue ) < mapRepeatValue) {
+                skinRepeatValue++;
+            };
+            return skinRepeatValue;
+        }
+        //
+        function skinChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+                
+                // a small integer, index into a small material array
+                let skinValue = document.getElementById("sldr_skin").value;
+
+                document.getElementById("sldr_skin_value").innerHTML = skinValue;
+
+                av_body.material = gASI.spheres[skinValue].material;
+
+
+                // this material has some mapRepeatValue in use, let's get it:
+                let mapRepeatValue = gASI.spheres[skinValue].material.map.repeat.x;
+                //
+                // convert to the value for the skin repeat slider:
+                let skinRepeatValue = getSkinRepeatValue( mapRepeatValue );
+                //
+                document.getElementById("sldr_skinRepeat").value = skinRepeatValue;
+                skinRepeatChanged();
+
+                
+                // this material has some skinRoughnessValue in use, let's get it:
+                let skinRoughnessValue = gASI.spheres[skinValue].material.roughness;
+                //
+                // convert to the value for the skin roughness slider:
+                skinRoughnessValue *= 100.0;
+                //
+                document.getElementById("sldr_skinRoughness").value = skinRoughnessValue;
+                skinRoughnessChanged();
+            }
+        }
+        //
+        function skinRepeatChanged() {
+            if (gASI.inited) {
+                
+                // get which skin:
+                let skinValue = document.getElementById("sldr_skin").value;
+
+                // get skinRepeat:
+                let skinRepeatValue = document.getElementById("sldr_skinRepeat").value;
+
+                let mapRepeatValue = Math.pow( 2, skinRepeatValue );
+                
+                document.getElementById("sldr_skinRepeat_value").innerHTML = mapRepeatValue;
+
+                gASI.spheres[skinValue].material.map.repeat.set( mapRepeatValue, mapRepeatValue );
+                gASI.spheres[skinValue].material.metalnessMap.repeat.set( mapRepeatValue, mapRepeatValue );
+                gASI.spheres[skinValue].material.normalMap.repeat.set( mapRepeatValue, mapRepeatValue );
+                gASI.spheres[skinValue].material.roughnessMap.repeat.set( mapRepeatValue, mapRepeatValue );
+            }
+        }
+        //
+        function skinRoughnessChanged() {
+            if (gASI.inited) {
+                
+                // get which skin:
+                let skinValue = document.getElementById("sldr_skin").value;
+
+                // get skinRoughness:
+                let skinRoughnessValue = document.getElementById("sldr_skinRoughness").value;
+                
+                document.getElementById("sldr_skinRoughness_value").innerHTML = skinRoughnessValue + '%';
+
+                let roughnessValue = skinRoughnessValue / 100.0;
+
+                gASI.spheres[skinValue].material.roughness = roughnessValue;
+            }
+        }
+
+        //----------------------------------------------------------
+        // skin tone picking via use of html color picker
+        //
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16)
+            } : null;  
+        }
+        //
+        function skinToneInit() {
+            let ci = document.querySelector("#colorInput_skin");
+            ci.value = "#94576c";
+        }
+        //
+        function skinToneChanged() {
+            if (gASI.inited) {
+                let ci = document.querySelector("#colorInput_skin");
+                let hexColor = ci.value;
+                let rgbColor = hexToRgb(hexColor);
+
+                let cl = document.querySelector("#colorInput_skinTone_value");
+                cl.innerHTML = hexColor;
+
+                let av_body = gASI.bodyMesh; 
+                av_body.material.color.r = rgbColor.r / 255.0
+                av_body.material.color.g = rgbColor.g / 255.0
+                av_body.material.color.b = rgbColor.b / 255.0
+
+                let skinSphere = gASI.spheres[0]; 
+                if (skinSphere) {
+                    skinSphere.material.color.r = rgbColor.r / 255.0
+                    skinSphere.material.color.g = rgbColor.g / 255.0
+                    skinSphere.material.color.b = rgbColor.b / 255.0
+                }
+            }
+        }
+        //
+        // -------- end skin tone picking -------------------------
+
+
+        // --------------- some routines camera lens routines --------
+        //
+        function camFOVChanged() {
+            if (typeof gASI.cam.camera !== 'undefined') {
+                let camFovSldr = document.getElementById("camLens");
+                document.getElementById("sldr_camLens_value").innerHTML = camFovSldr.value;
+                gASI.cam.camera.fov = parseFloat(camFovSldr.value);
+                gASI.cam.camera.updateProjectionMatrix();
+                console.log( "camera FOV is " + camFovSldr.value);
+            }
+        }
+        //
+        function setCamLens( mm ) {
+            if (typeof gASI.cam.camera !== 'undefined') {
+                document.getElementById("camLens").value = mm;
+                camFOVChanged();
+            }
+        }
+        // --------------- some routines that move the camera around --------
+        //
+        // position camera where the scene loads:
+        function viewAtLoad() {
+            if (typeof gASI.cam.controls !== 'undefined') {;
+                gASI.cam.camera.position.set( gASI.cam.pos.x, gASI.cam.pos.y, gASI.cam.pos.z );
+                //
+                document.getElementById("camLens").value = "45";
+                camFOVChanged();
+                //
+                gASI.cam.controls.target.set( gASI.cam.target.x, gASI.cam.target.y, gASI.cam.target.z );
+			    gASI.cam.controls.update();
+            }
+        }
+        //
+        // position camera to view the face:
+        function viewFace() {
+            if (typeof gASI.cam.controls !== 'undefined') {
+                gASI.cam.camera.position.set( 0, 33, 8 );
+                gASI.cam.controls.target.set( 0, 33.34, -1.3478 );
+			    gASI.cam.controls.update();
+            }
+        }
+        //
+        // position camera:
+        function viewFull45() {
+            if (typeof gASI.cam.controls !== 'undefined') {
+                gASI.cam.camera.position.set( 32, 32.275, 41.568 );
+                gASI.cam.controls.target.set( 0.15, 18.554, 0.3714 );
+			    gASI.cam.controls.update();
+            }
+        }
+        //
+        // position camera:
+        function viewMid45() {
+            if (typeof gASI.cam.controls !== 'undefined') {
+                gASI.cam.camera.position.set( 19.4734, 32.3731, 20.0688 );
+                gASI.cam.controls.target.set( -0.45, 25.875, -2.2695 );
+			    gASI.cam.controls.update();
+            }
+        }
+        //
+        // ------ end camera placement routines -------------------------
+
+
+        // the first in a series of functions related to Ethnicity Modification:
+        //
+        function ethnicityChangedAsian() {
+            let mainSldr = document.getElementById("sldr_asian");
+            let otherSldr1 = document.getElementById("sldr_african");
+            let otherSldr2 = document.getElementById("sldr_caucasian");
+            ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
+            setEthnicityShape( mainSldr, otherSldr1 );
+        }
+        //
+        function ethnicityChangedAfrican() {
+            let otherSldr1 = document.getElementById("sldr_asian");
+            let mainSldr = document.getElementById("sldr_african");
+            let otherSldr2 = document.getElementById("sldr_caucasian");
+            ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
+            setEthnicityShape( otherSldr1, mainSldr );
+        }  
+        //
+        function ethnicityChangedCaucasian() {
+            let otherSldr1 = document.getElementById("sldr_asian");
+            let otherSldr2 = document.getElementById("sldr_african");
+            let mainSldr = document.getElementById("sldr_caucasian");
+            ethnicityChanged( mainSldr, otherSldr1, otherSldr2 );
+            setEthnicityShape( otherSldr1, otherSldr2 );
+        }
+        //
+        // common logic for the normalization & updating of the ethnicity controls
+        // when any one ethnicity range slider has been modified:
+        function ethnicityChanged( mainSldr, otherSldr1, otherSldr2 ) {
+            let mainValue = parseFloat(mainSldr.value);
+            let other1Value = parseFloat(otherSldr1.value);
+            let other2Value = parseFloat(otherSldr2.value);
+            let s = mainValue + other1Value + other2Value;
+            if (s != 0) {
+                let d = (s - 100.0) * 0.5;
+                other1Value -= d;
+                other2Value -= d;
+                s = mainValue + other1Value + other2Value;
+                mainValue = mainValue / s * 100;
+                other1Value = other1Value / s * 100;
+                other2Value = other2Value / s * 100;
+            }
+            else {
+                mainValue = 100;
+                other1Value = 0;
+                other2Value = 0;
+            }
+            mainSldr.value = mainValue;
+            otherSldr1.value = other1Value;
+            otherSldr2.value = other2Value;
+
+            let sav = document.getElementById("sldr_asian").value;
+            let sbv = document.getElementById("sldr_african").value;
+            let scv = document.getElementById("sldr_caucasian").value;
+
+            document.getElementById("sldr_asian_value").innerHTML = sav + "%";
+            document.getElementById("sldr_african_value").innerHTML = sbv + "%";
+            document.getElementById("sldr_caucasian_value").innerHTML = scv + "%";
+
+		    gASI.race[0] = parseFloat(sav) / 100.0;
+		    gASI.race[1] = parseFloat(sbv) / 100.0;
+		    gASI.race[2] = parseFloat(scv) / 100.0;
+        }
+        //
+        // last routine related to Ethnicity Modifications;
+        // this sets the avatar face's ethnicity characteristics / shape:
+        // (Note the default ethnicity is Caucasian, so the other ethnicities are expressed
+        // as the percentage-wise morphs to Asian and African, morphs away from Caucasian.)
+        function setEthnicityShape( asianCtrl, africanCtrl ) {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+                let asianKey = av_body.morphTargetDictionary.FemaleAsian;
+                let africanKey = av_body.morphTargetDictionary.FemaleBlack;
+                av_body.morphTargetInfluences[asianKey] = parseFloat(asianCtrl.value) / 100.0;
+                av_body.morphTargetInfluences[africanKey] = parseFloat(africanCtrl.value) / 100.0;
+            }
+        }
+
+
+        // ----------- a rather large series of morph target applying routines -----------
+        //
+        function thin2HeavyChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+                let faHeavyKey = av_body.morphTargetDictionary.fa_Heavy;
+                let fbHeavyKey = av_body.morphTargetDictionary.fb_Heavy;
+                let fwHeavyKey = av_body.morphTargetDictionary.fw_Heavy;
+                let faSkinnyKey = av_body.morphTargetDictionary.fa_Skinny;
+                let fbSkinnyKey = av_body.morphTargetDictionary.fb_Skinny;
+                let fwSkinnyKey = av_body.morphTargetDictionary.fw_Skinny;
+
+                let st2hv = document.getElementById("sldr_thin2Heavy").value;
+
+                let st2hvf = parseFloat(st2hv);
+
+                // forcing feedback to be -100% to 100%:
+                let feedback = st2hvf - 100.0;
+                document.getElementById("sldr_thin2Heavy_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 4.0:
+                let wt = st2hvf / 50.0;
+
+                // check if we're making em fat:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want to be fat
+                    // that percentage is realized within their ethnicity:
+                    av_body.morphTargetInfluences[faHeavyKey] = wt * gASI.race[0];
+                    av_body.morphTargetInfluences[fbHeavyKey] = wt * gASI.race[1];
+                    av_body.morphTargetInfluences[fwHeavyKey] = wt * gASI.race[2];
+                    
+                    av_body.morphTargetInfluences[faSkinnyKey] = 0.0;
+                    av_body.morphTargetInfluences[fbSkinnyKey] = 0.0;
+                    av_body.morphTargetInfluences[fwSkinnyKey] = 0.0;
+                }
+                else { // nope, we're making em skinny:
+                    wt = 1.0 - wt; // percentage they want to be thin
+                    // that percentage is realized within their ethnicity:
+                    av_body.morphTargetInfluences[faHeavyKey] = 0.0;
+                    av_body.morphTargetInfluences[fbHeavyKey] = 0.0;
+                    av_body.morphTargetInfluences[fwHeavyKey] = 0.0;
+                    
+                    av_body.morphTargetInfluences[faSkinnyKey] = wt * gASI.race[0];
+                    av_body.morphTargetInfluences[fbSkinnyKey] = wt * gASI.race[1];
+                    av_body.morphTargetInfluences[fwSkinnyKey] = wt * gASI.race[2];
+                }
+            }
+        }
+
+        function muscularityChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+                let faMuscularKey = av_body.morphTargetDictionary.fa_Muscular;
+                let fbMuscularKey = av_body.morphTargetDictionary.fb_Muscular;
+                let fwMuscularKey = av_body.morphTargetDictionary.fw_Muscular;
+                let maMuscularKey = av_body.morphTargetDictionary.ma_Muscular;
+                let mbMuscularKey = av_body.morphTargetDictionary.mb_Muscular;
+                let mwMuscularKey = av_body.morphTargetDictionary.mw_Muscular;
+
+                let smv = document.getElementById("sldr_muscularity").value;
+
+                document.getElementById("sldr_muscularity_value").innerHTML = smv + "%";
+
+                // forcing wt to be within 0.0 to 3.0:
+                let wt = parseFloat(smv) / 100.0;
+                
+                av_body.morphTargetInfluences[faMuscularKey] = wt * 0.3333;
+                av_body.morphTargetInfluences[fbMuscularKey] = wt * 0.3333;
+                av_body.morphTargetInfluences[fwMuscularKey] = wt * 0.3333;
+
+                av_body.morphTargetInfluences[maMuscularKey] = wt * 0.16665;
+                av_body.morphTargetInfluences[mbMuscularKey] = wt * 0.16665;
+                av_body.morphTargetInfluences[mwMuscularKey] = wt * 0.16665;
+            }
+        }
+
+        function jawInOutChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+                let av_lowerTeeth = gASI.scene.getObjectByName('LowerTeeth_Mesh');
+                let av_lowerGums = gASI.scene.getObjectByName('LowerTeeth_Mesh_1');
+
+                let jawOutKey = [ 
+                    av_body.morphTargetDictionary.fa_JawOut,
+                    av_body.morphTargetDictionary.fb_JawOut,
+                    av_body.morphTargetDictionary.fw_JawOut 
+                ];
+
+                let jawInKey = [ 
+                    av_body.morphTargetDictionary.fa_JawIn,
+                    av_body.morphTargetDictionary.fb_JawIn,
+                    av_body.morphTargetDictionary.fw_JawIn 
+                ];
+
+                let sjv = document.getElementById("sldr_jawInOut").value;
+
+                let feedback = sjv * 2 - 100;
+                document.getElementById("sldr_jawInOut_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sjv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[jawOutKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[jawInKey[i]] = 0.0;
+                    }
+
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawOut_LowerTeeth ] = wt;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawOut_LowerTeeth ] = wt;
+
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawIn_LowerTeeth ] = 0.0;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawIn_LowerTeeth ] = 0.0;
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[jawInKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[jawOutKey[i]] = 0.0;
+                    }
+
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawIn_LowerTeeth ] = wt;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawIn_LowerTeeth ] = wt;
+
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawOut_LowerTeeth ] = 0.0;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawOut_LowerTeeth ] = 0.0;
+                }
+            }
+        }
+
+        function squareJawChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let squareJawKey = [ 
+                    av_body.morphTargetDictionary.fa_SquareJaw,
+                    av_body.morphTargetDictionary.fb_SquareJaw,
+                    av_body.morphTargetDictionary.fw_SquareJaw 
+                ];
+
+                let sjv = document.getElementById("sldr_squareJaw").value;
+
+                document.getElementById("sldr_squareJaw_value").innerHTML = sjv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sjv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[squareJawKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function chinCleftChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let chinCleftKey = [ 
+                    av_body.morphTargetDictionary.fa_ChinCleft,
+                    av_body.morphTargetDictionary.fb_ChinCleft,
+                    av_body.morphTargetDictionary.fw_ChinCleft 
+                ];
+
+                let scv = document.getElementById("sldr_chinCleft").value;
+
+                document.getElementById("sldr_chinCleft_value").innerHTML = scv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(scv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[chinCleftKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+ 
+        function chinInOutChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let chinOutKey = [ 
+                    av_body.morphTargetDictionary.fa_ChinOut,
+                    av_body.morphTargetDictionary.fb_ChinOut,
+                    av_body.morphTargetDictionary.fw_ChinOut 
+                ];
+
+                let chinInKey = [ 
+                    av_body.morphTargetDictionary.fa_ChinIn,
+                    av_body.morphTargetDictionary.fb_ChinIn,
+                    av_body.morphTargetDictionary.fw_ChinIn 
+                ];
+
+                let scv = document.getElementById("sldr_chinInOut").value;
+
+                let feedback = scv * 2 - 100;
+                document.getElementById("sldr_chinInOut_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(scv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[chinOutKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[chinInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[chinInKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[chinOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function mouthInOutChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let mouthOutKey = [ 
+                    av_body.morphTargetDictionary.fa_MouthOut,
+                    av_body.morphTargetDictionary.fb_MouthOut,
+                    av_body.morphTargetDictionary.fw_MouthOut 
+                ];
+
+                let mouthInKey = [ 
+                    av_body.morphTargetDictionary.fa_MouthIn,
+                    av_body.morphTargetDictionary.fb_MouthIn,
+                    av_body.morphTargetDictionary.fw_MouthIn 
+                ];
+
+                let smv = document.getElementById("sldr_mouthInOut").value;
+
+                let feedback = smv * 2 - 100;
+                document.getElementById("sldr_mouthInOut_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(smv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[mouthOutKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[mouthInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[mouthInKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[mouthOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function mouthWidthChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let outKey = [ 
+                    av_body.morphTargetDictionary.fa_WidePurseOutLeft, av_body.morphTargetDictionary.fa_WidePurseOutRight,
+                    av_body.morphTargetDictionary.fb_WidePurseOutLeft, av_body.morphTargetDictionary.fb_WidePurseOutRight,
+                    av_body.morphTargetDictionary.fw_WidePurseOutLeft, av_body.morphTargetDictionary.fw_WidePurseOutRight,
+                ];
+
+                let inKey = [ 
+                    av_body.morphTargetDictionary.fa_WidePurseInLeft, av_body.morphTargetDictionary.fa_WidePurseInRight,
+                    av_body.morphTargetDictionary.fb_WidePurseInLeft, av_body.morphTargetDictionary.fb_WidePurseInRight,
+                    av_body.morphTargetDictionary.fw_WidePurseInLeft, av_body.morphTargetDictionary.fw_WidePurseInRight,
+                ];
+
+                let smv = document.getElementById("sldr_mouthWidth").value;
+
+                let feedback = smv * 2 - 100;
+                document.getElementById("sldr_mouthWidth_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(smv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage user wants
+
+                    for (let i = 0; i < 6; i++) {
+                        av_body.morphTargetInfluences[outKey[i]] = wt * gASI.race[i % 3];
+                        av_body.morphTargetInfluences[inKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage user wants
+
+                    for (let i = 0; i < 6; i++) {
+                        av_body.morphTargetInfluences[inKey[i]] = wt * gASI.race[i % 3];
+                        av_body.morphTargetInfluences[outKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function gauntChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let gauntKey = [ 
+                    av_body.morphTargetDictionary.fa_Gaunt,
+                    av_body.morphTargetDictionary.fb_Gaunt,
+                    av_body.morphTargetDictionary.fw_Gaunt 
+                ];
+
+                let sgv = document.getElementById("sldr_gaunt").value;
+
+                document.getElementById("sldr_gaunt_value").innerHTML = sgv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sgv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[gauntKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function doubleChinChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let doubleChinKey = [ 
+                    av_body.morphTargetDictionary.fa_DoubleChin,
+                    av_body.morphTargetDictionary.fb_DoubleChin,
+                    av_body.morphTargetDictionary.fw_DoubleChin 
+                ];
+
+                let sdv = document.getElementById("sldr_doubleChin").value;
+
+                document.getElementById("sldr_doubleChin_value").innerHTML = sdv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sdv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[doubleChinKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function cheekBonesChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let cheekBoneKey = [ 
+                    av_body.morphTargetDictionary.fa_HighCheekBones,
+                    av_body.morphTargetDictionary.fb_HighCheekBones,
+                    av_body.morphTargetDictionary.fw_HighCheekBones 
+                ];
+
+                let scv = document.getElementById("sldr_cheekBones").value;
+
+                document.getElementById("sldr_cheekBones_value").innerHTML = scv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(scv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[cheekBoneKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function noseSizeChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let noseBigKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseLarge,
+                    av_body.morphTargetDictionary.fb_NoseLarge,
+                    av_body.morphTargetDictionary.fw_NoseLarge 
+                ];
+
+                let noseSmallKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseSmall,
+                    av_body.morphTargetDictionary.fb_NoseSmall,
+                    av_body.morphTargetDictionary.fw_NoseSmall
+                ];
+
+                let ssv = document.getElementById("sldr_noseSize").value;
+
+                let feedback = ssv * 2 - 100;
+                document.getElementById("sldr_noseSize_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(ssv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseBigKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[noseSmallKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseSmallKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[noseBigKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function noseTopInOutChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let noseHighOutKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseHighOut,
+                    av_body.morphTargetDictionary.fb_NoseHighOut,
+                    av_body.morphTargetDictionary.fw_NoseHighOut 
+                ];
+
+                let noseHighInKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseHighIn,
+                    av_body.morphTargetDictionary.fb_NoseHighIn,
+                    av_body.morphTargetDictionary.fw_NoseHighIn
+                ];
+
+                let snv = document.getElementById("sldr_noseTopInOut").value;
+
+                let feedback = snv * 2 - 100;
+                document.getElementById("sldr_noseTopInOut_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(snv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseHighOutKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[noseHighInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseHighInKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[noseHighOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function noseMidInOutChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let noseMidOutKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseMidOut,
+                    av_body.morphTargetDictionary.fb_NoseMidOut,
+                    av_body.morphTargetDictionary.fw_NoseMidOut 
+                ];
+
+                let noseMidInKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseMidIn,
+                    av_body.morphTargetDictionary.fb_NoseMidIn,
+                    av_body.morphTargetDictionary.fw_NoseMidIn
+                ];
+
+                let snv = document.getElementById("sldr_noseMidInOut").value;
+
+                let feedback = snv * 2 - 100;
+                document.getElementById("sldr_noseMidInOut_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(snv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseMidOutKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[noseMidInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[noseMidInKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[noseMidOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function noseTipChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let noseTipKey = [ 
+                    av_body.morphTargetDictionary.fa_NoseTipOut,
+                    av_body.morphTargetDictionary.fb_NoseTipOut,
+                    av_body.morphTargetDictionary.fw_NoseTipOut 
+                ];
+
+                let stv = document.getElementById("sldr_noseTip").value;
+
+                document.getElementById("sldr_noseTip_value").innerHTML = stv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(stv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[noseTipKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function browInOutChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let browOutKey = [ 
+                    av_body.morphTargetDictionary.fa_BrowOut,
+                    av_body.morphTargetDictionary.fb_BrowOut,
+                    av_body.morphTargetDictionary.fw_BrowOut 
+                ];
+
+                let browInKey = [ 
+                    av_body.morphTargetDictionary.fa_BrowFaceIn,
+                    av_body.morphTargetDictionary.fb_BrowFaceIn,
+                    av_body.morphTargetDictionary.fw_BrowFaceIn
+                ];
+
+                let sbv = document.getElementById("sldr_browInOut").value;
+
+                let feedback = sbv * 2 - 100;
+                document.getElementById("sldr_browInOut_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sbv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[browOutKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[browInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[browInKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[browOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function foreheadTopChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let foreheadTopOutKey = [ 
+                    av_body.morphTargetDictionary.fa_ForeHeadTopOut,
+                    av_body.morphTargetDictionary.fb_ForeHeadTopOut,
+                    av_body.morphTargetDictionary.fw_ForeHeadTopOut 
+                ];
+
+                let foreheadTopInKey = [ 
+                    av_body.morphTargetDictionary.fa_ForeHeadTopIn,
+                    av_body.morphTargetDictionary.fb_ForeHeadTopIn,
+                    av_body.morphTargetDictionary.fw_ForeHeadTopIn
+                ];
+
+                let sfv = document.getElementById("sldr_foreheadTop").value;
+
+                let feedback = sfv * 2 - 100;
+                document.getElementById("sldr_foreheadTop_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sfv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[foreheadTopOutKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[foreheadTopInKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[foreheadTopInKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[foreheadTopOutKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function resetFaceShape() {
+            if (gASI.inited) {
+                document.getElementById("sldr_jawInOut").value = "50";
+                document.getElementById("sldr_squareJaw").value = "0";
+                document.getElementById("sldr_chinCleft").value = "0";
+                document.getElementById("sldr_chinInOut").value = "50";
+                document.getElementById("sldr_mouthInOut").value = "50";
+                document.getElementById("sldr_mouthWidth").value = "50";
+                document.getElementById("sldr_gaunt").value = "0";
+                document.getElementById("sldr_doubleChin").value = "0";
+                document.getElementById("sldr_cheekBones").value = "0";
+                document.getElementById("sldr_noseSize").value = "50";
+                document.getElementById("sldr_noseTopInOut").value = "50";
+                document.getElementById("sldr_noseMidInOut").value = "50";
+                document.getElementById("sldr_noseTip").value = "0";
+                document.getElementById("sldr_browInOut").value = "50";
+                document.getElementById("sldr_foreheadTop").value = "50";
+                jawInOutChanged();
+                squareJawChanged();
+                chinCleftChanged();
+                chinInOutChanged();
+                mouthInOutChanged();
+                mouthWidthChanged();
+                gauntChanged();
+                doubleChinChanged();
+                cheekBonesChanged();
+                noseSizeChanged();
+                noseTopInOutChanged();
+                noseMidInOutChanged();
+                noseTipChanged();
+                browInOutChanged();
+                foreheadTopChanged();
+            }
+        }
+
+        function leftInsideBrowChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let leftInsideBrowUpKey = [ 
+                    av_body.morphTargetDictionary.fa_InBrowL_Up,
+                    av_body.morphTargetDictionary.fb_InBrowL_Up,
+                    av_body.morphTargetDictionary.fw_InBrowL_Up 
+                ];
+
+                let leftInsideBrowDownKey = [ 
+                    av_body.morphTargetDictionary.fa_InBrowL_Down,
+                    av_body.morphTargetDictionary.fb_InBrowL_Down,
+                    av_body.morphTargetDictionary.fw_InBrowL_Down
+                ];
+
+                let sv = document.getElementById("sldr_leftInsideBrow").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_leftInsideBrow_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[leftInsideBrowUpKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[leftInsideBrowDownKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[leftInsideBrowDownKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[leftInsideBrowUpKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function leftOutsideBrowChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let leftOutsideBrowUpKey = [ 
+                    av_body.morphTargetDictionary.fa_OutBrowL_Up,
+                    av_body.morphTargetDictionary.fb_OutBrowL_Up,
+                    av_body.morphTargetDictionary.fw_OutBrowL_Up 
+                ];
+
+                let leftOutsideBrowDownKey = [ 
+                    av_body.morphTargetDictionary.fa_OutBrowL_Down,
+                    av_body.morphTargetDictionary.fb_OutBrowL_Down,
+                    av_body.morphTargetDictionary.fw_OutBrowL_Down
+                ];
+
+                let sv = document.getElementById("sldr_leftOutsideBrow").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_leftOutsideBrow_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[leftOutsideBrowUpKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[leftOutsideBrowDownKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[leftOutsideBrowDownKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[leftOutsideBrowUpKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function rightInsideBrowChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let rightInsideBrowUpKey = [ 
+                    av_body.morphTargetDictionary.fa_InBrowR_Up,
+                    av_body.morphTargetDictionary.fb_InBrowR_Up,
+                    av_body.morphTargetDictionary.fw_InBrowR_Up 
+                ];
+
+                let rightInsideBrowDownKey = [ 
+                    av_body.morphTargetDictionary.fa_InBrowR_Down,
+                    av_body.morphTargetDictionary.fb_InBrowR_Down,
+                    av_body.morphTargetDictionary.fw_InBrowR_Down
+                ];
+
+                let sv = document.getElementById("sldr_rightInsideBrow").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_rightInsideBrow_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[rightInsideBrowUpKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[rightInsideBrowDownKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[rightInsideBrowDownKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[rightInsideBrowUpKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function rightOutsideBrowChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let rightOutsideBrowUpKey = [ 
+                    av_body.morphTargetDictionary.fa_OutBrowR_Up,
+                    av_body.morphTargetDictionary.fb_OutBrowR_Up,
+                    av_body.morphTargetDictionary.fw_OutBrowR_Up 
+                ];
+
+                let rightOutsideBrowDownKey = [ 
+                    av_body.morphTargetDictionary.fa_OutBrowR_Down,
+                    av_body.morphTargetDictionary.fb_OutBrowR_Down,
+                    av_body.morphTargetDictionary.fw_OutBrowR_Down
+                ];
+
+                let sv = document.getElementById("sldr_rightOutsideBrow").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_rightOutsideBrow_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[rightOutsideBrowUpKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[rightOutsideBrowDownKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[rightOutsideBrowDownKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[rightOutsideBrowUpKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function resetEyeBrows() {
+            if (gASI.inited) {
+                document.getElementById("sldr_leftInsideBrow").value = "50";
+                document.getElementById("sldr_leftOutsideBrow").value = "50";
+                document.getElementById("sldr_rightInsideBrow").value = "50";
+                document.getElementById("sldr_rightOutsideBrow").value = "50";
+                leftInsideBrowChanged();
+                leftOutsideBrowChanged();
+                rightInsideBrowChanged();
+                rightOutsideBrowChanged();
+            }
+        }
+
+        function leftTopLidChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let leftTopLidUpUpKey = [ 
+                    av_body.morphTargetDictionary.fa_LidUpperLeft_Up,
+                    av_body.morphTargetDictionary.fb_LidUpperLeft_Up,
+                    av_body.morphTargetDictionary.fw_LidUpperLeft_Up 
+                ];
+
+                let leftTopLidDownKey = [ 
+                    av_body.morphTargetDictionary.fa_LidUpperLeft_Down,
+                    av_body.morphTargetDictionary.fb_LidUpperLeft_Down,
+                    av_body.morphTargetDictionary.fw_LidUpperLeft_Down
+                ];
+
+                let sv = document.getElementById("sldr_leftTopLid").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_leftTopLid_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[leftTopLidUpUpKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[leftTopLidDownKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[leftTopLidDownKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[leftTopLidUpUpKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function leftBottomLidChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let leftBottomLidUpUpKey = [ 
+                    av_body.morphTargetDictionary.fa_LidLowerLeft_Up,
+                    av_body.morphTargetDictionary.fb_LidLowerLeft_Up,
+                    av_body.morphTargetDictionary.fw_LidLowerLeft_Up 
+                ];
+
+                let leftBottomLidDownKey = [ 
+                    av_body.morphTargetDictionary.fa_LidLowerLeft_Down,
+                    av_body.morphTargetDictionary.fb_LidLowerLeft_Down,
+                    av_body.morphTargetDictionary.fw_LidLowerLeft_Down
+                ];
+
+                let sv = document.getElementById("sldr_leftBottomLid").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_leftBottomLid_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[leftBottomLidDownKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[leftBottomLidUpUpKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[leftBottomLidUpUpKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[leftBottomLidDownKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function rightTopLidChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let rightTopLidUpUpKey = [ 
+                    av_body.morphTargetDictionary.fa_LidUpperRight_Up,
+                    av_body.morphTargetDictionary.fb_LidUpperRight_Up,
+                    av_body.morphTargetDictionary.fw_LidUpperRight_Up 
+                ];
+
+                let rightTopLidDownKey = [ 
+                    av_body.morphTargetDictionary.fa_LidUpperRight_Down,
+                    av_body.morphTargetDictionary.fb_LidUpperRight_Down,
+                    av_body.morphTargetDictionary.fw_LidUpperRight_Down
+                ];
+
+                let sv = document.getElementById("sldr_rightTopLid").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_rightTopLid_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[rightTopLidUpUpKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[rightTopLidDownKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[rightTopLidDownKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[rightTopLidUpUpKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+
+        function rightBottomLidChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let rightBottomLidUpUpKey = [ 
+                    av_body.morphTargetDictionary.fa_LidLowerRight_Up,
+                    av_body.morphTargetDictionary.fb_LidLowerRight_Up,
+                    av_body.morphTargetDictionary.fw_LidLowerRight_Up 
+                ];
+
+                let rightBottomLidDownKey = [ 
+                    av_body.morphTargetDictionary.fa_LidLowerRight_Down,
+                    av_body.morphTargetDictionary.fb_LidLowerRight_Down,
+                    av_body.morphTargetDictionary.fw_LidLowerRight_Down
+                ];
+
+                let sv = document.getElementById("sldr_rightBottomLid").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_rightBottomLid_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[rightBottomLidDownKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[rightBottomLidUpUpKey[i]] = 0.0;
+                    }
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[rightBottomLidUpUpKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[rightBottomLidDownKey[i]] = 0.0;
+                    }
+                }
+            }
+        }
+        
+        function resetEyeLids() {
+            if (gASI.inited) {
+                document.getElementById("sldr_leftTopLid").value = "50";
+                document.getElementById("sldr_leftBottomLid").value = "50";
+                document.getElementById("sldr_rightTopLid").value = "50";
+                document.getElementById("sldr_rightBottomLid").value = "50";
+                leftTopLidChanged();
+                leftBottomLidChanged();
+                rightTopLidChanged();
+                rightBottomLidChanged();
+            }
+        }
+
+        function lookLeftRightChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let sv = document.getElementById("sldr_lookLeftRight").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_lookLeftRight_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 and 2.0:
+                let wt = parseFloat(sv) / 50.0;
+
+                let maxDist = 5.0;
+
+                // now wt is between -1 and 1:
+                wt -= 1.0;
+
+                gASI.lookAtTarget.position.x = maxDist * wt;
+
+                // check for direction:
+                //
+                // this is the wrong way to calculate these morph influences, should be based on eye angles
+                if (wt >= 0) {
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidRight_LookRight ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidRight_LookLeft ] = wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidLeft_LookRight ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidLeft_LookLeft ] = wt;
+                }
+                else { 
+                    wt = -wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidRight_LookLeft ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidRight_LookRight ] = wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidLeft_LookLeft ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_LidLeft_LookRight ] = wt;
+                }
+            }
+        }
+
+        function lookUpDownChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let sv = document.getElementById("sldr_lookUpDown").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_lookUpDown_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 and 2.0:
+                let wt = parseFloat(sv) / 50.0;
+
+                let maxDist = 5.0;
+
+                // now wt is between -1 and 1:
+                wt -= 1.0;
+
+                gASI.lookAtTarget.position.y = 33.69 + maxDist * wt;
+
+                // check for direction:
+                //
+                // this is the wrong way to calculate these morph influences, should be based on eye angles
+                if (wt >= 0) {
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookUp ] = wt;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookUp ] = wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookDown ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookDown ] = 0.0;
+                }
+                else { 
+                    wt = -wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookDown ] = wt;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookDown ] = wt;
+
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeLeftLookUp ] = 0.0;
+                    av_body.morphTargetInfluences[ av_body.morphTargetDictionary.fw_EyeRightLookUp ] = 0.0;
+                }
+            }
+        }
+
+        function lookNearFarChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let sv = document.getElementById("sldr_lookNearFar").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_lookNearFar_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 and 1.0:
+                let wt = parseFloat(sv) / 100.0;
+
+                let maxDist = 20.0;
+
+                gASI.lookAtTarget.position.z = 2.5 + maxDist * wt;
+            }
+        }
+
+        function resetLookAt() {
+            if (gASI.inited) {
+                document.getElementById("sldr_lookLeftRight").value = "50";
+                document.getElementById("sldr_lookUpDown").value = "50";
+                document.getElementById("sldr_lookNearFar").value = "35";
+                lookLeftRightChanged();
+                lookUpDownChanged();
+                lookNearFarChanged();
+            }
+        }
+
+        function jawOpenCloseChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+                let av_lowerTeeth = gASI.scene.getObjectByName('LowerTeeth_Mesh');
+                let av_lowerGums = gASI.scene.getObjectByName('LowerTeeth_Mesh_1');
+                let av_tongue = gASI.tongue;
+
+                let jawDownKey = [ 
+                    av_body.morphTargetDictionary.fa_JawDown,
+                    av_body.morphTargetDictionary.fb_JawDown,
+                    av_body.morphTargetDictionary.fw_JawDown 
+                ];
+
+                let jawUpKey = [ 
+                    av_body.morphTargetDictionary.fa_JawUp,
+                    av_body.morphTargetDictionary.fb_JawUp,
+                    av_body.morphTargetDictionary.fw_JawUp
+                ];
+
+                let sv = document.getElementById("sldr_jawOpenClose").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_jawOpenClose_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[jawDownKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[jawUpKey[i]] = 0.0;
+                    }
+                    
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawDown_LowerTeeth ] = wt;
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawUp_LowerTeeth ] = 0.0;
+                    
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawDown_LowerTeeth ] = wt;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawUp_LowerTeeth ] = 0.0;
+                    
+                    av_tongue.morphTargetInfluences[ av_tongue.morphTargetDictionary.JawDown_Tongue ] = wt;
+                    av_tongue.morphTargetInfluences[ av_tongue.morphTargetDictionary.JawUp_Tongue ] = 0.0;
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[jawUpKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[jawDownKey[i]] = 0.0;
+                    }
+                    
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawUp_LowerTeeth ] = wt;
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawDown_LowerTeeth ] = 0.0;
+                    
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawUp_LowerTeeth ] = wt;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawDown_LowerTeeth ] = 0.0;
+                    
+                    av_tongue.morphTargetInfluences[ av_tongue.morphTargetDictionary.JawUp_Tongue ] = wt;
+                    av_tongue.morphTargetInfluences[ av_tongue.morphTargetDictionary.JawDown_Tongue ] = 0.0;
+                }
+            }
+        }
+
+        function jawLRChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+                let av_lowerTeeth = gASI.scene.getObjectByName('LowerTeeth_Mesh');
+                let av_lowerGums = gASI.scene.getObjectByName('LowerTeeth_Mesh_1');
+                let av_tongue = gASI.tongue;
+
+                let jawLeftKey = [ 
+                    av_body.morphTargetDictionary.fa_JawLSide,
+                    av_body.morphTargetDictionary.fb_JawLSide,
+                    av_body.morphTargetDictionary.fw_JawLSide 
+                ];
+
+                let jawRightKey = [ 
+                    av_body.morphTargetDictionary.fa_JawRSide,
+                    av_body.morphTargetDictionary.fb_JawRSide,
+                    av_body.morphTargetDictionary.fw_JawRSide
+                ];
+
+                let sv = document.getElementById("sldr_jawLR").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_jawLR_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                // check for direction:
+                if (wt >= 1.0) {
+                    wt -= 1.0;  // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[jawLeftKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[jawRightKey[i]] = 0.0;
+                    }
+                    
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawSideLeft_LowerTeeth ] = wt;
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawSideRight_LowerTeeth ] = 0.0;
+                    
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawSideLeft_LowerTeeth ] = wt;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawSideRight_LowerTeeth ] = 0.0;
+                    
+                    av_tongue.morphTargetInfluences[ av_tongue.morphTargetDictionary.JawSideLeft_Tongue ] = wt;
+                    av_tongue.morphTargetInfluences[ av_tongue.morphTargetDictionary.JawSideRight_Tongue ] = 0.0;
+                }
+                else { 
+                    wt = 1.0 - wt; // percentage they want 
+
+                    for (let i = 0; i < 3; i++) {
+                        av_body.morphTargetInfluences[jawRightKey[i]] = wt * gASI.race[i];
+                        av_body.morphTargetInfluences[jawLeftKey[i]] = 0.0;
+                    }
+                    
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawSideRight_LowerTeeth ] = wt;
+                    av_lowerTeeth.morphTargetInfluences[ av_lowerTeeth.morphTargetDictionary.JawSideLeft_LowerTeeth ] = 0.0;
+                    
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawSideRight_LowerTeeth ] = wt;
+                    av_lowerGums.morphTargetInfluences[ av_lowerGums.morphTargetDictionary.JawSideLeft_LowerTeeth ] = 0.0;
+                    
+                    av_tongue.morphTargetInfluences[ av_tongue.morphTargetDictionary.JawSideRight_Tongue ] = wt;
+                    av_tongue.morphTargetInfluences[ av_tongue.morphTargetDictionary.JawSideLeft_Tongue ] = 0.0;
+                }
+            }
+        }
+
+        function kissChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let kissKey = [ 
+                    av_body.morphTargetDictionary.fa_Puker,
+                    av_body.morphTargetDictionary.fb_Puker,
+                    av_body.morphTargetDictionary.fw_Puker 
+                ];
+
+                let stv = document.getElementById("sldr_kiss").value;
+
+                document.getElementById("sldr_kiss_value").innerHTML = stv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(stv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[kissKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function poutChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let poutKey = [ 
+                    av_body.morphTargetDictionary.fa_Pout,
+                    av_body.morphTargetDictionary.fb_Pout,
+                    av_body.morphTargetDictionary.fw_Pout 
+                ];
+
+                let stv = document.getElementById("sldr_pout").value;
+
+                document.getElementById("sldr_pout_value").innerHTML = stv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(stv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[poutKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function surpriseChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let surpriseLeftKey = [ 
+                    av_body.morphTargetDictionary.fa_SurpriseLeft,
+                    av_body.morphTargetDictionary.fb_SurpriseLeft,
+                    av_body.morphTargetDictionary.fw_SurpriseLeft 
+                ];
+
+                let surpriseRightKey = [ 
+                    av_body.morphTargetDictionary.fa_SurpriseRight,
+                    av_body.morphTargetDictionary.fb_SurpriseRight,
+                    av_body.morphTargetDictionary.fw_SurpriseRight 
+                ];
+
+                let stv = document.getElementById("sldr_surprise").value;
+
+                document.getElementById("sldr_surprise_value").innerHTML = stv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(stv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[surpriseLeftKey[i]] = wt * gASI.race[i];
+                    av_body.morphTargetInfluences[surpriseRightKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function joyChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let joyLeftKey = [ 
+                    av_body.morphTargetDictionary.fa_JoyLeft,
+                    av_body.morphTargetDictionary.fb_JoyLeft,
+                    av_body.morphTargetDictionary.fw_JoyLeft 
+                ];
+
+                let joyRightKey = [ 
+                    av_body.morphTargetDictionary.fa_JoyRight,
+                    av_body.morphTargetDictionary.fb_JoyRight,
+                    av_body.morphTargetDictionary.fw_JoyRight 
+                ];
+
+                let stv = document.getElementById("sldr_joy").value;
+
+                document.getElementById("sldr_joy_value").innerHTML = stv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(stv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[joyLeftKey[i]] = wt * gASI.race[i];
+                    av_body.morphTargetInfluences[joyRightKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function angerChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let angerLeftKey = [ 
+                    av_body.morphTargetDictionary.fa_AngryLeft,
+                    av_body.morphTargetDictionary.fb_AngryLeft,
+                    av_body.morphTargetDictionary.fw_AngryLeft 
+                ];
+
+                let angerRightKey = [ 
+                    av_body.morphTargetDictionary.fa_AngryRight,
+                    av_body.morphTargetDictionary.fb_AngryRight,
+                    av_body.morphTargetDictionary.fw_AngryRight 
+                ];
+
+                let stv = document.getElementById("sldr_anger").value;
+
+                document.getElementById("sldr_anger_value").innerHTML = stv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(stv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[angerLeftKey[i]] = wt * gASI.race[i];
+                    av_body.morphTargetInfluences[angerRightKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function fearChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let fearLeftKey = [ 
+                    av_body.morphTargetDictionary.fa_FearLeft,
+                    av_body.morphTargetDictionary.fb_FearLeft,
+                    av_body.morphTargetDictionary.fw_FearLeft 
+                ];
+
+                let fearRightKey = [ 
+                    av_body.morphTargetDictionary.fa_FearRight,
+                    av_body.morphTargetDictionary.fb_FearRight,
+                    av_body.morphTargetDictionary.fw_FearRight 
+                ];
+
+                let stv = document.getElementById("sldr_fear").value;
+
+                document.getElementById("sldr_fear_value").innerHTML = stv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(stv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[fearLeftKey[i]] = wt * gASI.race[i];
+                    av_body.morphTargetInfluences[fearRightKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function disgustChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let disgustLeftKey = [ 
+                    av_body.morphTargetDictionary.fa_DisgustLeft,
+                    av_body.morphTargetDictionary.fb_DisgustLeft,
+                    av_body.morphTargetDictionary.fw_DisgustLeft 
+                ];
+
+                let disgustRightKey = [ 
+                    av_body.morphTargetDictionary.fa_DisgustRight,
+                    av_body.morphTargetDictionary.fb_DisgustRight,
+                    av_body.morphTargetDictionary.fw_DisgustRight 
+                ];
+
+                let stv = document.getElementById("sldr_disgust").value;
+
+                document.getElementById("sldr_disgust_value").innerHTML = stv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(stv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[disgustLeftKey[i]] = wt * gASI.race[i];
+                    av_body.morphTargetInfluences[disgustRightKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+       
+        function resetMouthExpression() {
+            if (gASI.inited) {
+                document.getElementById("sldr_kiss").value = "0";
+                document.getElementById("sldr_pout").value = "0";
+                document.getElementById("sldr_surprise").value = "0";
+                document.getElementById("sldr_joy").value = "0";
+                document.getElementById("sldr_anger").value = "0";
+                document.getElementById("sldr_fear").value = "0";
+                document.getElementById("sldr_disgust").value = "0";
+                kissChanged();
+                poutChanged();
+                surpriseChanged();
+                joyChanged();
+                angerChanged();
+                fearChanged();
+                disgustChanged();
+            }
+        }
+
+        function THphomChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_TH,
+                    av_body.morphTargetDictionary.fb_TH,
+                    av_body.morphTargetDictionary.fw_TH 
+                ];
+
+                let sv = document.getElementById("sldr_THphom").value;
+
+                document.getElementById("sldr_THphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function FVphomChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_FV,
+                    av_body.morphTargetDictionary.fb_FV,
+                    av_body.morphTargetDictionary.fw_FV 
+                ];
+
+                let sv = document.getElementById("sldr_FVphom").value;
+
+                document.getElementById("sldr_FVphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function BMphomChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_BM,
+                    av_body.morphTargetDictionary.fb_BM,
+                    av_body.morphTargetDictionary.fw_BM 
+                ];
+
+                let sv = document.getElementById("sldr_BMphom").value;
+
+                document.getElementById("sldr_BMphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function UphomChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_U,
+                    av_body.morphTargetDictionary.fb_U,
+                    av_body.morphTargetDictionary.fw_U 
+                ];
+
+                let sv = document.getElementById("sldr_Uphom").value;
+
+                document.getElementById("sldr_Uphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function OphomChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_O,
+                    av_body.morphTargetDictionary.fb_O,
+                    av_body.morphTargetDictionary.fw_O 
+                ];
+
+                let sv = document.getElementById("sldr_Ophom").value;
+
+                document.getElementById("sldr_Ophom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function IphomChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_I,
+                    av_body.morphTargetDictionary.fb_I,
+                    av_body.morphTargetDictionary.fw_I 
+                ];
+
+                let sv = document.getElementById("sldr_Iphom").value;
+
+                document.getElementById("sldr_Iphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function EphomChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_E,
+                    av_body.morphTargetDictionary.fb_E,
+                    av_body.morphTargetDictionary.fw_E 
+                ];
+
+                let sv = document.getElementById("sldr_Ephom").value;
+
+                document.getElementById("sldr_Ephom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+
+        function AphomChanged() {
+            if (gASI.inited) {
+                let av_body = gASI.bodyMesh; 
+
+                let phomKey = [ 
+                    av_body.morphTargetDictionary.fa_A,
+                    av_body.morphTargetDictionary.fb_A,
+                    av_body.morphTargetDictionary.fw_A 
+                ];
+
+                let sv = document.getElementById("sldr_Aphom").value;
+
+                document.getElementById("sldr_Aphom_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                for (let i = 0; i < 3; i++) {
+                    av_body.morphTargetInfluences[phomKey[i]] = wt * gASI.race[i];
+                }
+            }
+        }
+      
+        function resetLipSync() {
+            if (gASI.inited) {
+                document.getElementById("sldr_THphom").value = "0";
+                document.getElementById("sldr_FVphom").value = "0";
+                document.getElementById("sldr_BMphom").value = "0";
+                document.getElementById("sldr_Uphom").value = "0";
+                document.getElementById("sldr_Ophom").value = "0";
+                document.getElementById("sldr_Iphom").value = "0";
+                document.getElementById("sldr_Ephom").value = "0";
+                document.getElementById("sldr_Aphom").value = "0";
+                THphomChanged();
+                FVphomChanged();
+                BMphomChanged();
+                UphomChanged();
+                OphomChanged();
+                IphomChanged();
+                EphomChanged();
+                AphomChanged();
+            }
+        }
+
+        function resetJaw() {
+            if (gASI.inited) {
+                document.getElementById("sldr_jawOpenClose").value = "50";
+                document.getElementById("sldr_jawLR").value = "50";
+                jawOpenCloseChanged();
+                jawLRChanged();
+            }
+        }
+
+        function tongueUpChanged() {
+            if (gASI.inited) {
+                let av_tongue = gASI.tongue; 
+
+                let sv = document.getElementById("sldr_tongueUp").value;
+
+                document.getElementById("sldr_tongueUp_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 1.0:
+                let wt = parseFloat(sv) / 100.0;
+                
+                av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.Up_Tongue] = wt;
+            }
+        }
+
+        function tongueOutChanged() {
+            if (gASI.inited) {
+                let av_tongue = gASI.tongue; 
+
+                let sv = document.getElementById("sldr_tongueOut").value;
+
+                document.getElementById("sldr_tongueOut_value").innerHTML = sv + "%";
+
+                // forcing wt to be within 0.0 to 4.0:
+                let wt = parseFloat(sv) / 25.0;
+                if (wt >= 3.0) {
+                    wt -= 3.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutC_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutB_Tongue] = 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutA_Tongue] = 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.Out_Tongue] = 1.0;
+                }
+                else if (wt >= 2.0) {
+                    wt -= 2.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutC_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutB_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutA_Tongue] = 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.Out_Tongue] = 1.0;
+                }
+                else if (wt >= 1.0) {
+                    wt -= 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutC_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutB_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutA_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.Out_Tongue] = 1.0;
+                }
+                else {
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutC_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutB_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.ScaleOutA_Tongue] = 0.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.Out_Tongue] = wt;
+                }
+            }
+        }
+
+        function tongueSwellChanged() {
+            if (gASI.inited) {
+                let av_tongue = gASI.tongue; 
+
+                let sv = document.getElementById("sldr_tongueSwell").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_tongueSwell_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                if (wt >= 1.0) {
+                    wt -= 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SwellOut_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SwellIn_Tongue] = 0.0;
+                }
+                else {
+                    wt = 1.0 - wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SwellIn_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SwellOut_Tongue] = 0.0;
+                }
+            }
+        }
+
+        function tongueLRChanged() {
+            if (gASI.inited) {
+                let av_tongue = gASI.tongue; 
+
+                let sv = document.getElementById("sldr_tongueLR").value;
+
+                let feedback = sv * 2 - 100;
+                document.getElementById("sldr_tongueLR_value").innerHTML = feedback + "%";
+
+                // forcing wt to be within 0.0 to 2.0:
+                let wt = parseFloat(sv) / 50.0;
+                if (wt >= 1.0) {
+                    wt -= 1.0;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SideRight_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SideLeft_Tongue] = 0.0;
+                }
+                else {
+                    wt = 1.0 - wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SideLeft_Tongue] = wt;
+                    av_tongue.morphTargetInfluences[av_tongue.morphTargetDictionary.SideRight_Tongue] = 0.0;
+                }
+            }
+        }
+     
+        function resetTongue() {
+            if (gASI.inited) {
+                document.getElementById("sldr_tongueUp").value = "0";
+                document.getElementById("sldr_tongueOut").value = "0";
+                document.getElementById("sldr_tongueSwell").value = "50";
+                document.getElementById("sldr_tongueLR").value = "50";
+                tongueUpChanged();
+                tongueOutChanged();
+                tongueSwellChanged();
+                tongueLRChanged();
+            }
+        }
+
+    </script>
+
+	<script src="/static/stats.js/build/stats.min.js"></script>
+
+	<script type="module">
+
+		document.addEventListener("DOMContentLoaded", function() {
+			page_init();
+            initTabs();
+			DoThree( gASI );
+		  },{ once: true });
+
+
+		import {
+			PerspectiveCamera, CameraHelper,
+			Scene, Color, Fog, HemisphereLight, DirectionalLight,
+			BoxGeometry, PlaneGeometry, Plane, PlaneHelper,
+			MeshNormalMaterial,
+			MeshStandardMaterial, MeshPhongMaterial, MeshBasicMaterial,
+			Mesh, AnimationMixer, GridHelper, Object3D,
+			WebGLRenderer, Raycaster, ACESFilmicToneMapping, sRGBEncoding,
+			Clock, MathUtils, Vector2, Vector3
+		} from 'three';
+
+		import { OrbitControls } from '/static/three/examples/jsm/controls/OrbitControls.js';
+		import { DRACOLoader } from '/static/three/examples/jsm/loaders/DRACOLoader.js';
+		import { GLTFLoader } from '/static/three/examples/jsm/loaders/GLTFLoader.js';
+		import { FontLoader } from '/static/three/examples/jsm/loaders/FontLoader.js';
+		import { TextGeometry } from '/static/three/examples/jsm/geometries/TextGeometry.js';
+
+
+		// dumps a gltf scene graph
+		function dumpObject(obj, lines = [], isLast = true, prefix = '') {
+			const localPrefix = isLast ? '└─' : '├─';
+			lines.push(`${prefix}${prefix ? localPrefix : ''}${obj.name || '*no-name*'} [${obj.type}]`);
+			const newPrefix = prefix + (isLast ? '  ' : '│ ');
+			const lastNdx = obj.children.length - 1;
+			obj.children.forEach((child, ndx) => {
+			  const isLast = ndx === lastNdx;
+			  dumpObject(child, lines, isLast, newPrefix);
+			});
+			return lines;
+		}
+
+		// collects the mesh objects, placing them into 'meshObjs[]':
+		function getMeshObjects(obj, meshObjs = [], isLast = true) {
+			if (obj.type=='Mesh')
+				meshObjs.push(obj);
+			//
+			const lastNdx = obj.children.length - 1;
+			obj.children.forEach((child, ndx) => {
+			  const isLast = ndx === lastNdx;
+			  getMeshObjects(child, meshObjs, isLast);
+			});
+			return meshObjs;
+		}
+	
+
+        function removeObject3D(object3D) {
+            if (!(object3D instanceof Object3D)) return false;
+        
+            // for better memory management and performance
+            if (object3D.geometry) object3D.geometry.dispose();
+        
+            if (object3D.material) {
+                if (object3D.material instanceof Array) {
+                    // for better memory management and performance
+                    object3D.material.forEach(material => material.dispose());
+                } else {
+                    // for better memory management and performance
+                    object3D.material.dispose();
+                }
+            }
+            object3D.removeFromParent(); // the parent might be the scene or another Object3D, but it is sure to be removed this way
+            return true;
+        }
+
+		function DoThree( sceneInfo  ) {
+
+			let stats;
+	
+			DoThreeInit( sceneInfo );
+			animate();
+	
+			function DoThreeInit( sceneInfo ) {
+	
+				const container = document.createElement( 'div' );
+				//
+				let mainTag = document.getElementById("mainContent")
+				mainTag.appendChild( container );
+	
+                // put the scene camera into our sceneInfo global:
+				sceneInfo.cam.camera = new PerspectiveCamera( 45, mainTag.offsetWidth / mainTag.offsetHeight, 1, 2000 );
+
+				sceneInfo.scene = new Scene();
+				sceneInfo.scene.background = new Color( 0xa0a0a0 );
+				sceneInfo.scene.fog = new Fog( 0xa0a0a0, 200, 1000 );
+	
+                // lights:
+				const hemiLight = new HemisphereLight( 0xffffff, 0x444444 );
+				hemiLight.position.set( 0, 200, 300 );
+				sceneInfo.scene.add( hemiLight );
+                //
+				const dirLight = new DirectionalLight( 0x888888 );
+				dirLight.position.set( 70, 50, 100 );
+				dirLight.castShadow = true;
+				dirLight.shadow.camera.top = 40;
+				dirLight.shadow.camera.bottom = -15;
+				dirLight.shadow.camera.left = -40;
+				dirLight.shadow.camera.right = 70;
+                dirLight.shadow.mapSize.set( 1024, 1024 );
+				sceneInfo.scene.add( dirLight );
+                //
+				if (sceneInfo.cam.helper)
+                    sceneInfo.scene.add( new CameraHelper( dirLight.shadow.camera ) ); /* */
+	            //
+				const dirLight2 = new DirectionalLight( 0x777777 );
+				dirLight2.position.set( -70, 50, -100 );
+				dirLight2.castShadow = true;
+				dirLight2.shadow.camera.top = 40;
+				dirLight2.shadow.camera.bottom = -25;
+				dirLight2.shadow.camera.left = -70;
+				dirLight2.shadow.camera.right = 40;
+                dirLight2.shadow.mapSize.set( 1024, 1024 );
+				sceneInfo.scene.add( dirLight2 );
+                //
+				if (sceneInfo.cam.helper)
+                    sceneInfo.scene.add( new CameraHelper( dirLight2.shadow.camera ) ); /* */
+	
+				// ground
+				const mesh = new Mesh( new PlaneGeometry( 2000, 2000 ), new MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+				mesh.rotation.x = - Math.PI / 2;
+				mesh.receiveShadow = true;
+				sceneInfo.scene.add( mesh );
+                //
+				const grid = new GridHelper( 2000, 20, 0x000000, 0x000000 );
+				grid.material.opacity = 0.2;
+				grid.material.transparent = true;
+				sceneInfo.scene.add( grid );
+	
+                // a progress cube that grows as the avatar geometry and scene loads:
+                const geometry = new BoxGeometry( 80, 2, 2 ); // width, height, depth
+                const material = new MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.5 } );
+                const progressCube = new Mesh( geometry, material );
+                progressCube.position.set( 0, 15, 0 );
+                sceneInfo.scene.add( progressCube );
+
+                const fontLoader = new FontLoader();
+                //
+                let loadingText = undefined;
+                //
+                fontLoader.load( '/static/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+                    const textGeom = new TextGeometry( 'Loading...', {
+                        font: font,
+                        size: 10,
+                        height: 1,
+                        curveSegments: 12,
+                        bevelEnabled: true,
+                        bevelThickness: 0.25,
+                        bevelSize: 0.1,
+                        bevelOffset: 0,
+                        bevelSegments: 5
+                    } );
+                    loadingText = new Mesh( textGeom, material );
+                    textGeom.computeBoundingBox();
+                    let x = (textGeom.boundingBox.max.x - textGeom.boundingBox.min.x) * -0.5;
+                    loadingText.position.set( x, 20, 0 );
+                    sceneInfo.scene.add( loadingText );
+                } );
+
+				// Instantiate a GLTF 3D file loader
+				const gltfLoader = new GLTFLoader();
+				//
+				let loadProgFract = 0;
+				let loadProgress = loadProgFract;
+				let lastLoadProgress = loadProgress;
+
+				// Optional: Provide a DRACOLoader instance to decode compressed mesh data
+				const dracoLoader = new DRACOLoader();
+				dracoLoader.setDecoderPath( '/static/three/examples/js/libs/draco/' );
+				gltfLoader.setDRACOLoader( dracoLoader ); /**/
+
+				// Load a glTF resource
+				gltfLoader.load(
+					sceneInfo.obj.url,
+					// called when the resource is loaded
+					function ( gltf ) {
+
+                        progressCube.material.opacity = 0.5;
+
+						let parentObj = gltf.scene;
+						parentObj.scale.set( sceneInfo.obj.scale, sceneInfo.obj.scale, sceneInfo.obj.scale );
+
+						console.log(dumpObject(parentObj).join('\n'));
+
+						getMeshObjects(parentObj, sceneInfo.meshObjs);
+
+						let count = sceneInfo.meshObjs.length;
+						for (let i = 0; i < count; i++) {
+                            
+                            let name = sceneInfo.meshObjs[i].name;
+
+							console.log("sceneInfo.meshObjs[" + i + "] has name " + name);
+
+							sceneInfo.meshObjs[i].receiveShadow  = false;
+
+                            if (name != 'LookAtParent') {
+                                sceneInfo.meshObjs[i].castShadow = true;
+                            }
+                            else { // object is the eyes' look at target:
+
+                                sceneInfo.meshObjs[i].material.opacity = 0.25;
+                                sceneInfo.meshObjs[i].material.transparent = true;
+
+                                sceneInfo.lookAtTarget = sceneInfo.meshObjs[i];
+
+                                // create invisible plane lookAtParent will be constrained position-wise:
+                                sceneInfo.rayPlane = new Plane(new Vector3(0, 0, 1), -5);
+                                // optional reference view
+                                // sceneInfo.scene.add(new PlaneHelper( sceneInfo.rayPlane, 100, 0xffff00 ));
+
+                                sceneInfo.rayMouse = new Vector2();
+                                sceneInfo.raycaster = new Raycaster();
+                                sceneInfo.rayIntersects = new Vector3();
+
+                                
+
+                                // temp use of sceneInfo.rayIntersects (a Vector3) to get world position:
+                                sceneInfo.lookAtTarget.getWorldPosition(sceneInfo.rayIntersects);
+                                sceneInfo.lookAtTarget.removeFromParent();
+                                // position back in world space:
+                                sceneInfo.lookAtTarget.position.set( sceneInfo.rayIntersects.x, sceneInfo.rayIntersects.y, sceneInfo.rayIntersects.z );
+                                sceneInfo.lookAtTarget.scale.set( 10, 10, 10 );
+                                // because we unparented it from it's loaded-scene-parent, it needs to be added to the scene:
+                                sceneInfo.scene.add( sceneInfo.lookAtTarget );
+
+                            }
+
+                            if (name == 'MaleAvatar') {
+                                sceneInfo.bodyMesh = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'EyeRight') {
+                                sceneInfo.eyeRMesh = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'EyeLeft') {
+                                sceneInfo.eyeLMesh = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Tongue') {
+                                sceneInfo.tongue = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere') {
+                                sceneInfo.spheres[0] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere001') {
+                                sceneInfo.spheres[1] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere002') {
+                                sceneInfo.spheres[2] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere003') {
+                                sceneInfo.spheres[3] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere004') {
+                                sceneInfo.spheres[4] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere005') {
+                                sceneInfo.spheres[5] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere006') {
+                                sceneInfo.spheres[6] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere007') {
+                                sceneInfo.spheres[7] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere008') {
+                                sceneInfo.spheres[8] = sceneInfo.meshObjs[i];
+                            }
+                            else if (name == 'Sphere009') {
+                                sceneInfo.spheres[9] = sceneInfo.meshObjs[i];
+                            }
+						}
+			
+						sceneInfo.scene.add(parentObj);
+                        //
+                        removeObject3D(progressCube);
+                        removeObject3D(loadingText);
+
+                        sceneInfo.inited = true;
+                        //
+                        // these require sceneInfo.inited == true (which is really gASI)
+                        skinToneInit();
+                        skinToneChanged();
+                        skinChanged();
+                        resetFaceShape();
+                        resetEyeBrows();
+                        resetEyeLids();
+                        resetMouthExpression();
+                        resetLipSync();
+                        resetJaw();
+                        resetTongue();
+                        resetLookAt();
+					},
+					// called while loading is progressing
+					function ( xhr ) {
+
+                        loadProgFract = xhr.loaded / xhr.total;
+
+                        progressCube.scale.set( loadProgFract, 1, 1 );
+                        progressCube.material.opacity = loadProgFract;
+                        
+						loadProgress = loadProgFract * 100;
+						if (loadProgress <= lastLoadProgress + 10)
+							return;
+						
+						console.log( loadProgress + '% loaded' );
+
+						lastLoadProgress += 10;
+
+					},
+					// called when loading has errors
+					function ( error ) {
+
+						console.log( 'An error happened' );
+
+					}
+				);
+	
+				sceneInfo.renderer = new WebGLRenderer( { antialias: true } );
+				sceneInfo.renderer.setPixelRatio( window.devicePixelRatio );
+				sceneInfo.renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
+                // remember:
+                sceneInfo.canvas = sceneInfo.renderer.domElement;
+                // 
+                sceneInfo.renderer.toneMapping = ACESFilmicToneMapping;
+				sceneInfo.renderer.toneMappingExposure = 1.0;
+				sceneInfo.renderer.outputEncoding = sRGBEncoding;
+                //
+				sceneInfo.renderer.shadowMap.enabled = true;
+                //
+				container.appendChild( sceneInfo.renderer.domElement );
+	
+				
+				sceneInfo.cam.controls = new OrbitControls( sceneInfo.cam.camera, sceneInfo.renderer.domElement );
+                viewAtLoad(); // positions camera and camera view 
+
+				window.addEventListener( 'resize', onWindowResize );
+	
+				// stats
+				stats = new Stats();
+				container.appendChild( stats.dom );
+			}
+	
+			function onWindowResize() {
+	
+				let mainTag = document.getElementById("mainContent")
+				
+				gASI.cam.camera.aspect = mainTag.clientWidth / mainTag.clientHeight;
+				gASI.cam.camera.updateProjectionMatrix();
+	
+				gASI.renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
+			}
+	
+			function animate() {
+	
+				requestAnimationFrame( animate );
+
+                const normDevCoord = gASI.normDevCoord;
+
+                // make sure eyes are looking at their target:
+                if (typeof gASI.lookAtTarget !== 'undefined') {
+
+                    const targetPos = new Vector3(0, 0, 0);
+                    gASI.lookAtTarget.getWorldPosition(targetPos);
+
+                    if (typeof gASI.eyeRMesh !== 'undefined') {
+                        gASI.eyeRMesh.lookAt(targetPos);
+                    }
+
+                    if (typeof gASI.eyeLMesh !== 'undefined') {
+                        gASI.eyeLMesh.lookAt(targetPos);
+                    }
+                }
+	
+				gASI.renderer.render( gASI.scene, gASI.cam.camera );
+	
+				stats.update();
+
+                if (sceneInfo.debug) {
+                    let ci = document.querySelector("#mainOverlay");
+                    ci.innerHTML = gASI.msg;
+                }
+			}
+		}
+
+
+
+        
+		function page_init() {
+
+			const access_token = localStorage.getItem('token');
+			if (typeof access_token !== 'undefined') {
+				const options = { headers: { "Authorization": "Bearer " + access_token } }
+				fetch("/users/me", options)
+				.then(response => response.json())
+				.then( response => {
+
+					if (response.hasOwnProperty('roles')) {
+
+						// user is logged in, change contact link:
+						document.getElementById("contactButton").innerHTML = '<a href="#" class="button" onclick="UserContact()">Contact</a>';
+
+						if (response.roles.includes("admin")) {
+
+							document.getElementById("aside").innerHTML = 
+								`<a href="#" class="button" onclick="UserSettings()">Settings</a>
+								<br/><br/>
+								<a href="#" class="button" onclick="Logout()">Logout</a>
+								`;
+						}
+					}
+				});
+			}
+		}
+
+	</script>
+	
+	{% include 'common_logout.html' %}
+
+	{% include 'common_refresh.html' %}
+	
+</body>
+</html>
