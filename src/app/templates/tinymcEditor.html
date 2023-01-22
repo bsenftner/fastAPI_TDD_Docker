@@ -116,7 +116,10 @@
 	
 		// get list of uploaded files and populate upload selection list:
 		const get_uploads = () => {
-			fetch('/upload', { // GET endpoint
+			let domain = (new URL(window.location));
+			const prebsjnk = domain.origin;
+			const furl = prebsjnk + '/upload';
+			fetch(furl, { // GET endpoint
 				  method: 'GET',
 				  headers: {}
 			}).then(
