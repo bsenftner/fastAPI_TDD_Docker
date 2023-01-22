@@ -250,3 +250,17 @@ async def a3da_basic( request: Request ):
           "blogPosts": blogPostList }, 
     )
     
+# ------------------------------------------------------------------------------------------------------------------
+# serve the requested page thru a Jinja2 template:
+@router.get("/flyingcars", status_code=status.HTTP_200_OK, response_class=HTMLResponse)
+async def flyingcars( request: Request ):
+
+    blogPostList = await crud.get_all_blogposts()
+    
+    return TEMPLATES.TemplateResponse(
+        "flyingcars.html",
+        { "request": request, 
+          "frags": FRAGS, 
+          "blogPosts": blogPostList }, 
+    )
+    

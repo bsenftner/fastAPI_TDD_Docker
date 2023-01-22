@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+{# 
+	This is a Jinja2 template for an html page
+	These lines are comments and are removed when the template is rendered. 
+#}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Blog of Blake Senftner</title>
+  <link rel="stylesheet" href="/static/index.css">
+  <link rel="stylesheet" href="/static/a3daEdit.css">
+
+  <style>
+    div#mainContent {
+	  box-sizing: border-box;
+	  font-family: Helvetica, Arial, sans-serif;
+	  font-size: 16px;
+	  height: 50%;
+	  margin: 0px;
+	  position: relative;
+	}
+  </style>
+
+  <!-- Remove this when import maps will be widely supported -->
+<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "/static/three/build/three.module.js"
+    }
+  }
+</script>
+
+</head>
+<body>
+	<div class="grid">
+		{% include 'common_header.html' %}
+
+		{# the left sidebar #}
+		{% include 'common_lsidebar.html' %}
+
+		{# the main content area #}
+		<main>
+			<div id="mainContent">
+            </div>
+            
+            <div id="mainOverlay"></div>
+
+            <div id="view_ctrls">
+                <a href="#" class="button" onclick="viewAtLoad()">Load View</a>
+                <a href="#" class="button" onclick="viewFace()">Face View</a>
+                <a href="#" class="button" onclick="viewMid45()">Mid Body View 45</a>
+                <a href="#" class="button" onclick="viewFull45()">Full Body View 45</a>
+                <div class="slidercontainer">
+                    <div class="slidercaption">Camera Lens:</div>
+                    <div class="slidervalue" id="sldr_camLens_value">45</div>
+                    <input type="range" min="20" max="120" value="45" class="slider" id="camLens" oninput="camFOVChanged()">
+                    <a href="#" class="button" onclick="setCamLens(35)">35</a>
+                    <a href="#" class="button" onclick="setCamLens(70)">70</a>
+                    <a href="#" class="button" onclick="setCamLens(110)">110</a>
+                </div>
+            </div>
+
+            <div class="tab">
+                <button class="tablinks" onclick="openTab(event, 'aboutTab')" id="defaultOpenTab">About</button>
+                <button class="tablinks" onclick="openTab(event, 'bodyTab')">Ethnicity & Body</button>
+                <button class="tablinks" onclick="openTab(event, 'faceTab')">Face Shape</button>
+                <button class="tablinks" onclick="openTab(event, 'upperFaceTab')">Upper Face Expression</button>
+                <button class="tablinks" onclick="openTab(event, 'lowerFaceTab')">Lower Face Expression</button>
+            </div>
+
+            <div id="aboutTab" class="tabcontent">
+                <h3>About this page</h3>
+                <p>This is nothing yet.
+                </p>
+            </div>
+
+		</main>
+
+		{# the right sidebar #}
+		<aside>
+			<div id="aside">
+				<a href="#" class="button" onclick="Login()">Login</a>
+				<br/>
+				<a href="#" class="button" onclick="Register()">Register</a>
+			</div>
+		</aside>
+  
+	<footer>
+		{{ frags[0].footer | safe }} 
+	</footer>
+	</div>
+
+    <script>
+		function UserContact() { window.location.href = "/Contact"; }
+
+		function Contact() { window.location.href = "/precontact"; }
+
+		function Login() { window.location.href = "/login"; }
+
+		function Register() { window.location.href = "/register"; }
+
+		function UserSettings() { window.location.href = "/Settings"; }
+	</script>
+	
+    <!-- pull in an html template holding javascript for tabs -->
+    {% include 'common_tabs.html' %}
+
+    <script>
+
+        // 'scene info'
+		const gASI = { 
+            'inited': false,
+            'debug': false,
+            'canvas': undefined,                        // will have DOM WebGL canvas 
+            'renderer': undefined,                      // will have WebGLRenderer assigned
+            'scene': undefined,                         // will have THREE Scene assigned
+			'cam': {
+                'camera': undefined,                    // will have THREE PerspectiveCamera assigned
+                'controls': undefined,                  // will have THREE OrbitControls assigned
+				'pos': { 'x': 0, 'y': 40, 'z': 50 },
+				'target': { 'x': 0, 'y': 20, 'z': 0 },
+				'helper': false,
+			},
+			'obj': {
+				'url': 'static/flyingcars/hotrod.glb',
+				'scale': 10,
+			},
+            // will hold array of mesh objects:
+            'meshObjs': [],
+            'msg': 'x = 0, y = 0',
+            'normDevCoord': { x: 0, y: 0 },
+            'raycaster': undefined,
+            'rayMouse': undefined,
+            'rayIntersects': undefined,
+            'rayPlane': undefined,
+            'spheres': [false,false,false,false,false,false,false,false,false,false], // an array of 10
+		};
+
+
+        //----------------------------------------------------------
+        // mouse picking via sending rays into scene
+        //
+        function getCanvasRelativePosition(event, canvas) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                    x: (event.clientX - rect.left) * canvas.width  / rect.width,
+                    y: (event.clientY - rect.top ) * canvas.height / rect.height,
+            };
+        }
+        //
+        function setPickPosition(event) {
+            let canvas = gASI.canvas;
+            if (typeof canvas !== 'undefined') {
+                const pos = getCanvasRelativePosition(event, canvas);
+
+                gASI.msg = 'page.x,y: ' + event.clientX + ', ' + event.clientY + '; canvas.x,y: ' + pos.x + ', ' + pos.y;
+
+                gASI.normDevCoord.x = (pos.x / canvas.width ) *  2 - 1;
+                gASI.normDevCoord.y = (pos.y / canvas.height) * -2 + 1;  // note we flip Y
+
+                gASI.msg += '<br/>';
+                gASI.msg += 'normDevCoord.x,y: ' + gASI.normDevCoord.x.toFixed(2) + ', ' + gASI.normDevCoord.y.toFixed(2);
+
+                // the last ray intersection item to be allocated:
+                if (typeof gASI.rayIntersects !== 'undefined') {
+                    gASI.rayMouse.x = pos.x;
+                    gASI.rayMouse.y = pos.y;
+                    //
+                    gASI.raycaster.setFromCamera(gASI.rayMouse, gASI.cam.camera);
+                    let ret = gASI.raycaster.ray.intersectPlane(gASI.rayPlane, gASI.rayIntersects);
+                    if (typeof ret !== 'undefined') {
+                        // gASI.msg += '<br/>';
+                        // gASI.msg += 'gASI.rayIntersects.x,y,z: ' + gASI.rayIntersects.x.toFixed(2) + ', ' + gASI.rayIntersects.y.toFixed(2) + ', ' + gASI.rayIntersects.z.toFixed(2);
+                        //
+                        gASI.msg += '<br/>';
+                        gASI.msg += 'gASI.lookAtTarget.x,y,z: ' + gASI.lookAtTarget.position.x.toFixed(2) + ', ' + gASI.lookAtTarget.position.y.toFixed(2) + ', ' + gASI.lookAtTarget.position.z.toFixed(2);
+                        //
+                        // gASI.lookAtTarget.position.set( gASI.rayIntersects.x, gASI.rayIntersects.y, gASI.rayIntersects.z );
+                    }
+                    else {
+                        gASI.msg += '<br/>No Intersection';
+                    }
+                }
+            }
+            else {
+                clearPickPosition();
+            }
+        }
+        //
+        function clearPickPosition() {
+            // unlike the mouse which always has a position
+            // if the user stops touching the screen we want
+            // to stop picking. For now we just pick a value
+            // unlikely to pick something
+            gASI.normDevCoord.x = -100000;
+            gASI.normDevCoord.y = -100000;
+        }
+        //
+        window.addEventListener('mousemove', setPickPosition);
+        window.addEventListener('mouseout', clearPickPosition);
+        window.addEventListener('mouseleave', clearPickPosition);
+        //
+        // --- end mouse picking logic ----------------------------
+        
+
+
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16)
+            } : null;  
+        }
+
+
+        // --------------- some routines camera lens routines --------
+        //
+        function camFOVChanged() {
+            if (typeof gASI.cam.camera !== 'undefined') {
+                let camFovSldr = document.getElementById("camLens");
+                document.getElementById("sldr_camLens_value").innerHTML = camFovSldr.value;
+                gASI.cam.camera.fov = parseFloat(camFovSldr.value);
+                gASI.cam.camera.updateProjectionMatrix();
+                console.log( "camera FOV is " + camFovSldr.value);
+            }
+        }
+        //
+        function setCamLens( mm ) {
+            if (typeof gASI.cam.camera !== 'undefined') {
+                document.getElementById("camLens").value = mm;
+                camFOVChanged();
+            }
+        }
+        // --------------- some routines that move the camera around --------
+        //
+        // position camera where the scene loads:
+        function viewAtLoad() {
+            if (typeof gASI.cam.controls !== 'undefined') {;
+                gASI.cam.camera.position.set( gASI.cam.pos.x, gASI.cam.pos.y, gASI.cam.pos.z );
+                //
+                document.getElementById("camLens").value = "45";
+                camFOVChanged();
+                //
+                gASI.cam.controls.target.set( gASI.cam.target.x, gASI.cam.target.y, gASI.cam.target.z );
+			    gASI.cam.controls.update();
+            }
+        }
+        //
+        // position camera to view the face:
+        function viewFace() {
+            if (typeof gASI.cam.controls !== 'undefined') {
+                gASI.cam.camera.position.set( 0, 33, 8 );
+                gASI.cam.controls.target.set( 0, 33.34, -1.3478 );
+			    gASI.cam.controls.update();
+            }
+        }
+        //
+        // position camera:
+        function viewFull45() {
+            if (typeof gASI.cam.controls !== 'undefined') {
+                gASI.cam.camera.position.set( 32, 32.275, 41.568 );
+                gASI.cam.controls.target.set( 0.15, 18.554, 0.3714 );
+			    gASI.cam.controls.update();
+            }
+        }
+        //
+        // position camera:
+        function viewMid45() {
+            if (typeof gASI.cam.controls !== 'undefined') {
+                gASI.cam.camera.position.set( 19.4734, 32.3731, 20.0688 );
+                gASI.cam.controls.target.set( -0.45, 25.875, -2.2695 );
+			    gASI.cam.controls.update();
+            }
+        }
+        //
+        // ------ end camera placement routines -------------------------
+
+    </script>
+
+	<script src="/static/stats.js/build/stats.min.js"></script>
+
+	<script type="module">
+
+		document.addEventListener("DOMContentLoaded", function() {
+			page_init();
+            // initTabs();
+			DoThree( gASI );
+		  },{ once: true });
+
+
+		import {
+			PerspectiveCamera, CameraHelper,
+			Scene, Color, Fog, HemisphereLight, DirectionalLight,
+			BoxGeometry, PlaneGeometry, Plane, PlaneHelper,
+			MeshNormalMaterial,
+			MeshStandardMaterial, MeshPhongMaterial, MeshBasicMaterial,
+			Mesh, AnimationMixer, GridHelper, Object3D,
+			WebGLRenderer, Raycaster, ACESFilmicToneMapping, sRGBEncoding,
+			Clock, MathUtils, Vector2, Vector3
+		} from 'three';
+
+		import { OrbitControls } from '/static/three/examples/jsm/controls/OrbitControls.js';
+		import { DRACOLoader } from '/static/three/examples/jsm/loaders/DRACOLoader.js';
+		import { GLTFLoader } from '/static/three/examples/jsm/loaders/GLTFLoader.js';
+		import { FontLoader } from '/static/three/examples/jsm/loaders/FontLoader.js';
+		import { TextGeometry } from '/static/three/examples/jsm/geometries/TextGeometry.js';
+
+
+		// dumps a gltf scene graph
+		function dumpObject(obj, lines = [], isLast = true, prefix = '') {
+			const localPrefix = isLast ? '└─' : '├─';
+			lines.push(`${prefix}${prefix ? localPrefix : ''}${obj.name || '*no-name*'} [${obj.type}]`);
+			const newPrefix = prefix + (isLast ? '  ' : '│ ');
+			const lastNdx = obj.children.length - 1;
+			obj.children.forEach((child, ndx) => {
+			  const isLast = ndx === lastNdx;
+			  dumpObject(child, lines, isLast, newPrefix);
+			});
+			return lines;
+		}
+
+		// collects the mesh objects, placing them into 'meshObjs[]':
+		function getMeshObjects(obj, meshObjs = [], isLast = true) {
+			if (obj.type=='Mesh')
+				meshObjs.push(obj);
+			//
+			const lastNdx = obj.children.length - 1;
+			obj.children.forEach((child, ndx) => {
+			  const isLast = ndx === lastNdx;
+			  getMeshObjects(child, meshObjs, isLast);
+			});
+			return meshObjs;
+		}
+	
+
+        function removeObject3D(object3D) {
+            if (!(object3D instanceof Object3D)) return false;
+        
+            // for better memory management and performance
+            if (object3D.geometry) object3D.geometry.dispose();
+        
+            if (object3D.material) {
+                if (object3D.material instanceof Array) {
+                    // for better memory management and performance
+                    object3D.material.forEach(material => material.dispose());
+                } else {
+                    // for better memory management and performance
+                    object3D.material.dispose();
+                }
+            }
+            object3D.removeFromParent(); // the parent might be the scene or another Object3D, but it is sure to be removed this way
+            return true;
+        }
+
+		function DoThree( sceneInfo  ) {
+
+			let stats;
+	
+			DoThreeInit( sceneInfo );
+			animate();
+	
+			function DoThreeInit( sceneInfo ) {
+	
+				const container = document.createElement( 'div' );
+				//
+				let mainTag = document.getElementById("mainContent")
+				mainTag.appendChild( container );
+	
+                // put the scene camera into our sceneInfo global:
+				sceneInfo.cam.camera = new PerspectiveCamera( 45, mainTag.offsetWidth / mainTag.offsetHeight, 1, 2000 );
+
+				sceneInfo.scene = new Scene();
+				sceneInfo.scene.background = new Color( 0xa0a0a0 );
+				sceneInfo.scene.fog = new Fog( 0xa0a0a0, 200, 1000 );
+	
+                // lights:
+				const hemiLight = new HemisphereLight( 0xffffff, 0x444444 );
+				hemiLight.position.set( 0, 200, 300 );
+				sceneInfo.scene.add( hemiLight );
+                //
+				const dirLight = new DirectionalLight( 0x888888 );
+				dirLight.position.set( 70, 50, 100 );
+				dirLight.castShadow = true;
+				dirLight.shadow.camera.top = 40;
+				dirLight.shadow.camera.bottom = -15;
+				dirLight.shadow.camera.left = -40;
+				dirLight.shadow.camera.right = 70;
+                dirLight.shadow.mapSize.set( 1024, 1024 );
+				sceneInfo.scene.add( dirLight );
+                //
+				if (sceneInfo.cam.helper)
+                    sceneInfo.scene.add( new CameraHelper( dirLight.shadow.camera ) ); /* */
+	            //
+				const dirLight2 = new DirectionalLight( 0x777777 );
+				dirLight2.position.set( -70, 50, -100 );
+				dirLight2.castShadow = true;
+				dirLight2.shadow.camera.top = 40;
+				dirLight2.shadow.camera.bottom = -25;
+				dirLight2.shadow.camera.left = -70;
+				dirLight2.shadow.camera.right = 40;
+                dirLight2.shadow.mapSize.set( 1024, 1024 );
+				sceneInfo.scene.add( dirLight2 );
+                //
+				if (sceneInfo.cam.helper)
+                    sceneInfo.scene.add( new CameraHelper( dirLight2.shadow.camera ) ); /* */
+	
+				// ground
+				const mesh = new Mesh( new PlaneGeometry( 2000, 2000 ), new MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+				mesh.rotation.x = - Math.PI / 2;
+				mesh.receiveShadow = true;
+				sceneInfo.scene.add( mesh );
+                //
+				const grid = new GridHelper( 2000, 20, 0x000000, 0x000000 );
+				grid.material.opacity = 0.2;
+				grid.material.transparent = true;
+				sceneInfo.scene.add( grid );
+	
+                // a progress cube that grows as the avatar geometry and scene loads:
+                const geometry = new BoxGeometry( 80, 2, 2 ); // width, height, depth
+                const material = new MeshBasicMaterial( { color: 0x00ff00, transparent: true, opacity: 0.5 } );
+                const progressCube = new Mesh( geometry, material );
+                progressCube.position.set( 0, 15, 0 );
+                sceneInfo.scene.add( progressCube );
+
+                const fontLoader = new FontLoader();
+                //
+                let loadingText = undefined;
+                //
+                fontLoader.load( '/static/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+                    const textGeom = new TextGeometry( 'Loading...', {
+                        font: font,
+                        size: 10,
+                        height: 1,
+                        curveSegments: 12,
+                        bevelEnabled: true,
+                        bevelThickness: 0.25,
+                        bevelSize: 0.1,
+                        bevelOffset: 0,
+                        bevelSegments: 5
+                    } );
+                    loadingText = new Mesh( textGeom, material );
+                    textGeom.computeBoundingBox();
+                    let x = (textGeom.boundingBox.max.x - textGeom.boundingBox.min.x) * -0.5;
+                    loadingText.position.set( x, 20, 0 );
+                    sceneInfo.scene.add( loadingText );
+                } );
+
+				// Instantiate a GLTF 3D file loader
+				const gltfLoader = new GLTFLoader();
+				//
+				let loadProgFract = 0;
+				let loadProgress = loadProgFract;
+				let lastLoadProgress = loadProgress;
+
+				// Optional: Provide a DRACOLoader instance to decode compressed mesh data
+				const dracoLoader = new DRACOLoader();
+				dracoLoader.setDecoderPath( '/static/three/examples/js/libs/draco/' );
+				gltfLoader.setDRACOLoader( dracoLoader ); /**/
+
+				// Load a glTF resource
+				gltfLoader.load(
+					sceneInfo.obj.url,
+					// called when the resource is loaded
+					function ( gltf ) {
+
+                        progressCube.material.opacity = 0.5;
+
+						let parentObj = gltf.scene;
+						parentObj.scale.set( sceneInfo.obj.scale, sceneInfo.obj.scale, sceneInfo.obj.scale );
+
+						console.log(dumpObject(parentObj).join('\n'));
+
+						getMeshObjects(parentObj, sceneInfo.meshObjs);
+
+						let count = sceneInfo.meshObjs.length;
+						for (let i = 0; i < count; i++) {
+                            
+                            let name = sceneInfo.meshObjs[i].name;
+
+							console.log("sceneInfo.meshObjs[" + i + "] has name " + name);
+
+							sceneInfo.meshObjs[i].receiveShadow  = true;
+                            sceneInfo.meshObjs[i].castShadow = true;
+						}
+			
+						sceneInfo.scene.add(parentObj);
+                        //
+                        removeObject3D(progressCube);
+                        removeObject3D(loadingText);
+
+                        sceneInfo.inited = true;
+                        //
+                        // these require sceneInfo.inited == true (which is really gASI)
+					},
+					// called while loading is progressing
+					function ( xhr ) {
+
+                        loadProgFract = xhr.loaded / xhr.total;
+
+                        progressCube.scale.set( loadProgFract, 1, 1 );
+                        progressCube.material.opacity = loadProgFract;
+                        
+						loadProgress = loadProgFract * 100;
+						if (loadProgress <= lastLoadProgress + 10)
+							return;
+						
+						console.log( loadProgress + '% loaded' );
+
+						lastLoadProgress += 10;
+
+					},
+					// called when loading has errors
+					function ( error ) {
+
+						console.log( 'An error happened' );
+
+					}
+				);
+                 /*   */
+
+				sceneInfo.renderer = new WebGLRenderer( { antialias: true } );
+				sceneInfo.renderer.setPixelRatio( window.devicePixelRatio );
+				sceneInfo.renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
+                // remember:
+                sceneInfo.canvas = sceneInfo.renderer.domElement;
+                // 
+                sceneInfo.renderer.toneMapping = ACESFilmicToneMapping;
+				sceneInfo.renderer.toneMappingExposure = 1.0;
+				sceneInfo.renderer.outputEncoding = sRGBEncoding;
+                //
+				sceneInfo.renderer.shadowMap.enabled = true;
+                //
+				container.appendChild( sceneInfo.renderer.domElement );
+	
+				
+				sceneInfo.cam.controls = new OrbitControls( sceneInfo.cam.camera, sceneInfo.renderer.domElement );
+                viewAtLoad(); // positions camera and camera view 
+
+				window.addEventListener( 'resize', onWindowResize );
+	
+				// stats
+				stats = new Stats();
+				container.appendChild( stats.dom );
+			}
+	
+			function onWindowResize() {
+	
+				let mainTag = document.getElementById("mainContent")
+				
+				gASI.cam.camera.aspect = mainTag.clientWidth / mainTag.clientHeight;
+				gASI.cam.camera.updateProjectionMatrix();
+	
+				gASI.renderer.setSize( mainTag.clientWidth, mainTag.clientHeight );
+			}
+	
+			function animate() {
+	
+				requestAnimationFrame( animate );
+
+                const normDevCoord = gASI.normDevCoord;
+	
+				gASI.renderer.render( gASI.scene, gASI.cam.camera );
+	
+				stats.update();
+
+                if (sceneInfo.debug) {
+                    let ci = document.querySelector("#mainOverlay");
+                    ci.innerHTML = gASI.msg;
+                }
+			}
+		}
+
+
+
+        
+		function page_init() {
+
+			const access_token = localStorage.getItem('token');
+			if (typeof access_token !== 'undefined') {
+				const options = { headers: { "Authorization": "Bearer " + access_token } }
+				fetch("/users/me", options)
+				.then(response => response.json())
+				.then( response => {
+
+					if (response.hasOwnProperty('roles')) {
+
+						// user is logged in, change contact link:
+						document.getElementById("contactButton").innerHTML = '<a href="#" class="button" onclick="UserContact()">Contact</a>';
+
+						if (response.roles.includes("admin")) {
+
+							document.getElementById("aside").innerHTML = 
+								`<a href="#" class="button" onclick="UserSettings()">Settings</a>
+								<br/><br/>
+								<a href="#" class="button" onclick="Logout()">Logout</a>
+								`;
+						}
+					}
+				});
+			}
+		}
+
+	</script>
+	
+	{% include 'common_logout.html' %}
+
+	{% include 'common_refresh.html' %}
+	
+</body>
+</html>
