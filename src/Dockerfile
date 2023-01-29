@@ -1,5 +1,4 @@
 # pull official base image
-# FROM python:3.9.4-alpine
 FROM python:3.9.6-alpine
 
 # create directory for the app user
