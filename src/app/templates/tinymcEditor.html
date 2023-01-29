@@ -316,7 +316,12 @@
 
 			// This will upload the file after having read it
 			const upload = (file) => {
-				fetch('/upload', { // Your POST endpoint
+				// make the HTTP put request using fetch api
+				let domain = (new URL(window.location));
+				const prebsjnk = domain.origin;
+				const furl = prebsjnk + '/upload';
+				fetch(furl, {
+				// fetch('/upload', { // Your POST endpoint
 	  				method: 'POST',
 	  				headers: {},
 	  				body: data // This is your file object
