@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware 
@@ -8,10 +9,24 @@ from app.api import blogposts, notes, ping, users_htmlpages, video, htmlpages, u
 
 # import sentry_sdk
 
+# isolate these activities into their own file:
+from app.startup import initialize_database_data
+#
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # startup logic
+    db_mgr: DatabaseMgr = get_database_mgr()
+    await db_mgr.get_db().connect()
+    await initialize_database_data()
+    yield
+    # shutdown logic
+    db_mgr: DatabaseMgr = get_database_mgr()
+    await db_mgr.get_db().disconnect()
+    
 # generate our "app"
 def create_application() -> FastAPI:
 
-    application = FastAPI(title="FastAPI_TDD_Docker (& postgresql): BlogPosts & Data Notes", openapi_url="/openapi.json")
+    application = FastAPI(lifespan=lifespan,title="FastAPI_TDD_Docker (& postgresql): BlogPosts & Data Notes", openapi_url="/openapi.json")
 
     # add CORS handling: 
     application.add_middleware(
@@ -27,12 +42,7 @@ def create_application() -> FastAPI:
     application.mount("/static", StaticFiles(directory=str(config.get_base_path() / "static")), name="static") 
 
 
-    
-    
-    # isolate these activities into their own file:
-    from app.startup import initialize_database_data
-    #
-    # setup handler for application start that inits the db connection: 
+    """ # setup handler for application start that inits the db connection: 
     @application.on_event("startup")
     async def startup():
         db_mgr: DatabaseMgr = get_database_mgr()
@@ -43,7 +53,9 @@ def create_application() -> FastAPI:
     @application.on_event("shutdown")
     async def shutdown():
         db_mgr: DatabaseMgr = get_database_mgr()
-        await db_mgr.get_db().disconnect()
+        await db_mgr.get_db().disconnect() """
+        
+        
 
     # install the ping router into our app:
     application.include_router(ping.router)

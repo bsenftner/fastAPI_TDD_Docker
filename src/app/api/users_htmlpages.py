@@ -100,7 +100,7 @@ async def refresh_token(response: Response, request: Request):
             summary="Get current logged in user data", 
             response_model=UserPublic)
 async def read_users_me(request: Request, current_user: UserInDB = Depends(users.get_current_active_user)):
-    # print(request.cookies)
+    print(current_user)
     return {"username": current_user.username, 
             "id": current_user.id, 
             "email": current_user.email, 

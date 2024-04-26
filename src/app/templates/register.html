@@ -60,7 +60,7 @@
 		function page_init() {
             // check if this is a reload after successful registration:
 			const webusername = localStorage.getItem('webusername');
-			if (webusername) {
+			if (webusername && webusername != 'undefined') {
 				console.log('new user refresh')
 				document.getElementById("mainContent").innerHTML = 
 								'<h4>Thank you for registering with the site, ' + webusername + '.</h4>' +

@@ -19,7 +19,7 @@ services:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASS}@db/${DB_NAME}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.blog.rule=Host(`blog.blakesenftner.com`)
+      - traefik.http.routers.blog.rule=Host(`blog.blakesenftner.com`, `www.blakesenftner.com`)
       - traefik.http.routers.blog.tls=true
       - traefik.http.routers.blog.tls.certresolver=lets-encrypt
     networks:

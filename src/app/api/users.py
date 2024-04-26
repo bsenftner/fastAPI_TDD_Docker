@@ -10,7 +10,9 @@ from app.api.utils import OAuth2PasswordBearerWithCookie
 from email_validator import validate_email, EmailNotValidError
 from app.send_email import send_email_async
 
-from jose import JWTError, jwt
+# from jose import JWTError, jwt
+import jwt
+
 from typing import Any, Union
 from datetime import datetime, timedelta
 
@@ -77,7 +79,9 @@ def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> 
         expires_delta = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRES_MINUTES)
     
     to_encode = {"exp": expires_delta, "sub": str(subject)}
-    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, settings.JWT_ALGORITHM)
+    # encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, settings.JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(payload=to_encode, key=settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    
     return encoded_jwt
 
 # -------------------------------------------------------------------------------------
@@ -91,15 +95,20 @@ def create_refresh_token(subject: Union[str, Any], expires_delta: int = None) ->
         expires_delta = datetime.utcnow() + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRES_MINUTES)
     
     to_encode = {"exp": expires_delta, "sub": str(subject)}
-    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_REFRESH_KEY, settings.JWT_ALGORITHM)
+    # encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_REFRESH_KEY, settings.JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(payload=to_encode, key=settings.JWT_SECRET_REFRESH_KEY, algorithm=settings.JWT_ALGORITHM)
+    
     return encoded_jwt
 
 
 
 
 # -------------------------------------------------------------------------------------
-def user_has_role( user: UserInDB, role: str):
-    return role in user.roles
+def user_has_role( user: UserInDB, role: str) -> bool:
+    if not user:
+        return False
+    roles_list = user.roles.split(' ')  # Split the roles string into a list
+    return role in roles_list
 
 
 # -------------------------------------------------------------------------------------
@@ -109,9 +118,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInDB:
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    username = ''
     try:
         settings = get_settings() # application config settings
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        # payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        payload = jwt.decode(jwt=token, key=settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        
         username: str = payload.get("sub")
         # log.info(f"get_current_user: username is {username}")
         expTime: str = payload.get("exp")
@@ -128,8 +140,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserInDB:
                 headers={"WWW-Authenticate": "Bearer"},
             )
         
-    except JWTError:
-        raise credentials_exception
+    except jwt.exceptions.InvalidTokenError as e:
+        log.info(f"get_current_user: jwt error: " + repr(e))
+    except Exception as e:
+        log.info("get_current_user: WARNING NORMAL EXCEPTION CAUGHT")
+        log.info(repr(e))
+        
+    """ except JWTError:
+        log.info(f"get_current_user: JWTError")
+        raise credentials_exception """
     
     user = await get_user(username) 
     if user is None:
@@ -148,7 +167,10 @@ async def get_refresh_user(request: Request) -> UserInDB:
     try:
         cookies = request.cookies # json.loads(request.cookies)
         settings = get_settings() # application config settings
-        payload = jwt.decode(cookies['refresh_token'], settings.JWT_SECRET_REFRESH_KEY, algorithms=[settings.JWT_ALGORITHM]) 
+        
+        # payload = jwt.decode(cookies['refresh_token'], settings.JWT_SECRET_REFRESH_KEY, algorithms=[settings.JWT_ALGORITHM]) 
+        payload = jwt.decode(jwt=cookies['refresh_token'], key=settings.JWT_SECRET_REFRESH_KEY, algorithms=[settings.JWT_ALGORITHM])
+        
         username: str = payload.get("sub")
         expTime: str = payload.get("exp")
         if username is None:
@@ -164,8 +186,14 @@ async def get_refresh_user(request: Request) -> UserInDB:
             )
             
 
-    except JWTError:
-        raise credentials_exception
+    except jwt.exceptions.InvalidTokenError as e:
+        log.info(f"get_refresh_user: jwt error: " + repr(e))
+    except Exception as e:
+        log.info("get_refresh_user: WARNING NORMAL EXCEPTION CAUGHT")
+        log.info(repr(e))
+            
+    """ except JWTError:
+        raise credentials_exception """
     
     user = await get_user(username=username) # token_data.username)
     if user is None:
